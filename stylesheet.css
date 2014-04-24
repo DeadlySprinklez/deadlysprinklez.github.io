@@ -20,3 +20,8 @@ img {
 html {
   background-color: #8C3800;
 }
+#button {
+  border: 3px #0000 solid;
+  background-color: #cc0000;
+  color: #0000;
+}
