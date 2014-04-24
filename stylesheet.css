@@ -1,0 +1,22 @@
+#navbar {
+  align: top;
+  margin: auto;
+  border: 5px #cc0000 solid;
+  background-color: #0000;
+}
+#mainpart {
+  border: 1px #000000 dashed;
+  align: center;
+  margin: auto;
+  background-color: #0000;
+}
+a {
+  text-decoration: none;
+  color: #ffffff;
+}
+img {
+  border: 5px #cc0000;
+}
+html {
+  background-color: #8C3800;
+}
