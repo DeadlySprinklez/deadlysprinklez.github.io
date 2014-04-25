@@ -13,6 +13,7 @@ img {
 }
 html {
   background-color: #572200;
+  border: 3px dotted #cc0000;
 }
 #button {
   border: 3px #cc0000 solid;
