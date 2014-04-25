@@ -22,6 +22,7 @@ html {
   text-align: center;
   height: 25px;
   width: 50px;
+  border-radius: 3px;
 }
 #newscasttitle {
   font-size: 20px;
