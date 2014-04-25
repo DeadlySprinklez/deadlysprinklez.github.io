@@ -1,5 +1,5 @@
 #navbar {
-  text-align: center;
+  text-align: left;
   margin: auto;
   border: 5px #cc0000 solid;
   background-color: #0000;
@@ -28,6 +28,7 @@ html {
   background-color: #00ffff;
   color: #cc0000;
   margin: auto;
+  text-align: center;
 }
 #newscasttitle {
   font-size: 20px;
