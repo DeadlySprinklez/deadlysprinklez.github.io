@@ -21,10 +21,9 @@ html {
   margin: 0 auto;
   text-align: center;
   height: 20px;
-  width: 50px;
+  width: 33.333%;
   border-radius: 3px;
   float: left;
-  float: right;
 }
 #newscasttitle {
   font-size: 20px;
