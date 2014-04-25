@@ -21,9 +21,8 @@ html {
   margin: 0 auto;
   text-align: center;
   height: 20px;
-  width: 70%;
+  width: 50px;
   border-radius: 3px;
-  display: inline-block;
 }
 #newscasttitle {
   font-size: 20px;
