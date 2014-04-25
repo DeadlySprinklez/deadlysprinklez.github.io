@@ -23,6 +23,7 @@ html {
   height: 20px;
   width: 50px;
   border-radius: 3px;
+  float: left;
 }
 #newscasttitle {
   font-size: 20px;
