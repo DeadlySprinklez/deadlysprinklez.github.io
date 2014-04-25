@@ -1,11 +1,11 @@
 #navbar {
   text-align: left;
   margin: auto;
-  border: 5px #cc0000 solid;
+  border: 3px #cc0000 solid;
   background-color: #0000;
   border-radius: 5px;
-  width: 120px;
-  height: 50px;
+  width: 100px;
+  height: 40px;
 }
 #mainpart {
   border: 1px #000000 dashed;
