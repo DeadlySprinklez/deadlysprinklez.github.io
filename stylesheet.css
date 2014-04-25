@@ -18,12 +18,11 @@ html {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
-  margin: 0 auto;
+  margin: auto;
   text-align: center;
   height: 20px;
-  width: 33%;
+  width: 50px;
   border-radius: 3px;
-  float: left;
 }
 #newscasttitle {
   font-size: 20px;
