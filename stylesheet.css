@@ -1,12 +1,3 @@
-#navbar {
-  text-align: left;
-  margin: auto;
-  border: 3px #cc0000 solid;
-  background-color: #0000;
-  border-radius: 5px;
-  width: 100px;
-  height: 50px;
-}
 #mainpart {
   border: 1px #000000 dashed;
   text-align: center;
@@ -29,6 +20,8 @@ html {
   color: #cc0000;
   margin: auto;
   text-align: center;
+  height: 75px;
+  
 }
 #newscasttitle {
   font-size: 20px;
