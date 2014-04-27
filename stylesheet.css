@@ -8,6 +8,10 @@ a {
   text-decoration: none;
   color: #929292;
 }
+a:hover {
+  color: #585858; 
+    
+}
 img {
   border: 5px #cc0000;
 }
