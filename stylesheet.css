@@ -40,3 +40,6 @@ html {
 div {
   color: #d1d1d1;
 }
+li:hover {
+  color: #FFFFFF;
+}
