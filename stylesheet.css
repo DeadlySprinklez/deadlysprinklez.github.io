@@ -25,6 +25,10 @@ html {
   width: 50px;
   border-radius: 3px;
 }
+#button:hover {
+  background-color: #00B2B2;
+  
+}
 #newscasttitle {
   font-size: 20px;
   color: #FFFFFF;
