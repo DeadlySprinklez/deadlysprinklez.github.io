@@ -53,8 +53,9 @@ li:hover {
   margin: auto;
   text-align: center;
   height: 20px;
-  width: 100px;
+  width: 100%;
   border-radius: 3px;
+  overflow: auto;
 }
 #button_game:hover {
   background-color: #00B2B2;
