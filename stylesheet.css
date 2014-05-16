@@ -53,11 +53,36 @@ li:hover {
   margin: auto;
   text-align: center;
   height: 20px;
-  width: 100px;
+  width: 100%;
   border-radius: 3px;
-  overflow: auto;
-  
 }
 #button_game:hover {
+  background-color: #00B2B2;
+}
+
+#button_gamex3 {
+  border: 3px #cc0000 solid;
+  background-color: #00ffff;
+  color: #cc0000;
+  margin: auto;
+  text-align: center;
+  height: 20px;
+  width: 33.3333333333333333%;
+  border-radius: 3px;
+}
+#button_gamex3:hover {
+  background-color: #00B2B2;
+}
+#button_gamex2 {
+  border: 3px #cc0000 solid;
+  background-color: #00ffff;
+  color: #cc0000;
+  margin: auto;
+  text-align: center;
+  height: 20px;
+  width: 50%;
+  border-radius: 3px;
+}
+#button_gamex2:hover {
   background-color: #00B2B2;
 }
