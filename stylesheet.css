@@ -56,3 +56,6 @@ li:hover {
   width: 100px;
   border-radius: 3px;
 }
+#button_game:hover {
+  background-color: #00B2B2;
+}
