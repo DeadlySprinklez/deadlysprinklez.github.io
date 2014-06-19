@@ -30,7 +30,7 @@ html {
   width: 50px;
   border-radius: 3px;
 }
-ul li #button {
+#navbar ul li {
     display: inline;
     padding: 5px 5px 5px 5px;
 }
