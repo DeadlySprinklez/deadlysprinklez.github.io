@@ -20,6 +20,8 @@ html {
   border: 3px dotted #cc0000;
 }
 #button {
+  display: inline;
+  position: fixed;
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
