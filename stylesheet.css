@@ -30,7 +30,7 @@ html {
   width: 50px;
   border-radius: 3px;
 }
-#button ul li {
+ul li #button {
     display: inline;
     padding: 5px 5px 5px 5px;
 }
