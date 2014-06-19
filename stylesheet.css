@@ -20,7 +20,6 @@ html {
   border: 3px dotted #cc0000;
 }
 #button {
-  display: inline;
   position: fixed;
   border: 3px #cc0000 solid;
   background-color: #00ffff;
@@ -30,6 +29,10 @@ html {
   height: 20px;
   width: 50px;
   border-radius: 3px;
+}
+#button ul li {
+    display: inline;
+    padding: 5px 5px 5px 5px;
 }
 #button:hover {
   background-color: #00B2B2;
