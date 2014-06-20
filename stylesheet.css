@@ -32,7 +32,7 @@ html {
 }
 #navbar ul li {
     display: inline;
-    padding: 5px 5px 5px 5px;
+    padding: 50px;
 }
 #button:hover {
   background-color: #00B2B2;
