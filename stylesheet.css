@@ -91,3 +91,6 @@ li:hover {
 #button_gamex2:hover {
   background-color: #00B2B2;
 }
+ul {
+  	list-style-type: none;
+}
