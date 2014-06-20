@@ -24,7 +24,7 @@ html {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
-  margin-top: -5px;
+  margin-top: -10px;
   text-align: center;
   height: 20px;
   width: 50px;
@@ -32,7 +32,7 @@ html {
 }
 #navbar ul li {
     display: inline;
-    padding: 50px;
+    padding: ;
 }
 #button:hover {
   background-color: #00B2B2;
