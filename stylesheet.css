@@ -30,8 +30,6 @@ html {
   border-radius: 3px;
 }
 #navbar ul li {
-    margin-top: -10px;
-    padding-right: 50px;
 }
 #button:hover {
   background-color: #00B2B2;
