@@ -33,7 +33,7 @@ html {
 }
 #button:hover {
   background-color: #00B2B2;
-  padding: 0px 0px 3px 0px;
+  padding: 3px 0px 0px 0px;
   box-shadow: 1px 1px 2px;
 }
 #newscasttitle {
