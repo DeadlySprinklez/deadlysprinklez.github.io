@@ -1,4 +1,4 @@
-#mainpart {
+section {
   border: 1px #000000 dashed;
   text-align: center;
   margin: auto;
@@ -29,8 +29,11 @@ html {
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
 }
-#navbar {
+nav {
   position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 .button:hover {
   background-color: #00B2B2;
