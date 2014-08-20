@@ -27,6 +27,7 @@ html {
   height: 20px;
   width: 50px;
   border-radius: 3px;
+  box-shadow: 5px 5px 2px;
 }
 #navbar ul li {
 }
