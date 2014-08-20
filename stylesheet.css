@@ -28,7 +28,7 @@ html {
   width: 50px;
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
-  postition: fixed;
+  position: fixed;
 }
 #navbar ul li {
 }
