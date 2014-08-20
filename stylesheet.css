@@ -19,7 +19,7 @@ html {
   background-color: #572200;
   border: 3px dotted #cc0000;
 }
-#button {
+.button {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
@@ -28,11 +28,11 @@ html {
   width: 50px;
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
+}
+#navbar {
   position: fixed;
 }
-#navbar ul li {
-}
-#button:hover {
+.button:hover {
   background-color: #00B2B2;
   margin: 3px 0px 0px 1px;
   box-shadow: 1px 2px 2px;
