@@ -19,7 +19,7 @@ html {
   background-color: #572200;
   border: 3px dotted #cc0000;
 }
-.navbutton1 {
+.button {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
@@ -29,67 +29,7 @@ html {
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
 }
-.navbutton1:hover {
-  background-color: #00B2B2;
-  margin: 3px 0px 0px 1px;
-  box-shadow: 1px 2px 2px;
-}
-.navbutton2 {
-  border: 3px #cc0000 solid;
-  background-color: #00ffff;
-  color: #cc0000;
-  text-align: center;
-  height: 20px;
-  width: 50px;
-  border-radius: 3px;
-  box-shadow: 2px 2px 2px;
-}
-.navbutton2:hover {
-  background-color: #00B2B2;
-  margin: 3px 0px 0px 1px;
-  box-shadow: 1px 2px 2px;
-}
-.navbutton3 {
-  border: 3px #cc0000 solid;
-  background-color: #00ffff;
-  color: #cc0000;
-  text-align: center;
-  height: 20px;
-  width: 50px;
-  border-radius: 3px;
-  box-shadow: 2px 2px 2px;
-}
-.navbutton3:hover {
-  background-color: #00B2B2;
-  margin: 3px 0px 0px 1px;
-  box-shadow: 1px 2px 2px;
-}
-.navbutton4 {
-  border: 3px #cc0000 solid;
-  background-color: #00ffff;
-  color: #cc0000;
-  text-align: center;
-  height: 20px;
-  width: 50px;
-  border-radius: 3px;
-  box-shadow: 2px 2px 2px;
-}
-.navbutton4:hover {
-  background-color: #00B2B2;
-  margin: 3px 0px 0px 1px;
-  box-shadow: 1px 2px 2px;
-}
-.navbutton5 {
-  border: 3px #cc0000 solid;
-  background-color: #00ffff;
-  color: #cc0000;
-  text-align: center;
-  height: 20px;
-  width: 50px;
-  border-radius: 3px;
-  box-shadow: 2px 2px 2px;
-}
-.navbutton5:hover {
+.button:hover {
   background-color: #00B2B2;
   margin: 3px 0px 0px 1px;
   box-shadow: 1px 2px 2px;
@@ -100,7 +40,6 @@ nav {
   left: 0;
   width: 100%;
 }
-
 #newscasttitle {
   font-size: 20px;
   color: #FFFFFF;
@@ -127,7 +66,6 @@ li:hover {
 #button_game:hover {
   background-color: #00B2B2;
 }
-
 #button_gamex3 {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
