@@ -1,3 +1,7 @@
+marquee {
+  color: #00B200;
+  background-color: #000000 ;
+}
 section {
   border: 1px #000000 dashed;
   text-align: center;
