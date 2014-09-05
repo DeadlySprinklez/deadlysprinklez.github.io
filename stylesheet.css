@@ -32,8 +32,8 @@ html {
   width: 50px;
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
-  transition: margin 0.5s;
-  transition: box-shadow 0.5s;
+  transition: margin 1s;
+  transition: box-shadow 1s;
 }
 .button:hover {
   background-color: #00B2B2;
