@@ -32,7 +32,7 @@ html {
   width: 50px;
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
-  text-shadow: 1px 2px #007070;
+  text-shadow: 1px 1px #007070;
   transition: margin 1s;
   transition: box-shadow 1s;
 }
