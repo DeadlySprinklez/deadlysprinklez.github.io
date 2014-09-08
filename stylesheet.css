@@ -12,7 +12,7 @@ a {
   text-decoration: none;
   color: #929292;
 }
-a:active{
+.button a:active{
   color: #006B00;
 }
 a:hover {
