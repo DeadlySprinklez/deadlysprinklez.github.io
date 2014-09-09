@@ -7,7 +7,7 @@ section {
   text-align: center;
   margin-top: 20px;
   color: #FFFFFF;
-  box-shadow: 2px 2px 2px;
+  box-shadow: 2px 2px 2px #000000;
 }
 a {
   text-decoration: none;
