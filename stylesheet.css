@@ -22,7 +22,7 @@ a:hover {
     
 }
 img {
-  border: 5px #cc0000;
+  box-shadow: 2px 2px 2px #2EE62E;
 }
 html {
   background-color: #572200;
