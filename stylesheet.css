@@ -1,6 +1,7 @@
 marquee {
   color: #00B200;
   background-color: #000000 ;
+  box-shadow: 3px 3px 3px #0A0A0A;
 }
 section {
   border: 1px #000000 dashed;
