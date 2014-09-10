@@ -66,43 +66,52 @@ li:hover {
 #newscasttitle:hover {
   color: #929292;
 }
-#button_game {
+.button_game {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
-  margin: auto;
   text-align: center;
   height: 20px;
-  width: 100%;
+  width: 300px;
   border-radius: 3px;
+  box-shadow: 2px 2px 2px;
+  text-shadow: 2px 2px #007070;
+  transition: margin 1s;
+  transition: box-shadow 1s;
 }
-#button_game:hover {
+.button_game:hover {
   background-color: #00B2B2;
 }
-#button_gamex3 {
+.button_gamex3 {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
-  margin: auto;
   text-align: center;
   height: 20px;
-  width: 33.3333333333333333%;
+  width: 150px;
   border-radius: 3px;
+  box-shadow: 2px 2px 2px;
+  text-shadow: 2px 2px #007070;
+  transition: margin 1s;
+  transition: box-shadow 1s;
 }
-#button_gamex3:hover {
+.button_gamex3:hover {
   background-color: #00B2B2;
 }
-#button_gamex2 {
+.button_gamex2 {
   border: 3px #cc0000 solid;
   background-color: #00ffff;
   color: #cc0000;
-  margin: auto;
   text-align: center;
   height: 20px;
-  width: 250px
+  width: 250px;
   border-radius: 3px;
+  box-shadow: 2px 2px 2px;
+  text-shadow: 2px 2px #007070;
+  transition: margin 1s;
+  transition: box-shadow 1s;
 }
-#button_gamex2:hover {
+.button_gamex2:hover {
   background-color: #00B2B2;
 }
 ul {
