@@ -126,3 +126,21 @@ li:hover {
 ul {
   	list-style-type: none;
 }
+.bigbutton {
+  font-size: 50px;
+  border: 15px #cc0000 solid;
+  background-color: #00ffff;
+  color: #cc0000;
+  text-align: center;
+  height: 300px;
+  width: 500px;
+  border-radius: 100px;
+  box-shadow: 5px 5px 5px;
+  text-shadow: 2px 2px #007070;
+  transition: box-shadow 1s;
+}
+.bigbutton:hover {
+  background-color: #00B2B2;
+  box-shadow: 1px 2px 2px;
+  text-shadow: 1px 1px #007070;
+}
