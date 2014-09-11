@@ -137,8 +137,8 @@ ul {
   border-radius: 100px;
   box-shadow: 5px 5px 5px;
   text-shadow: 2px 2px #007070;
-  transition: box-shadow 1s;
-  transition: border-radius 0.5s;
+  transition: box-shadow 0.5s linear;
+  transition: border-radius 0.5s linear;
 }
 .bigbutton:hover {
   background-color: #00B2B2;
