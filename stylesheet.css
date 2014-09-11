@@ -14,9 +14,6 @@ a {
   text-decoration: none;
   color: #929292;
 }
-.button a:active{
-  color: #006B00;
-}
 a:hover {
   color: #585858; 
     
@@ -38,8 +35,8 @@ html {
   border-radius: 3px;
   box-shadow: 2px 2px 2px;
   text-shadow: 2px 2px #007070;
-  transition: margin 1s;
-  transition: box-shadow 1s;
+  transition: margin 2s;
+  transition: box-shadow 0.5s;
 }
 .button:hover {
   background-color: #00B2B2;
