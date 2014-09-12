@@ -131,7 +131,10 @@ ul {
   text-align: center;
   height: 75px;
   width: 500px;
-  border-radius: 100px;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 15px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
   box-shadow: 5px 5px 5px;
   text-shadow: 2px 2px #007070;
   transition: box-shadow 0.5s linear;
@@ -141,5 +144,6 @@ ul {
   background-color: #00B2B2;
   box-shadow: 1px 2px 2px;
   text-shadow: 1px 1px #007070;
-  border-radius: 25px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 7.5px;
 }
