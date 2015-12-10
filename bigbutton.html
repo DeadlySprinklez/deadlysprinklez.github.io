@@ -34,8 +34,11 @@
       else if (charclick === 9) {
         document.getElementById("charindex").innerHTML = charClick + " " + "<h1>9</h1>" + "Sorry, this page has not yet been implemented!";
       }
-      else (charclick === 10) {
+      else if (charclick === 10) {
         document.getElementById("charindex").innerHTML = charClick + " " + "<h1>10</h1>" + "Sorry, this page has not yet been implemented!";
+      }
+      else {
+        document.getElementById("charindex").innerHTML = "Somehow, you got a number that wasn't in between 1 and 10. Try again!";
       }
     }
   </script>
