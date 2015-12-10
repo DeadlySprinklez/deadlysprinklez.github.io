@@ -5,8 +5,8 @@
   <link rel="shortcut icon" href="http://i1308.photobucket.com/albums/s616/StickDemonic/avaturfavi_zps2bfb309d.gif"/>
   <title>DeadlySprinklez's Character Index!</title>
   <script>
+    var charClick = Math.floor(Math.random() * (10-1));
     window.bigButton = function() {
-      var charClick = Math.floor(Math.random() * (10-1));
       if (charClick === 1) {
             document.getElementById("charindex").innerHTML = charClick + " " + "<h1>Khajiit</h1>" + "KhajiitSprinklez has an unbelievable resistance to cold, as why his kind lives in places like Skyrim.";
       }
@@ -41,6 +41,80 @@
         document.getElementById("charindex").innerHTML = "Somehow, you got a number that wasn't in between 1 and 10. Try again!";
       }
     }
+  window.nextButton = function() {
+    if charClick <= 10 {
+      var charClick += 1;
+    }
+    if (charClick === 1) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>Khajiit</h1>" + "KhajiitSprinklez has an unbelievable resistance to cold, as why his kind lives in places like Skyrim.";      }
+    else if (charClick === 2) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>2</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 3) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>3</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 4) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>4</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 5) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>5</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 6) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>6</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 7) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>7</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 8) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>8</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 9) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>9</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 10) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>10</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else {
+      document.getElementById("charindex").innerHTML = "Somehow, you got a number that wasn't in between 1 and 10. Try again!";
+    }
+  }
+  window.backButton = function() {
+    if charClick > 0 {
+      var charClick -= 1
+    }
+    if (charClick === 1) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>Khajiit</h1>" + "KhajiitSprinklez has an unbelievable resistance to cold, as why his kind lives in places like Skyrim.";      }
+    else if (charClick === 2) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>2</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 3) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>3</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 4) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>4</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 5) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>5</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 6) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>6</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 7) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>7</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 8) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>8</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 9) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>9</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else if (charClick === 10) {
+      document.getElementById("charindex").innerHTML = charClick + " " + "<h1>10</h1>" + "Sorry, this page has not yet been implemented!";
+    }
+    else {
+      document.getElementById("charindex").innerHTML = "Somehow, you got a number that wasn't in between 1 and 10. Try again!";
+    }
+  }
   </script>
 </head>
 <body>
@@ -85,10 +159,12 @@
   <table>
     <tr>
       <td>
-        <div class="bigbutton" onclick="bigButton()"><center>Click for a random page!</center></div>
+        <div id="charindex">Hit the button for me to change into a page!</div>
       </td>
       <td>
-        <div id="charindex">Hit the button for me to change into a page!</div>
+        <div class="backbutton" onclick="backButton()"><center>Previous Page</center></div>
+        <div class="bigbutton" onclick="bigButton()"><center>Click for a random page!</center></div>
+        <div class="nextbutton" onclick="nextButton()"><center>Next Page</center></div>
       </td>
     </tr>
   </table>
