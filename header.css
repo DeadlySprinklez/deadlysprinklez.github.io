@@ -2,6 +2,7 @@ ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
+	background-color: #FFFFFF;
 }
 li {
 	display: inline;
@@ -9,7 +10,6 @@ li {
 li a {
 	display: block;
 	padding: 8px;
-	background-color: #FFFFFF;
 	color: #00a86b;
 }
 li a:active {
