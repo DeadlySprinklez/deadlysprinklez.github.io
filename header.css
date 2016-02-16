@@ -11,6 +11,7 @@ li a {
 	padding: 8px;
 	color: #00a86b;
 	display: inline;
+	width: 150px;
 }
 li a:active {
 	background-color: #DDD;
