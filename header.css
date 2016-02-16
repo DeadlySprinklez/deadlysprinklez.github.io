@@ -5,12 +5,12 @@ ul {
 	background-color: #FFF;
 }
 li {
-	display: inline;
 }
 li a {
 	display: block;
 	padding: 8px;
 	color: #00a86b;
+	display: inline;
 }
 li a:active {
 	background-color: #DDD;
