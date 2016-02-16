@@ -12,6 +12,7 @@ li a {
 	color: #00a86b;
 	display: inline;
 	width: 150px;
+	height: 50px;
 }
 li a:hover {
 	background-color: #555555;
