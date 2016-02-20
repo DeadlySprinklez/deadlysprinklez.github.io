@@ -3,9 +3,6 @@ ul {
 	margin: 0;
 	padding: 0;
 }
-li {
-	background-color: #000000;
-}
 li a {
 	display: block;
 	padding: 8px;
