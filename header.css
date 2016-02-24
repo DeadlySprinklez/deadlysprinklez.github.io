@@ -4,7 +4,7 @@ ul {
 	padding: 0;
 	display: inline;
 }
-li {
+ul li {
 	display: inline;
 }
 li a {
