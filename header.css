@@ -1,13 +1,5 @@
-ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	display: inline;
-}
-ul li {
-	display: inline;
-}
-ul li a {
+
+table tr td a {
 	display: block;
 	padding: 8px;
 	color: #00a86b;
@@ -15,9 +7,9 @@ ul li a {
 	height: 13px;
 	background-color: #000000;
 }
-li a:hover {
+table tr td a:hover {
 	background-color: #555555;
 }
-li a:active {
+table tr td a:active {
 	background-color: #AAAAAA;
 }
