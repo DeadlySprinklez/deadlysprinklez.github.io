@@ -7,7 +7,7 @@ ul {
 ul li {
 	display: inline;
 }
-li a {
+ul li a {
 	display: block;
 	padding: 8px;
 	color: #00a86b;
