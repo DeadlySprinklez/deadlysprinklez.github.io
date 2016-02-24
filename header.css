@@ -1,4 +1,6 @@
-
+table {
+	border-collapse: collapse;
+}
 table tr td a {
 	display: block;
 	padding: 8px;
