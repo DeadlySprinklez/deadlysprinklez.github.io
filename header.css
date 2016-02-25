@@ -8,7 +8,7 @@ table tr td a {
 	width: 55px;
 	height: 13px;
 	background-color: #000000;
-	line-height: 5px;
+	line-height: 3px;
 }
 table tr td a:hover {
 	background-color: #555555;
