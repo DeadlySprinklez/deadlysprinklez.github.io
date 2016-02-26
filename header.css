@@ -9,10 +9,14 @@ table tr td a {
 	height: 13px;
 	background-color: #000000;
 	line-height: 10px;
+	border: 6px solid #c2ddf7;
 }
 table tr td a:hover {
 	background-color: #555555;
 }
 table tr td a:active {
 	background-color: #AAAAAA;
+}
+#header marquee {
+	color: #FFFFFF;
 }
