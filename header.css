@@ -18,11 +18,12 @@ table tr td a:active {
 	background-color: #AAAAAA;
 }
 #header marquee {
-	color: #FFFFFF;
+	color: #00a86b;
 }
 #header {
 	background-color: #000000;
 	border: 6px solid #c2ddf7;
+	border-radius: 3px;
 	width: 600px;
 	height: 75px;
 	position: fixed;
