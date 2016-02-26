@@ -22,4 +22,6 @@ table tr td a:active {
 #header {
 	background-color: #000000;
 	border: 6px solid #c2ddf7;
+	width: 600px;
+	height: 75px;
 }
