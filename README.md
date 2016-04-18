@@ -1,3 +1,3 @@
-deadlysprinklez.github.io
-=========================
-### HOLD UP! This area is under construction! I'm afraid I can't let you pass... but really, what's stoppin' ya?
+##### This area was closed due to a more user friendly host opening up to the creator.
+
+(it was tumblr)
