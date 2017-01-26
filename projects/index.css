@@ -1,14 +1,15 @@
 nav {
   width: 100%;
-  margin: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
   background-color: rgba(0, 0, 0, 0);
 }
 .navlink:link {
   color: rgb(25, 75, 255);
-  text-shadow: 4000px 0px 0 black;
-  text-shadow: -4000px 0px 0 black;
+  text-shadow: 4000px 0px 0 black, -4000px 0px 0 black;
   transition: color 0.25s;
-  transition: text-shadow 1.5s ease-out;
+  transition: text-shadow 1.5s cubic-bezier(0, 0, 0, 1);
   text-decoration: none;
 }
 .navlink:hover {
