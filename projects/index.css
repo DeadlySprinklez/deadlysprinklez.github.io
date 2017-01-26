@@ -5,11 +5,11 @@ nav {
 }
 .navlink:link {
   color: rgb(25, 75, 255);
-  text-shadow: 10000000px 0px 0 black;
+  text-shadow: 200% 0% 0 black;
   transition: color 0.25s;
   transition: text-shadow 1.5s;
 }
 .navlink:hover {
   color: rgb(50, 150, 255);
-  text-shadow: 1px 0px 0 black;
+  text-shadow: 1px 0% 0 black;
 }
