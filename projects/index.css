@@ -9,7 +9,7 @@ nav {
   color: rgb(100, 100, 100);
   text-shadow: 4000px 0px 0 black, -4000px 0px 0 black;
   transition: color 0.25s;
-  transition: text-shadow 1.5s cubic-bezier(0, 0, 0, 1);
+  transition: text-shadow 1.5s cubic-bezier(1, 0, 0, 1);
   text-decoration: none;
 }
 .navlink:hover {
