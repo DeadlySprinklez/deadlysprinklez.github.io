@@ -8,5 +8,5 @@ nav {
   transition: color 1s
 }
 .navlink:hover {
-  color: rgb(5, 15, 127);
+  color: rgb(50, 150, 255);
 }
