@@ -8,14 +8,18 @@ nav {
 .navlink:link {
   color: rgb(100, 100, 100);
   text-shadow: 4000px 0px 0 black, -4000px 0px 0 black;
-  transition: color 0.25s;
+  transition: color 1s;
   transition: text-shadow 1.5s cubic-bezier(1, 0, 0, 1);
   text-decoration: none;
-  
+}
+.navlink:visited {
+  color: rgba(100, 100, 100, 0.75);
 }
 .navlink:hover {
   color: rgb(225, 225, 225);
   text-shadow: 0px 0px 3px white, 0px 0px 3px white;
+}
+.navlink:active { 
 }
 html {
   background: linear-gradient(#000000, #07074a);
