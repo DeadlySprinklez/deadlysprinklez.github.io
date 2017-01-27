@@ -11,10 +11,11 @@ nav {
   transition: color 0.25s;
   transition: text-shadow 1.5s cubic-bezier(1, 0, 0, 1);
   text-decoration: none;
+  
 }
 .navlink:hover {
   color: rgb(225, 225, 225);
-  text-shadow: 0px 0px 2px white, 0px 0px 2px white;
+  text-shadow: 0px 0px 3px white, 0px 0px 3px white;
 }
 html {
   background: linear-gradient(#000000, #07074a);
