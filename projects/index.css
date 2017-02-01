@@ -33,6 +33,6 @@ div.messagebox {
   background-color: rgba(255, 255, 255, 0.25);
   color: #FFFFFF;
   border: medium double rgba(255, 255, 255, 0.5);
-  width: 0%;
+  width: auto;
   justify-content: center;
 }
