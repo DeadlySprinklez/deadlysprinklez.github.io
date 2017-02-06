@@ -40,6 +40,6 @@ div#blogwindow {
   display: flex;
   justify-content: center;
   flex-direction: row;
-  width: 40%;
   height: 675px;
+  margin-top: 5px;
 }
