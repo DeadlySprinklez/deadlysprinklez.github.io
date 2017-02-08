@@ -40,6 +40,8 @@ div#blogwindow {
   display: flex;
   justify-content: center;
   flex-direction: row;
-  height: 675px;
   margin-top: 5px;
+}
+div#blogwindow iframe {
+  height: 1000px;
 }
