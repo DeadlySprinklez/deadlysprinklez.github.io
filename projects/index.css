@@ -45,3 +45,8 @@ div#blogwindow {
 div#blogwindow iframe {
   height: 500px;
 }
+div#recentvideos {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
