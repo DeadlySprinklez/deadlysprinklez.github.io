@@ -45,7 +45,7 @@ div#blogwindow {
 }
 div#blogwindow iframe {
   height: 540px;
-  width: 960px;
+  width: auto;
 }
 div#recentvideos {
   display: flex;
