@@ -43,7 +43,8 @@ div#blogwindow {
   margin-top: 5px;
 }
 div#blogwindow iframe {
-  height: 500px;
+  height: 540px;
+  width: 960px;
 }
 div#recentvideos {
   display: flex;
