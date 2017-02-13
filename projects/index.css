@@ -5,6 +5,7 @@ nav {
   flex-direction: row;
   background-color: rgba(0, 0, 0, 0);
   top: 100%;
+  position: fixed;
 }
 .navlink:link {
   color: rgb(100, 100, 100);
