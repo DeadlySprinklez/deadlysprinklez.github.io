@@ -6,9 +6,6 @@ nav {
   background-color: rgba(0, 0, 0, 0);
   position: fixed;
 }
-nav table tr td a {
-  background-color: rgba(0, 0, 0, 10);
-}
 .navlink:link {
   color: rgb(100, 100, 100);
   text-shadow: 2000px 0px 0 black, -2000px 0px 0 black;
@@ -17,6 +14,7 @@ nav table tr td a {
   text-decoration: none;
   margin-left: 15px;
   margin-right: 15px;
+  background-color: rgba(0, 0, 0, 75);
 }
 .navlink:visited {
   color: rgba(100, 100, 100, 0.75);
