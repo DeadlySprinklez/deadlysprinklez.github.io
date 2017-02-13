@@ -6,7 +6,7 @@ nav {
   background-color: rgba(0, 0, 0, 0);
   position: fixed;
 }
-nav a {
+nav table tr td a {
   background-color: rgba(0, 0, 0, 10);
 }
 .navlink:link {
