@@ -51,4 +51,6 @@ div#recentvideos {
   display: flex;
   justify-content: center;
   flex-direction: row;
+  object-fit: cover;
+  overflow: hidden;
 }
