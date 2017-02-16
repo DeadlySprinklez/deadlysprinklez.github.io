@@ -1,6 +1,8 @@
 <html>
   <head>
     <link rel="stylesheet" href="index.css" type="text/css"/>
+    <script async src="//platform.twitter.com/widgets.js" charset="utf-8">
+    </script>
     <script>
       window.twttr = (function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0],
@@ -18,8 +20,22 @@
 
       return t;
       }(document, "script", "twitter-wjs"));
+      twttr.widgets.load();
     </script>
-    <script async src="//platform.twitter.com/widgets.js" charset="utf-8">
+    <script>
+      twttr.widgets.createTimeline(
+  {
+    sourceType: 'profile',
+    screenName: 'deadlysprinklez'
+  },
+  document.getElementById('timeline'),
+  {
+    width: '450',
+    height: '700',
+    related: 'deadlysprinklez,twitterapi'
+  }).then(function (el) {
+    console.log('Embedded a timeline.')
+  });
     </script>
     <title>
       DeadlySprinklez
