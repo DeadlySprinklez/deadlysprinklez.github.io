@@ -8,7 +8,7 @@ nav {
 }
 .navlink:link {
   color: rgb(100, 100, 100);
-  text-shadow: 2000px 0px 0 cyan, -2000px 0px 0 red;
+  text-shadow: 2000px 0px 10px cyan, -2000px 0px 10px red;
   transition: color 1s;
   transition: text-shadow 1.5s cubic-bezier(1, 0, 0, 1);
   text-decoration: none;
@@ -22,7 +22,7 @@ nav {
 }
 .navlink:hover {
   color: rgb(225, 225, 225);
-  text-shadow: -4px 0px 0px cyan, 4px 0px 0px red;
+  text-shadow: -4px 0px 1px rgba(0, 255, 255, 0.5), 4px 0px 1px rgba(255, 0, 0, 0.5);
 }
 .navlink:active { 
 }
