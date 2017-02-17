@@ -46,7 +46,7 @@ div#blogwindow {
   margin-top: 5px;
 }
 div#blogwindow iframe {
-  height: 750px;
+  height: 500px;
   width: auto;
 }
 div#recentvideos {
@@ -55,7 +55,8 @@ div#recentvideos {
   flex-direction: row;
   object-fit: cover;
   overflow: hidden;
-  width:
+  width: 75%;
+  height: auto;
 }
 table#content {
   display: flex;
