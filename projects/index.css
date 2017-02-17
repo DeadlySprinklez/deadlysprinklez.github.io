@@ -49,7 +49,7 @@ div#blogwindow iframe {
   height: 500px;
   width: auto;
 }
-div#recentvideos {
+div#recentvideos iframe{
   display: flex;
   justify-content: center;
   flex-direction: row;
