@@ -27,7 +27,7 @@ nav {
 .navlink:active { 
 }
 html {
-  background: linear-gradient(#000000, #07074a);
+  background: linear-gradient(#000000, #07074a) none 100% no-repeat;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 div.messagebox {
