@@ -27,7 +27,7 @@ nav {
 .navlink:active { 
 }
 html {
-  background-color: linear-gradient(#000000, #07074a);
+  background: linear-gradient(#000000, #07074a);
   background-repeat: no-repeat;
   background-attachment: fixed;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
