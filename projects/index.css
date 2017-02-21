@@ -58,7 +58,7 @@ div#recentvideos iframe{
   position:absolute;
   top: 0;
   left: 0;
-  height: inherit;
+  height: 100%;
 }
 div#recentvideos {
   position: relative;
