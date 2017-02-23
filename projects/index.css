@@ -60,11 +60,13 @@ div#recentvideos iframe{
   top: 0;
   left: 0;
   height: 100%;
+  width: 100%;
 }
 div#recentvideos {
   position: relative;
   padding-bottom: 56.25%;
   padding-top: 30px;
+  margin-top: 25px;
   height: 0;
   overflow: hidden;
   z-index: 0;
