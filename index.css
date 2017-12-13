@@ -17,6 +17,8 @@ nav {
   margin-right: 15px;
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 .navlink:visited {
   color: rgba(100, 100, 100, 0.75);
