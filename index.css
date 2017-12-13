@@ -43,16 +43,6 @@ div.messagebox {
   width: auto;
   justify-content: center;
 }
-div#blogwindow {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  margin-top: 5px;
-}
-div#blogwindow iframe {
-  height: 650px;
-  width: auto;
-}
 iframe{
   display: flex;
   justify-content: center;
@@ -62,8 +52,8 @@ iframe{
   position:absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
+  height: 35.5%;
+  width: auto;
 }
 table#content {
   display: flex;
