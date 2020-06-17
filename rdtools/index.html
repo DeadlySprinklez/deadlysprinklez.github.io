@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div id="page">
+		<h1>Rhythm Doctor Custom Character JSON Generator</h1>
+		<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
+		<span style="text-decoration-line: line-through;"><b>Spritesheet:</b> <input type="file" name="autofill" disabled> (optional - will help out with creation)</span> <b>Not Yet Implemented</b>
+		<br><br>
+		<b>Filename:</b> <input type="text" name="filename"> This MUST be the same as the spritesheet!
+		<br><br>
+		<b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)
+		<div style="font-size: 8pt; margin-right: 75%">(if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)</div>
+		<br>
+		<b>Clips:</b>
+		<div style="font-size: 8pt; margin-right: 75%">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
+		<div class="expressionList">
+			<div class="expressionNoDelete expression"><img class="removebutton" src="remove button.png"> <b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+				<select>
+					<option value="yes" selected="selected">Loop at end</option>
+					<option value="onBeat">Loop on beat</option>
+					<option value="no">Don't loop</option>
+				</select> |
+				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+			</div>
+			<div class="expressionNoDelete expression"><img class="removebutton" src="remove button.png"> <b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+				<select>
+					<option value="yes" selected="selected">Loop at end</option>
+					<option value="onBeat">Loop on beat</option>
+					<option value="no">Don't loop</option>
+				</select> |
+				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+			</div>
+			<div class="expressionNoDelete expression"><img class="removebutton" src="remove button.png"> <b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+				<select>
+					<option value="yes" selected="selected">Loop at end</option>
+					<option value="onBeat">Loop on beat</option>
+					<option value="no">Don't loop</option>
+				</select> |
+				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+			</div>
+			<div class="expressionNoDelete expression"><img class="removebutton" src="remove button.png"> <b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+				<select>
+					<option value="yes" selected="selected">Loop at end</option>
+					<option value="onBeat">Loop on beat</option>
+					<option value="no">Don't loop</option>
+				</select> |
+				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+			</div>
+			<img src="add button.png" class="addbutton" onclick="addExpression(event)">
+		</div> 
+	</div>
+	<h1 style="display: none;">export</h1>
+	<br>
+	<button id="export" onclick="exportJSON()"><h3>Export + Download</h3></button>
+	<br>
+	<footer style="text-align: right; vertical-align: bottom; color: white">Tool ©️ DeadlySprinklez 2020.<br>Background art, add/remove buttons, and Rhythm Doctor are property of Hafiz Azman and Seventh Beat Games.</footer>
+	<script src="main.js"></script>
+</body>
