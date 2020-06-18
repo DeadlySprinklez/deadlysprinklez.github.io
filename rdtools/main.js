@@ -9,10 +9,83 @@ for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onclick", "deleteExpression(event)");
 }
 list = null;
+document.getElementsByName('autofill')[0].addEventListener('change', imageHandling, false);
+var canvas = document.getElementById("initialCanvas");
+var context = canvas.getContext("2d");
 
+function imageHandling(e) {
+	if (e.currentTarget.value.endsWith('.png')) {
+		var filenameautofill = e.currentTarget.value.split("\\");
+		filenameautofill = filenameautofill[filenameautofill.length-1].split(".")[0];
+		document.getElementsByName('filename')[0].value = filenameautofill;
+		var reader = new FileReader();
+	    reader.onload = function(event){
+	        var img = new Image();
+	        img.onload = function(){
+	        	if (img.width < 9 || img.height < 9) {
+					alert('Your image is too small to be a valid spritesheet!\nSpritesheets need to have multiple frames, each frame having four rows/columns of blank pixels on each side.\nIf you need a sample, there are plenty in #custom-assets at https://discord.com/rhythmdr/');
+					return;
+				}
+				document.getElementsByName('sizeX')[0].value = img.width;
+				canvas.width = img.width;
+				canvas.height = img.height;
+				context.drawImage(img,0,0);
+				var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+				var position = 0;
+				var chain = 0;
+				var skip = false;
+				for (var i = 1; i <= canvas.height; i++) {
+					if (i >= canvas.height - 8) {
+						alert('Your image wasn\'t recognized as a spritesheet, so height wasn\'t autofilled for you. I would recommend checking your spritesheet, or you could fill the rest in manually!');
+						break;
+					}
+					for (var j = 1; j <= canvas.width; j++) {
+						console.log(j + " " + i);
+						if (i > 1) {
+							position = ((i-1)*canvas.width)+j
+							if (imgData.data[position*4-1] != 0) {
+								skip = true;
+								console.log("Script used Skip Alpha! " + imgData.data[position*4-1] + ", " + position)
+								break;
+							}
+						}
+						else {
+							if (imgData.data[j*4-1] != 0) {
+								skip = true;
+								console.log("Script used Skip Beta! " + imgData.data[j*4-1])
+								break;
+							}	
+						}
+					}
+					console.log("Script attempts Chain Omega!")
+					if (skip == false) {
+						chain++;
+						console.log("Chain increased!")
+					}
+					else {
+						chain = 0;
+						skip = false;
+						console.log("...but it failed! Chain reset!")
+						continue;
+					}
+					if (chain == 8) {
+						document.getElementsByName('sizeY')[0].value = i-4;
+						break;
+					}
+				}
+			}
+			img.src = event.target.result;
+		}
+		reader.readAsDataURL(e.target.files[0]);
+	}
+	else {
+		alert('Invalid filetype! Spritesheets should be \'.png\'s only!')
+		return;
+	}
+}
 function datareload(event) {
 	var focus = event.currentTarget
-	if (focus.options[event.currentTarget.selectedIndex].value == "no") {
+	if (focus.options[focus.selectedIndex].value == "no") {
 		focus.parentNode.lastElementChild.setAttribute("readonly", "");
 		focus.parentNode.lastElementChild.value = null;
 	}

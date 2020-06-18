@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+	<meta charset="utf-8"/>
 	<link rel="stylesheet" href="style.css">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 	<title>Rhythm Doctor Custom Character JSON Generator</title>
@@ -9,7 +10,7 @@
 	<div id="page">
 		<h1>Rhythm Doctor Custom Character JSON Generator</h1>
 		<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
-		<span style="text-decoration-line: line-through;"><b>Spritesheet:</b> <input type="file" name="autofill" disabled> (optional - will help out with creation)</span> <b>Not Yet Implemented</b>
+		<b>Spritesheet:</b> <input type="file" name="autofill"> (optional - will help out with creation)
 		<br><br>
 		<b>Filename:</b> <input type="text" name="filename"> This MUST be the same as the spritesheet!
 		<br><br>
@@ -67,5 +68,6 @@
 		Background art, add/remove buttons, and Rhythm Doctor are property of Hafiz Azman and Seventh Beat Games.<br>
 		<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi I spent 3 days on this and could use the cash)</a>
 	</footer>
+	<canvas id="initialCanvas" style="display: none;"></canvas>
 	<script src="main.js"></script>
 </body>
