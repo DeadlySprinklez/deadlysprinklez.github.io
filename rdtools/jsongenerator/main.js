@@ -1,7 +1,3 @@
-var tempdisable = document.body.querySelectorAll("*");
-for (i = 0; i < tempdisable.length; i++) {
-	tempdisable[i].setAttribute("disabled", "");
-}
 
 var changeevent = new Event('change');
 list = document.getElementsByTagName("SELECT");
@@ -35,43 +31,75 @@ function imageHandling(e) {
 				canvas.width = img.width;
 				canvas.height = img.height;
 				context.drawImage(img,0,0);
-				var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-				var position = 0;
-				var chain = 0;
-				var skip = false;
-				for (var i = 1; i <= canvas.height; i++) {
-					for (var j = 1; j <= canvas.width; j++) {
-						console.log(j + " " + i);
-						if (i > 1) {
-							position = ((i-1)*canvas.width)+j
-							if (imgData.data[position*4-1] != 0) {
-								skip = true;
-								console.log("Script used Skip Alpha! " + imgData.data[position*4-1] + ", " + position)
-								break;
+				var imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+				var alphaData = [];
+				for (i = 1; i*4-1 < imgData.length; i ++) {
+					alphaData[i] = imgData[i*4-1];
+				}
+				chain = 0;
+				//finding Y value
+				outY: for (y = 4; y <= canvas.height-1; y++) {
+					for (x = 4; x <= canvas.width-1; x++) {
+						if (alphaData[x+canvas.width*y] != 0 && chain < 8) {
+							console.log("BREAK ",x,y);
+							chain = 0;
+							break;
+						}
+						else if (chain >= 8 && alphaData[x+canvas.width*y] != 0) {
+							console.log("CHAIN BROKEN!");
+							while (chain >= 4) {
+								console.log(chain,y,canvas.height%y)
+								if (canvas.height % y == 0) {
+									console.log("Y STATUS: FOUND, ",y);
+									document.getElementsByName('sizeY')[0].value = y;
+									var sizeY = y;
+									break outY;
+								}
+								chain--;
+								y--;
 							}
+							console.log("Y STATUS: FAILURE, FILLING IN IMAGE HEIGHT AS FALLBACK");
+							document.getElementsByName('sizeY')[0].value = canvas.height;
+							sizeY = canvas.height;
+							break outY;
 						}
-						else {
-							if (imgData.data[j*4-1] != 0) {
-								skip = true;
-								console.log("Script used Skip Beta! " + imgData.data[j*4-1])
-								break;
-							}	
+						else if (x == canvas.width-1) {
+							chain++;
+							console.log("ROW ",y," GOOD, CHAIN: ",chain);
+							continue;
 						}
 					}
-					console.log("Script attempts Chain Omega!")
-					if (skip == false) {
-						chain++;
-						console.log("Chain increased!")
-					}
-					else {
-						chain = 0;
-						skip = false;
-						console.log("...but it failed! Chain reset!")
-						continue;
-					}
-					if (chain == 4) {
-						document.getElementsByName('sizeY')[0].value = i;
-						break;
+				}
+				chain = 0;
+				//finding X value
+				outX: for (x = 4; x <= canvas.width-1; x++) {
+					for (y = 4; y <= sizeY; y++) {
+						if (alphaData[x+canvas.width*y] != 0 && chain < 8) {
+							console.log("BREAK ",x,y);
+							chain = 0;
+							break;
+						}
+						else if (chain >= 8 && alphaData[x+canvas.width*y] != 0) {
+							console.log("CHAIN BROKEN!");
+							while (chain >= 4) {
+								console.log(chain,x,canvas.width%x)
+								if (canvas.width % x == 0) {
+									console.log("X STATUS: FOUND, ",x);
+									document.getElementsByName('sizeX')[0].value = x;
+									break outX;
+								}
+								chain--;
+								x--;
+							}
+							console.log("X STATUS: FAILURE, FILLING IN IMAGE WIDTH AS FALLBACK");
+							document.getElementsByName('sizeX')[0].value = canvas.width;
+							break outX;
+						}
+						else if (y == sizeY-1) {
+							chain++;
+							console.log("COLUMN ",x," GOOD, CHAIN: ",chain);
+							continue;
+						}
 					}
 				}
 			}
