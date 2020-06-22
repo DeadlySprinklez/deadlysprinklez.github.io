@@ -1,6 +1,7 @@
 
-var changeevent = new Event('change');
-list = document.getElementsByTagName("SELECT");
+const changeevent = new Event('change');
+const clickevent = new Event('click');
+var list = document.getElementsByTagName("SELECT");
 for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onchange", "datareload(event)");
 	list[i].dispatchEvent(changeevent);
@@ -10,16 +11,14 @@ for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onclick", "deleteExpression(event)");
 }
 list = null;
-document.getElementsByName('autofill')[0].addEventListener('change', imageHandling, false);
+document.getElementsByName('autofill')[0].addEventListener('change', fileHandling, false);
 var canvas = document.getElementById("initialCanvas");
 var context = canvas.getContext("2d");
 
-function imageHandling(e) {
+function fileHandling(e) {
+	var reader = new FileReader();
+	// New spritesheet handler
 	if (e.currentTarget.value.endsWith('.png')) {
-		var filenameautofill = e.currentTarget.value.split("\\");
-		filenameautofill = filenameautofill[filenameautofill.length-1].split(".")[0];
-		document.getElementsByName('filename')[0].value = filenameautofill;
-		var reader = new FileReader();
 	    reader.onload = function(event){
 	        var img = new Image();
 	        img.onload = function(){
@@ -27,7 +26,7 @@ function imageHandling(e) {
 					alert('Your image is too small to be a valid spritesheet!\nSpritesheets need to have multiple frames, each frame having four rows/columns of blank pixels on each side.\nIf you need a sample, there are plenty in #custom-assets at https://discord.com/rhythmdr/');
 					return;
 				}
-				//document.getElementsByName('sizeX')[0].value = img.width; (OBSOLETE AS OF JUNE 20th)
+				//document.getElementsByName('sizeX')[0].value = img.width; (OBSOLETE AS OF JUNE 20th, R.I.P.)
 				canvas.width = img.width;
 				canvas.height = img.height;
 				context.drawImage(img,0,0);
@@ -37,16 +36,19 @@ function imageHandling(e) {
 					alphaData[i] = imgData[i*4-1];
 				}
 				chain = 0;
+				ready = false;
 				//finding Y value
 				outY: for (y = 4; y <= canvas.height-1; y++) {
 					for (x = 4; x <= canvas.width-1; x++) {
-						if (alphaData[x+canvas.width*y] != 0 && chain < 8) {
+						if (alphaData[x+canvas.width*y] != 0 && chain < 8 && y != canvas.height - 4) {
 							console.log("BREAK ",x,y);
+							ready = true;
 							chain = 0;
 							break;
 						}
-						else if (chain >= 8 && alphaData[x+canvas.width*y] != 0) {
-							console.log("CHAIN BROKEN!");
+						else if ((chain >= 8 && alphaData[x+canvas.width*y] != 0) || y == canvas.height - 4) {
+							console.log("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
+							y--;
 							while (chain >= 4) {
 								console.log(chain,y,canvas.height%y)
 								if (canvas.height % y == 0) {
@@ -59,11 +61,13 @@ function imageHandling(e) {
 								y--;
 							}
 							console.log("Y STATUS: FAILURE, FILLING IN IMAGE HEIGHT AS FALLBACK");
-							document.getElementsByName('sizeY')[0].value = canvas.height;
+							if (window.confirm("Couldn't find frame Y! Press OK to fill in image height as a fallback, or press Cancel to leave your Y value as it is.")) {
+								document.getElementsByName('sizeY')[0].value = canvas.height;
+							}
 							sizeY = canvas.height;
 							break outY;
 						}
-						else if (x == canvas.width-1) {
+						else if (x == canvas.width-1 && ready) {
 							chain++;
 							console.log("ROW ",y," GOOD, CHAIN: ",chain);
 							continue;
@@ -71,16 +75,19 @@ function imageHandling(e) {
 					}
 				}
 				chain = 0;
+				ready = false;
 				//finding X value
 				outX: for (x = 4; x <= canvas.width-1; x++) {
 					for (y = 4; y <= sizeY; y++) {
-						if (alphaData[x+canvas.width*y] != 0 && chain < 8) {
+						if (alphaData[x+canvas.width*y] != 0 && chain < 8 && x != canvas.width - 4) {
 							console.log("BREAK ",x,y);
+							ready = true;
 							chain = 0;
 							break;
 						}
-						else if (chain >= 8 && alphaData[x+canvas.width*y] != 0) {
-							console.log("CHAIN BROKEN!");
+						else if ((chain >= 8 && alphaData[x+canvas.width*y] != 0) || x == canvas.width - 4) {
+							console.log("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
+							x--;
 							while (chain >= 4) {
 								console.log(chain,x,canvas.width%x)
 								if (canvas.width % x == 0) {
@@ -92,10 +99,12 @@ function imageHandling(e) {
 								x--;
 							}
 							console.log("X STATUS: FAILURE, FILLING IN IMAGE WIDTH AS FALLBACK");
-							document.getElementsByName('sizeX')[0].value = canvas.width;
+							if (window.confirm("Couldn't find frame X! Press OK to fill in image width as a fallback, or press Cancel to leave your X value as it is.")) {
+								document.getElementsByName('sizeX')[0].value = canvas.width;
+							}
 							break outX;
 						}
-						else if (y == sizeY-1) {
+						else if (y == sizeY-1 && ready) {
 							chain++;
 							console.log("COLUMN ",x," GOOD, CHAIN: ",chain);
 							continue;
@@ -107,10 +116,58 @@ function imageHandling(e) {
 		}
 		reader.readAsDataURL(e.target.files[0]);
 	}
+	// Pre-existing JSON handler 
+	else if (e.currentTarget.value.endsWith('.json')) {
+		reader.onload = function(event) {
+			var jsonObj = JSON.parse(event.target.result);
+			document.getElementsByName('sizeX')[0].value = jsonObj.size[0];
+			document.getElementsByName('sizeY')[0].value = jsonObj.size[1];
+			list = document.getElementsByClassName("expression");
+			for (i = list.length; i > 4; i--) {
+				list[i].getElementsByClassName("removebutton")[0].dispatchEvent(clickevent);
+			}
+			customexpressions = 0;
+			listnumber = 0;
+			for (i = 0; i < jsonObj.clips.length; i++) {
+				switch (jsonObj.clips[i].name) {
+					case "neutral":
+						listnumber = 0;
+						break;
+					case "happy":
+						listnumber = 1;
+						break;
+					case "barely":
+						listnumber = 2;
+						break;
+					case "missed":
+						listnumber = 3;
+						break;
+					default:
+						customexpressions++;
+						listnumber = 3 + customexpressions;
+						document.getElementsByClassName("addbutton")[0].dispatchEvent(clickevent);
+						list[listnumber].querySelector('[name=expressionname]').value = jsonObj.clips[i].name;
+						break;
+				}
+				list[listnumber].querySelector('*[name=frames]').value = jsonObj.clips[i].frames.toString();
+				list[listnumber].querySelector('*[name=fps]').value = jsonObj.clips[i].fps;
+				list[listnumber].getElementsByTagName("select")[0].value = jsonObj.clips[i].loop;
+				if (typeof jsonObj.clips[i].loopStart != undefined) {
+					list[listnumber].querySelector('*[name=loopStart]').value = jsonObj.clips[i].loopStart;
+				}	
+			}
+		}
+		reader.readAsText(event.target.files[0]);
+	}
+	// fallback, skips filename autofill
 	else {
-		alert('Invalid filetype! Spritesheets should be \'.png\'s only!')
+		alert('Invalid filetype! Accepted filetypes are \'.json\'s and \'.png\'s!')
 		return;
 	}
+	// filename autofill, only runs if the file type was valid
+	var filenameautofill = e.currentTarget.value.split("\\");
+	filenameautofill = filenameautofill[filenameautofill.length-1].split(".")[0];
+	document.getElementsByName('filename')[0].value = filenameautofill;
 }
 function datareload(event) {
 	var focus = event.currentTarget
