@@ -20,10 +20,13 @@
 		<b>Filename:</b> <input type="text" name="filename"> This MUST be the same as the spritesheet!
 		<br><br>
 		<b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)
-		<div style="font-size: 8pt; margin-right: 75%">(if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)</div>
+		<div class="hint">(if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)</div>
+		<br>
+		<button onclick="redrawFrames()">Reload Frames</button>
+		<div class="hint">(useful if animation previews don't look right)</div>
 		<br>
 		<b>Clips:</b>
-		<div style="font-size: 8pt; margin-right: 75%">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
+		<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
 		<div class="expressionList">
 			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
 				<select>
@@ -32,7 +35,8 @@
 					<option value="no">Don't loop</option>
 				</select> |
 				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
 			</div>
 			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
 				<select>
@@ -41,7 +45,8 @@
 					<option value="no">Don't loop</option>
 				</select> |
 				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
 			</div>
 			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
 				<select>
@@ -50,7 +55,8 @@
 					<option value="no">Don't loop</option>
 				</select> |
 				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
 			</div>
 			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
 				<select>
@@ -59,9 +65,14 @@
 					<option value="no">Don't loop</option>
 				</select> |
 				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0>
+				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
 			</div>
 			<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
+			<div id="animationDiv" style="display: none;">
+				<canvas id="animation"></canvas>
+				<button onclick="stopAnim = true;">Stop</button>
+			</div>
 		</div> 
 	</div>
 	<h1 style="display: none;">export</h1>
@@ -70,7 +81,8 @@
 	<br>
 	<footer style="text-align: right; vertical-align: bottom; color: white">
 		Tool ©️ DeadlySprinklez 2020.<br>
-		Background art, add/remove buttons, and Rhythm Doctor are property of Hafiz Azman and Seventh Beat Games.<br>
+		Background art and add button are from Rhythm Doctor, property of Hafiz Azman and Seventh Beat Games.<br>
+		Remove and preview buttons are edited add buttons, again from Rhythm Doctor.<br>
 		<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi I spent about a week total on this and could use the cash)</a>
 	</footer>
 	<canvas id="initialCanvas" style="display: none;"></canvas>

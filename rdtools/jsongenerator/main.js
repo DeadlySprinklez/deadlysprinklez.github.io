@@ -1,20 +1,3 @@
-
-const changeevent = new Event('change');
-const clickevent = new Event('click');
-var list = document.getElementsByTagName("SELECT");
-for (i = 0; i < list.length; i++) {
-	list[i].setAttribute("onchange", "datareload(event)");
-	list[i].dispatchEvent(changeevent);
-}
-list = document.getElementsByClassName("removebutton");
-for (i = 0; i < list.length; i++) {
-	list[i].setAttribute("onclick", "deleteExpression(event)");
-}
-list = null;
-document.getElementsByName('autofill')[0].addEventListener('change', fileHandling, false);
-var canvas = document.getElementById("initialCanvas");
-var context = canvas.getContext("2d");
-
 function fileHandling(e) {
 	var reader = new FileReader();
 	// New spritesheet handler
@@ -26,10 +9,16 @@ function fileHandling(e) {
 					alert('Your image is too small to be a valid spritesheet!\nSpritesheets need to have multiple frames, each frame having four rows/columns of blank pixels on each side.\nIf you need a sample, there are plenty in #custom-assets at https://discord.com/rhythmdr/');
 					return;
 				}
-				//document.getElementsByName('sizeX')[0].value = img.width; (OBSOLETE AS OF JUNE 20th, R.I.P.)
+				//doc.getElementsByName('sizeX')[0].value = img.width; (OBSOLETE AS OF JUNE 20th, R.I.P.)
 				canvas.width = img.width;
 				canvas.height = img.height;
 				context.drawImage(img,0,0);
+				if (doc.getElementsByName('sizeY')[0].value != 9 && doc.getElementsByName('sizeX')[0].value != 9) {
+					if (!window.confirm("Size data was already filled in - press OK to overwrite, or press Cancel to upload the spritesheet without changing the frame size.")) {
+						redrawFrames();
+						return;
+					}
+				}
 				var imgData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 				var alphaData = [];
 				for (i = 1; i*4-1 < imgData.length; i ++) {
@@ -53,7 +42,7 @@ function fileHandling(e) {
 								console.log(chain,y,canvas.height%y)
 								if (canvas.height % y == 0) {
 									console.log("Y STATUS: FOUND, ",y);
-									document.getElementsByName('sizeY')[0].value = y;
+									doc.getElementsByName('sizeY')[0].value = y;
 									var sizeY = y;
 									break outY;
 								}
@@ -62,7 +51,7 @@ function fileHandling(e) {
 							}
 							console.log("Y STATUS: FAILURE, FILLING IN IMAGE HEIGHT AS FALLBACK");
 							if (window.confirm("Couldn't find frame Y! Press OK to fill in image height as a fallback, or press Cancel to leave your Y value as it is.")) {
-								document.getElementsByName('sizeY')[0].value = canvas.height;
+								doc.getElementsByName('sizeY')[0].value = canvas.height;
 							}
 							sizeY = canvas.height;
 							break outY;
@@ -92,7 +81,7 @@ function fileHandling(e) {
 								console.log(chain,x,canvas.width%x)
 								if (canvas.width % x == 0) {
 									console.log("X STATUS: FOUND, ",x);
-									document.getElementsByName('sizeX')[0].value = x;
+									doc.getElementsByName('sizeX')[0].value = x;
 									break outX;
 								}
 								chain--;
@@ -100,7 +89,7 @@ function fileHandling(e) {
 							}
 							console.log("X STATUS: FAILURE, FILLING IN IMAGE WIDTH AS FALLBACK");
 							if (window.confirm("Couldn't find frame X! Press OK to fill in image width as a fallback, or press Cancel to leave your X value as it is.")) {
-								document.getElementsByName('sizeX')[0].value = canvas.width;
+								doc.getElementsByName('sizeX')[0].value = canvas.width;
 							}
 							break outX;
 						}
@@ -111,6 +100,7 @@ function fileHandling(e) {
 						}
 					}
 				}
+				redrawFrames();
 			}
 			img.src = event.target.result;
 		}
@@ -120,9 +110,9 @@ function fileHandling(e) {
 	else if (e.currentTarget.value.endsWith('.json')) {
 		reader.onload = function(event) {
 			var jsonObj = JSON.parse(event.target.result);
-			document.getElementsByName('sizeX')[0].value = jsonObj.size[0];
-			document.getElementsByName('sizeY')[0].value = jsonObj.size[1];
-			list = document.getElementsByClassName("expression");
+			doc.getElementsByName('sizeX')[0].value = jsonObj.size[0];
+			doc.getElementsByName('sizeY')[0].value = jsonObj.size[1];
+			list = doc.getElementsByClassName("expression");
 			for (i = list.length; i > 4; i--) {
 				list[i].getElementsByClassName("removebutton")[0].dispatchEvent(clickevent);
 			}
@@ -145,7 +135,7 @@ function fileHandling(e) {
 					default:
 						customexpressions++;
 						listnumber = 3 + customexpressions;
-						document.getElementsByClassName("addbutton")[0].dispatchEvent(clickevent);
+						doc.getElementsByClassName("addbutton")[0].dispatchEvent(clickevent);
 						list[listnumber].querySelector('[name=expressionname]').value = jsonObj.clips[i].name;
 						break;
 				}
@@ -167,10 +157,89 @@ function fileHandling(e) {
 	// filename autofill, only runs if the file type was valid
 	var filenameautofill = e.currentTarget.value.split("\\");
 	filenameautofill = filenameautofill[filenameautofill.length-1].split(".")[0];
-	document.getElementsByName('filename')[0].value = filenameautofill;
+	doc.getElementsByName('filename')[0].value = filenameautofill;
 }
-function datareload(event) {
-	var focus = event.currentTarget
+function redrawFrames() {
+	stopAnim = true;
+	framedata = [];
+	canvasX = Number(doc.getElementsByName('sizeX')[0].value);
+	framecountx = (canvas.width)/canvasX;
+	canvasY = Number(doc.getElementsByName('sizeY')[0].value);
+	framecounty = (canvas.height)/canvasY;
+	for (y = 1; y <= framecounty; y++) {
+		for (x = 1; x <= framecountx; x++) {
+			framedata[x+y*framecountx-framecountx-1] = context.getImageData(x*canvasX-canvasX,y*canvasY-canvasY,canvasX,canvasY);
+		}
+	}
+	console.log(framedata);
+}
+function previewAnim(event) {
+	/* TODO:
+	[ ] create array of imagedata for frame image data (easier in fileHandling()?)
+	[ ]	read frames, write image data to secondary canvas
+	[ ]	
+	*/		
+	stopAnim = true;
+	var focus = event.currentTarget;
+	if (doc.getElementsByName("autofill")[0].value.endsWith('.png') != true) {
+		alert("Previewing animations won't work unless you have a .png uploaded! Press the \"Browse\" button at the top of the page to upload a spritesheet.")
+		return;
+	}
+	else if (focus.parentNode.querySelector("*[name=frames]").value == "") {
+		alert("You can't preview an animation with no frames!");
+		return;
+	}
+	let x = doc.getElementsByName('sizeX')[0].value;
+	let y = doc.getElementsByName('sizeY')[0].value;
+	framework = [];
+	framework = focus.parentNode.querySelector("*[name=frames]").value;
+	framework = framework.split(",");
+	for (i = 0; i < framework.length; i++) {
+		framework[i] = Number(framework[i]);
+		if (framedata[framework[i]] == undefined) {
+			alert("Spritesheet does not have frame " + framework[i] + "! Wrong framesize maybe?");
+			return;
+		}
+		console.log(framedata[framework[i]]);
+	}
+	startAnim(focus.parentNode.querySelector("*[name=fps]").value);
+	//this line goes at the end of the function
+	animCanvas.parentNode.removeAttribute("style");
+}
+function startAnim(fpsArg) {
+	stopAnim = false;
+	fpsArg = Number(fpsArg);
+	if (fpsArg == 0) {
+		fpsArg = 12;
+	}
+	animCanvas.width = doc.getElementsByName('sizeX')[0].value;
+	animCanvas.height = doc.getElementsByName('sizeY')[0].value;
+	currentframe = 0;
+	fpsInt = 1000/fpsArg;
+	then = window.performance.now();
+	animate();
+}
+function animate(frametime) {
+	if (stopAnim) {
+		animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
+		animCanvas.parentNode.setAttribute("style", "display: none;");
+		return;
+	}
+	requestAnimationFrame(animate);
+	now = frametime;
+	elapsed = now - then;
+	if (elapsed > fpsInt) {
+		then = now - (elapsed % fpsInt);
+		if (currentframe == framework.length) {
+			currentframe = 0;
+		}
+		animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
+		animContext.putImageData(framedata[framework[currentframe]],0,0);
+		currentframe++;
+	}
+}
+function loopStartCheck(event) {
+	var focus = event.currentTarget;
 	if (focus.options[focus.selectedIndex].value == "no") {
 		focus.parentNode.lastElementChild.setAttribute("readonly", "");
 		focus.parentNode.lastElementChild.value = null;
@@ -180,8 +249,8 @@ function datareload(event) {
 	}
 }
 function addExpression(event) {
-	var newExpressionNumber = document.getElementsByClassName("expression").length - 3
-	event.currentTarget.insertAdjacentHTML("beforebegin", "<div class=\"expression\"><img class=\"removebutton\" src=\"assets/remove button.png\" onclick=\"deleteExpression(event)\"> <b>Expression:</b> <input type=\"text\" name=\"expressionname\" value=\"newExpression" + newExpressionNumber + "\"> | <b>Frames:</b> <input type=\"text\" name=\"frames\" placeholder=\"0,1,2,3,4...4,3,2,1,0\"> | <b>Loop:</b>\n<select onchange=\"datareload(event)\">\n<option value=\"yes\" selected=\"selected\">Loop at end</option>\n<option value=\"onBeat\">Loop on beat</option>\n<option value=\"no\">Don't loop</option>\n</select> |\n<b>FPS:</b> <input type=\"number\" min=0 value=0 name=\"fps\" style=\"width: 50px;\"> | <b>Loop Start:</b>\n<input type=\"number\" name=\"loopStart\" placeholder=\"(optional)\">\n</div>");
+	var newExpressionNumber = doc.getElementsByClassName("expression").length - 3
+	event.currentTarget.insertAdjacentHTML("beforebegin", "<div class=\"expression\"><img class=\"removebutton\" src=\"assets/remove button.png\" onclick=\"deleteExpression(event)\"> <b>Expression:</b> <input type=\"text\" name=\"expressionname\" value=\"newExpression" + newExpressionNumber + "\"> | <b>Frames:</b> <input type=\"text\" name=\"frames\" placeholder=\"0,1,2,3,4...4,3,2,1,0\"> | <b>Loop:</b>\n<select onchange=\"datareload(event)\">\n<option value=\"yes\" selected=\"selected\">Loop at end</option>\n<option value=\"onBeat\">Loop on beat</option>\n<option value=\"no\">Don't loop</option>\n</select> |\n<b>FPS:</b> <input type=\"number\" min=0 value=0 name=\"fps\" style=\"width: 50px;\"> | <b>Loop Start:</b>\n<input type=\"number\" name=\"loopStart\" placeholder=\"(optional)\"> | \n<img src=\"assets/play button.png\" class=\"preview\" onclick=\"previewAnim(event)\"></div>");
 }
 function deleteExpression(event) {
 	if (event.currentTarget.parentNode.className.includes("expressionNoDelete")) {
@@ -192,31 +261,31 @@ function deleteExpression(event) {
 	}
 }
 function exportJSON() {
-	filename = document.getElementsByName("filename")[0].value;
+	filename = doc.getElementsByName("filename")[0].value;
 	if (filename.length == 0 || filename == null) {
 		window.alert("The filename is required!");
 		return;
 	}
-	doc = document;
+	doc = doc;
 	selects = doc.getElementsByTagName("SELECT");
 	docexp = doc.getElementsByClassName("expression").length;
-	framedata = "";
-	savedframedata = [];
+	frames = "";
+	savedframes = [];
 	expressiondata = [];
 	for (i = 0; i < docexp; i++) {
-		framedata = doc.getElementsByName("frames")[i].value;
-		savedframedata = framedata.split(",");
-		for (j = 0; j < savedframedata.length; j++) {
-			savedframedata[j] = Number(savedframedata[j]);
+		frames = doc.getElementsByName("frames")[i].value;
+		savedframes = frames.split(",");
+		for (j = 0; j < savedframes.length; j++) {
+			savedframes[j] = Number(savedframes[j]);
 		}
 		if (Number(doc.getElementsByName("loopStart")[i].value) == 0 || doc.getElementsByName("loopStart")[i].value.length == 0 || selects[i].options[selects[i].selectedIndex].value == "no") {
 			expressiondata[i] = {"name": doc.getElementsByName("expressionname")[i].value, 
-			"frames": savedframedata, "loop": selects[i].options[selects[i].selectedIndex].value,
+			"frames": savedframes, "loop": selects[i].options[selects[i].selectedIndex].value,
 			"fps": Number(doc.getElementsByName("fps")[i].value)};
 		}
 		else {
 			expressiondata[i] = {"name": doc.getElementsByName("expressionname")[i].value, 
-			"frames": savedframedata, "loop": selects[i].options[selects[i].selectedIndex].value,
+			"frames": savedframes, "loop": selects[i].options[selects[i].selectedIndex].value,
 			"fps": Number(doc.getElementsByName("fps")[i].value), "loopStart": Number(doc.getElementsByName("loopStart")[i].value)};
 		}
 	}
@@ -236,8 +305,39 @@ function exportJSON() {
 
     let exportFileDefaultName = filename + '.json';
 
-    let linkElement = document.createElement('a');
+    let linkElement = doc.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click(); 
+}
+
+const doc = document;
+const changeevent = new Event('change');
+const clickevent = new Event('click');
+var stopAnim = false;
+var framedata = [];
+var framework = [];
+var now = 0;
+var then = 0;
+var elapsed = 0;
+var fpsInt = 0;
+var currentframe = 0;
+var list = doc.getElementsByTagName("SELECT");
+for (i = 0; i < list.length; i++) {
+	list[i].setAttribute("onchange", "loopStartCheck(event)");
+	list[i].dispatchEvent(changeevent);
+}
+
+list = doc.getElementsByClassName("removebutton");
+for (i = 0; i < list.length; i++) {
+	list[i].setAttribute("onclick", "deleteExpression(event)");
+}
+list = null;
+doc.getElementsByName('autofill')[0].addEventListener('change', fileHandling, false);
+const canvas = doc.getElementById("initialCanvas");
+var context = canvas.getContext("2d");
+const animCanvas = doc.getElementById('animation');
+var animContext = animCanvas.getContext("2d");
+if (doc.getElementsByName('autofill')[0].value) {
+	doc.getElementsByName('autofill')[0].dispatchEvent(changeevent);
 }
