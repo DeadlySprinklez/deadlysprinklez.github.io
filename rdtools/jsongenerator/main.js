@@ -202,6 +202,16 @@ function previewAnim(event) {
 		}
 		console.log(framedata[framework[i]]);
 	}
+	if (focus.parentNode.querySelector("*[name=loopStart]").value && Number(focus.parentNode.querySelector("*[name=loopStart]").value) <= framework.length) {
+		loopStart = Number(focus.parentNode.querySelector("*[name=loopStart]").value);
+	}
+	else if (Number(focus.parentNode.querySelector("*[name=loopStart]").value) > framework.length) {
+		alert("Loop start works by the \"Frames\" field, not the actual frames in the spritesheet! Example: if you wanted the first frame, frame " + framework[0] + ", you would put Loop Start as 0!\n\nDefaulting to no loop start.");
+		loopStart = 0;
+	}
+	else {
+		loopStart = 0;
+	}
 	startAnim(focus.parentNode.querySelector("*[name=fps]").value);
 	//this line goes at the end of the function
 	animCanvas.parentNode.removeAttribute("style");
@@ -231,7 +241,7 @@ function animate(frametime) {
 	if (elapsed > fpsInt) {
 		then = now - (elapsed % fpsInt);
 		if (currentframe == framework.length) {
-			currentframe = 0;
+			currentframe = loopStart;
 		}
 		animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
 		animContext.putImageData(framedata[framework[currentframe]],0,0);
@@ -322,6 +332,7 @@ var then = 0;
 var elapsed = 0;
 var fpsInt = 0;
 var currentframe = 0;
+var loopStart = 0;
 var list = doc.getElementsByTagName("SELECT");
 for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onchange", "loopStartCheck(event)");
