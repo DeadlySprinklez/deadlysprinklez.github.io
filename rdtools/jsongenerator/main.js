@@ -274,7 +274,6 @@ function exportJSON() {
 		window.alert("The filename is required!");
 		return;
 	}
-	doc = doc;
 	selects = doc.getElementsByTagName("SELECT");
 	docexp = doc.getElementsByClassName("expression").length;
 	frames = "";
