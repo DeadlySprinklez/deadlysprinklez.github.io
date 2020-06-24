@@ -171,7 +171,6 @@ function redrawFrames() {
 			framedata[x+y*framecountx-framecountx-1] = context.getImageData(x*canvasX-canvasX,y*canvasY-canvasY,canvasX,canvasY);
 		}
 	}
-	console.log(framedata);
 }
 function previewAnim(event) {
 	/* TODO:
@@ -200,7 +199,6 @@ function previewAnim(event) {
 			alert("Spritesheet does not have frame " + framework[i] + "! Wrong framesize maybe?");
 			return;
 		}
-		console.log(framedata[framework[i]]);
 	}
 	if (focus.parentNode.querySelector("*[name=loopStart]").value && Number(focus.parentNode.querySelector("*[name=loopStart]").value) <= framework.length) {
 		loopStart = Number(focus.parentNode.querySelector("*[name=loopStart]").value);
@@ -299,7 +297,6 @@ function exportJSON() {
 			"fps": Number(doc.getElementsByName("fps")[i].value), "loopStart": Number(doc.getElementsByName("loopStart")[i].value)};
 		}
 	}
-	console.log(expressiondata);
 	
 	var JSONStorage = 
 	{"size": 
