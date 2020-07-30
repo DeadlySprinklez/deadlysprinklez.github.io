@@ -12,79 +12,135 @@
 	<title>Rhythm Doctor Custom Character JSON Generator</title>
 </head>
 <body>
-	<div id="page">
-		<h1>Rhythm Doctor Custom Character JSON Generator</h1>
-		<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
-		<b>File Upload:</b> <input type="file" name="autofill"> (optional - accepts .png and .json! will autofill some slots out for you)
-		<br><br>
-		<b>Filename:</b> <input type="text" name="filename"> This MUST be the same as the spritesheet!
-		<br><br>
-		<b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)
-		<div class="hint">(if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)</div>
+	<div id="main">
+		<div class="page">
+			<h1>Rhythm Doctor Custom Character JSON Generator</h1>
+			<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
+			<div id="advanced" onclick="toggleAdvanced(event)" title="Allows any value for frame X and Y, and allows for deleting the default four expressions.">
+				This is where the switch for advanced mode would be<br>IF WE HAD ONE
+			</div>
+			<span title="Upload a file here. Accepts .png and .json files. Will try to autofill some values for you! Allows for animation previews with .png files.">
+				<b>File Upload:</b> <input type="file" name="autofill"> (optional)
+			</span>
+			<br><br>
+			<b>Filename:</b> <input type="text" name="filename"> <span style="color: #FF3030">This MUST be the same as the spritesheet, or it won't work in the game!</span>
+			<br><br>
+			<span title="This is the size of one frame on the spritesheet. (if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)">
+				<b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)
+			</span>
+			<br><br>
+			<b>Clips:</b>
+			<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
+			<div class="expressionList">
+				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+					<select>
+						<option value="yes" selected="selected">Loop at end</option>
+						<option value="onBeat">Loop on beat</option>
+						<option value="no">Don't loop</option>
+					</select> |
+					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				</div>
+				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+					<select>
+						<option value="yes" selected="selected">Loop at end</option>
+						<option value="onBeat">Loop on beat</option>
+						<option value="no">Don't loop</option>
+					</select> |
+					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				</div>
+				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+					<select>
+						<option value="yes" selected="selected">Loop at end</option>
+						<option value="onBeat">Loop on beat</option>
+						<option value="no">Don't loop</option>
+					</select> |
+					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				</div>
+				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
+					<select>
+						<option value="yes" selected="selected">Loop at end</option>
+						<option value="onBeat">Loop on beat</option>
+						<option value="no">Don't loop</option>
+					</select> |
+					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
+					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				</div>
+				<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
+				<div id="animationDiv" style="display: none;">
+					<canvas id="animation"></canvas>
+					<button onclick="stopAnim = true;">Stop</button>
+				</div>
+			</div> 
+		</div>
+		<h1 style="display: none;">export</h1>
 		<br>
-		<button onclick="redrawFrames()">Reload Frames</button>
-		<div class="hint">(useful if animation previews don't look right)</div>
+		<button id="export" onclick="exportJSON()"><h3>Export + Download JSON</h3></button>
 		<br>
-		<b>Clips:</b>
-		<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
-		<div class="expressionList">
-			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-				<select>
-					<option value="yes" selected="selected">Loop at end</option>
-					<option value="onBeat">Loop on beat</option>
-					<option value="no">Don't loop</option>
-				</select> |
-				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-			</div>
-			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-				<select>
-					<option value="yes" selected="selected">Loop at end</option>
-					<option value="onBeat">Loop on beat</option>
-					<option value="no">Don't loop</option>
-				</select> |
-				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-			</div>
-			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-				<select>
-					<option value="yes" selected="selected">Loop at end</option>
-					<option value="onBeat">Loop on beat</option>
-					<option value="no">Don't loop</option>
-				</select> |
-				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-			</div>
-			<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-				<select>
-					<option value="yes" selected="selected">Loop at end</option>
-					<option value="onBeat">Loop on beat</option>
-					<option value="no">Don't loop</option>
-				</select> |
-				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-				<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-			</div>
-			<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
-			<div id="animationDiv" style="display: none;">
-				<canvas id="animation"></canvas>
-				<button onclick="stopAnim = true;">Stop</button>
-			</div>
-		</div> 
+		<footer style="text-align: right; vertical-align: bottom; color: white">
+			Tool ©️ DeadlySprinklez 2020.<br>
+			Background art and add button are from Rhythm Doctor, property of Hafiz Azman and Seventh Beat Games.<br>
+			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
+			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
+		</footer>
 	</div>
-	<h1 style="display: none;">export</h1>
-	<br>
-	<button id="export" onclick="exportJSON()"><h3>Export + Download</h3></button>
-	<br>
-	<footer style="text-align: right; vertical-align: bottom; color: white">
-		Tool ©️ DeadlySprinklez 2020.<br>
-		Background art and add button are from Rhythm Doctor, property of Hafiz Azman and Seventh Beat Games.<br>
-		Remove and preview buttons are edited add buttons, again from Rhythm Doctor.<br>
-		<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi I spent about a week total on this and could use the cash)</a>
-	</footer>
 	<canvas id="initialCanvas" style="display: none;"></canvas>
+	<div id="helpMenu">
+		<div class="page">
+			<h1>Help</h1>
+			The tool is made to be as streamlined as possible, but there's not a whole lot of direction for people who are just starting out, which is why this is here!<br><br>
+			<h3>Jump To:</h3>
+			<span onclick="document.getElementById('getting-started').scrollIntoView()"><a href="#">Getting Started</a></span><br>
+			<span onclick="document.getElementById('advanced-mode').scrollIntoView()"><a href="#">Advanced Mode</a></span><br>
+			<span onclick="document.getElementById('troubleshooting').scrollIntoView()"><a href="#">Troubleshooting</a></span><br>
+			<span onclick="document.getElementById('whats-next').scrollIntoView()"><a href="#">What's Next?</a></span><br>
+
+			<h2 id="getting-started">Getting Started</h2>
+			To start, you should have either a pre-existing .json file, or a .png spritesheet! Most spritesheets are vertical, but with a recent update they can be actual sheets now - with both verticality AND horizon...tality? They can go both side to side and up and down.<br>
+			As an example, we'll be using <span class="highlight">MarioMak967#6308</span>'s Logun sprite, reworked by RD developer <span class="highlight">giacomo</span> for the sake of demonstration.<br>
+			<img src="assets/help/logun2.png" class="example"><br>
+			To begin with, we'll upload the spritesheet. To do so, click on the Browse... button and find your spritesheet!
+			<div class="hint"><span class="highlight">TIP:</span> You can also click and drag the file from your file browser onto the Browse... button.</div><br>
+			Next to your Browse... button should be the name of the spritesheet. It should look like this!<br>
+			<img src="assets/help/fileUpload.png" class="example"><br>
+			If all goes well, the image should go through and the tool will pick it up and analyze it a bit. Computer magic! It should grab the size of a <i>single frame</i> automatically. If it's not able to find either the width or the height of the frame, it'll pop up with an error message saying it wasn't able to find one or the other! Don't worry - the tool isn't broken if this happens. If you hit the OK button, you can have it <span class="highlight">autofill the image's width (X) OR height (Y) as a fallback</span>; this helps with purely vertical and horizontal spritesheets, since those are perfectly made to fit the image's width or height respectively. If this doesn't apply to you, you can hit the cancel button and fill those values in yourself.
+			<div class="hint"><span class="highlight">TIP:</span> If you don't know what you're doing, you can always contact me or others for help! My Discord tag is <span class="highlight">DeadlySprinklez#4327.</span></div><br>
+			Now the first three inputs should look like this!<br>
+			<img src="assets/help/postUpload.png" class="example"><br>
+			<div class="hint">Note that the frame size does not need to be the same for both X and Y - it just so happens that the logun sprite is completely square!</div>
+			<div class="hint">Also, pay attention to the red text - this will be the name of your .json file! It needs to be the same name as your spritesheet!</div>
+			Now we can move on to the final part of the JSON and character creation - the expressions! Below the Frame Size input should be the Clips section, with four pre-made and non-deletable slots: neutral, happy, barely, and missed. Before we get into those, you need to know a few things.<br><br>
+			Frames are <span class="highlight">zero-indexed</span>, which means that the first frame on the spritesheet is actually the 0th frame. This is because computers commonly use zero as the first digit - so if you want to use your first frame, second frame, third frame, and fourth frame in that order, it would go into the frame input box as "0, 1, 2, 3".<br>
+			Another thing is that there exists a such thing as 0 FPS, or 0 frames per second, in the game. This makes it so that sprites advance to the next frame on <span class="highlight">every quarter beat</span> but <span class="highlight">this will only work with the Loop on beat option selected</span>. If the loop on beat option isn't selected, having 0 FPS will mess up the animation.<br><br>
+			Now that we know these things, we can get to filling in the different slots in an expression! The "neutral" 
+			With that out of the way, you're on your way to making your first custom character! There's not much that I can do to help you here - it's all up to you now. If you want to see a preview of your sprite and your animation, click the <img src="assets/play button.png" style="width:12px;height:12px;"> yellow play button on the right of each expression! Other than that, once you're done click on the <span class="highlight">Export + Download JSON</span> button, save the file in the same place as your spritesheet, and import your custom character by going into the Level Editor, going into the blue Rows tab, adding a new row, and clicking on the folder button next to the character dropdown box!<br>
+			<img src="assets/help/inEditor.png" class="example"><br>
+			Once you've done that, you've done it! You've made a custom character! If it comes out looking glitched or messed up, don't worry - everybody messes up sometimes. Just jump to <a href="#"><span class="highlight" onclick="document.getElementById('troubleshooting').scrollIntoView()">Troubleshooting</span></a> or contact anyone with the RD Editor Helper role on the Seventh Beat Games' official Discord server, <a href="https://discord.gg/rhythmdr">Rhythm Doctor Lounge</a>.<br>
+			<h2 id="advanced-mode">Advanced Mode</h2>
+			Advanced Mode (if I added it hh) is a switch that <span class="highlight">disables limiters</span> on the frame X and frame Y inputs and allows you to <span class="highlight">delete the first four default expressions</span> to allow for complete liberty in JSON creation. The only downsides is that due to an unlimited frame X and Y input, the <span class="highlight">frame size automater is disabled</span>. Use this at your own risk and only if you know 100% what you are doing.<br>
+			<h2 id="troubleshooting">Troubleshooting</h2>
+			<h4>My sprite looks glitched/squished!</h4>
+			This is likely due to using a sheet format on an outdated editor/preorder build of the game! Make sure you're up to date, or if the latest stable version for the preorder is still 0.6.1, use the beta. If that's not the issue, your frame size is likely wrong! Try tweaking it and using the Play preview on the site.
+			<h4>My sprite constantly slides like it was tiled!</h4>
+			Either your frame X or your frame Y is wrong! Sometimes the frame size algorithm performs poorly - it's more there for convenience and not to be relied on. If you need help finding the actual frame X or Y, ask for help on <a href="https://discord.gg/rhythmdr">Rhythm Doctor Lounge</a> - Seventh Beat Games' official Discord server.
+			<h4>I have my FPS set to 0 but my character is much slower than a frame every quarter beat!</h4>
+			Make sure you have Loop set to <span class="highlight">Loop on beat</span>! If you have it set to Loop at end, your frames will go a lot slower and will not loop correctly. Be warned!
+			<br>
+			<h2 id="whats-next">What's Next?</h2>
+			Currently I'm working on adding Advanced Mode to the JSON generator. This will allow you to bypass all the limiters on the tool, of which there are little to begin with, but still.<br>
+			Hopefully I'll also get around to adding preview scaling, so you can see your sprite as big or as small as you want.
+			I'm also planning on adding support for clip groups, if they get added to the game! Hi Gia!<br>
+			Otherwise, I'm always open to suggestions and other ideas! Message me on Discord at <span class="highlight">DeadlySprinklez#4327</span>. I'll be happy to hear you!
+		</div>
+	</div>
+	<div id="help" onclick="toggleHelp()">
+		<img src="assets/help button.png">
+	</div>
 	<script src="main.js"></script>
 </body>

@@ -173,12 +173,8 @@ function redrawFrames() {
 	}
 }
 function previewAnim(event) {
-	/* TODO:
-	[ ] create array of imagedata for frame image data (easier in fileHandling()?)
-	[ ]	read frames, write image data to secondary canvas
-	[ ]	
-	*/		
 	stopAnim = true;
+	redrawFrames();
 	var focus = event.currentTarget;
 	if (doc.getElementsByName("autofill")[0].value.endsWith('.png') != true) {
 		alert("Previewing animations won't work unless you have a .png uploaded! Press the \"Browse\" button at the top of the page to upload a spritesheet.")
@@ -316,6 +312,26 @@ function exportJSON() {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click(); 
 }
+function toggleHelp() {
+	var helpMenu = doc.getElementById("helpMenu");
+	var helpButton = doc.getElementById("help").firstElementChild;
+	helpMode = !helpMode;
+	if (helpMode) {
+		helpMenu.style.zIndex = "0";
+		helpButton.setAttribute("src", "assets/remove button.png");
+	}
+	else {
+		helpMenu.style.zIndex = "-50";
+		helpButton.setAttribute("src", "assets/help button.png");
+	}
+}
+function toggleAdvanced(event) {
+	if (event.shiftKey) {
+		advancedMode = !advancedMode;
+		console.log("Advanced Mode: " + String(advancedMode));
+
+	}
+}
 
 const doc = document;
 const changeevent = new Event('change');
@@ -329,6 +345,8 @@ var elapsed = 0;
 var fpsInt = 0;
 var currentframe = 0;
 var loopStart = 0;
+var helpMode = false;
+var advancedMode = false;
 var list = doc.getElementsByTagName("SELECT");
 for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onchange", "loopStartCheck(event)");

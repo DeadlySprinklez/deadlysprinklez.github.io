@@ -1,8 +1,16 @@
 html {
 	font-family: 'Open Sans', sans-serif;
+}
+#main {
 	background-image: url('assets/background.png');
 	background-attachment: fixed;
 	background-size: 100%;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: auto;
 }
 a, a:active, a:hover, a:visited {
 	font-style: normal;
@@ -21,7 +29,8 @@ h1 {
 	text-align: center;
 	font-weight: 700;
 }
-#page {
+.page {
+	position: relative;
 	width: 80%;
 	margin: 10px 9.557% 10px 9.557%;
 	padding: 0px 15px 5px 15px;
@@ -48,7 +57,6 @@ h1 {
 	margin: 0px 47% 0px 48%;
 	padding-top: 5px;
 	cursor: pointer;
-	transition:;
 }
 .addbutton:hover {
 	filter: brightness(.85);
@@ -58,9 +66,39 @@ h1 {
 }
 .hint {
 	font-size: 8pt;
-	margin-right: 75%;
 }
 input[readonly] {
 	background-color: #afafaf;
 	color: #313131;
+}
+#help {
+	position: absolute;
+	top: 1%;
+	right: 1%;
+}
+#helpMenu {
+	overflow: hidden;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.5);
+	left: 0;
+	top: 0;
+	z-index: -50;
+	overflow: auto;
+}
+.example {
+	border: 1px solid rgb(22,39,201);
+}
+#helpMenu .page {
+	text-shadow: none;
+}
+.highlight {
+	color: gold;
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+#advanced {
+	position: absolute;
+	right: 1%;
 }
