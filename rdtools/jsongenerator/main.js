@@ -160,7 +160,6 @@ function fileHandling(e) {
 	doc.getElementsByName('filename')[0].value = filenameautofill;
 }
 function redrawFrames() {
-	stopAnim = true;
 	framedata = [];
 	canvasX = Number(doc.getElementsByName('sizeX')[0].value);
 	framecountx = (canvas.width)/canvasX;
@@ -206,9 +205,15 @@ function previewAnim(event) {
 	else {
 		loopStart = 0;
 	}
+
+	let loopSelect = focus.parentNode.querySelector("select");
+	loopingCheck = loopSelect.options[loopSelect.selectedIndex].value;
+	if (loopSelect.options[loopSelect.selectedIndex].value == "no" || loopStart != 0) {
+		//make play button appear
+	}
 	startAnim(focus.parentNode.querySelector("*[name=fps]").value);
 	//this line goes at the end of the function
-	animCanvas.parentNode.removeAttribute("style");
+	animCanvas.parentNode.setAttribute("style", "display: inline-block;");
 }
 function startAnim(fpsArg) {
 	stopAnim = false;
@@ -216,8 +221,10 @@ function startAnim(fpsArg) {
 	if (fpsArg == 0) {
 		fpsArg = 12;
 	}
-	animCanvas.width = doc.getElementsByName('sizeX')[0].value;
-	animCanvas.height = doc.getElementsByName('sizeY')[0].value;
+	baseWidth = Number(doc.getElementsByName('sizeX')[0].value);
+	baseHeight = Number(doc.getElementsByName('sizeY')[0].value);
+	animCanvas.width = baseWidth;
+	animCanvas.height = baseHeight;
 	currentframe = 0;
 	fpsInt = 1000/fpsArg;
 	then = window.performance.now();
@@ -227,19 +234,26 @@ function animate(frametime) {
 	if (stopAnim) {
 		animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
 		animCanvas.parentNode.setAttribute("style", "display: none;");
+		//make play button disappear
 		return;
 	}
 	requestAnimationFrame(animate);
+	scale = Number((doc.getElementById('scaleInput').value ? doc.getElementById('scaleInput').value : scale));
 	now = frametime;
 	elapsed = now - then;
 	if (elapsed > fpsInt) {
 		then = now - (elapsed % fpsInt);
-		if (currentframe == framework.length) {
+		if (currentframe == framework.length && loopingCheck != "no") {
 			currentframe = loopStart;
 		}
-		animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
-		animContext.putImageData(framedata[framework[currentframe]],0,0);
-		currentframe++;
+		animCanvas.setAttribute("style", "width: " + String(baseWidth*scale) + "px; height: " + String(baseHeight*scale) + "px");
+		if (framedata[framework[currentframe]]) {
+			animContext.clearRect(0,0,animCanvas.width,animCanvas.height);
+			animContext.putImageData(framedata[framework[currentframe]],0,0);
+		}
+		if (currentframe < framework.length) {
+			currentframe++;
+		}
 	}
 }
 function loopStartCheck(event) {
@@ -255,6 +269,7 @@ function loopStartCheck(event) {
 function addExpression(event) {
 	var newExpressionNumber = doc.getElementsByClassName("expression").length - 3
 	event.currentTarget.insertAdjacentHTML("beforebegin", "<div class=\"expression\"><img class=\"removebutton\" src=\"assets/remove button.png\" onclick=\"deleteExpression(event)\"> <b>Expression:</b> <input type=\"text\" name=\"expressionname\" value=\"newExpression" + newExpressionNumber + "\"> | <b>Frames:</b> <input type=\"text\" name=\"frames\" placeholder=\"0,1,2,3,4...4,3,2,1,0\"> | <b>Loop:</b>\n<select onchange=\"datareload(event)\">\n<option value=\"yes\" selected=\"selected\">Loop at end</option>\n<option value=\"onBeat\">Loop on beat</option>\n<option value=\"no\">Don't loop</option>\n</select> |\n<b>FPS:</b> <input type=\"number\" min=0 value=0 name=\"fps\" style=\"width: 50px;\"> | <b>Loop Start:</b>\n<input type=\"number\" name=\"loopStart\" placeholder=\"(optional)\"> | \n<img src=\"assets/play button.png\" class=\"preview\" onclick=\"previewAnim(event)\"></div>");
+	doc.getElementById('main').scrollBy(0,1e6);
 }
 function deleteExpression(event) {
 	if (event.currentTarget.parentNode.className.includes("expressionNoDelete")) {
@@ -329,8 +344,17 @@ function toggleAdvanced(event) {
 	if (event.shiftKey) {
 		advancedMode = !advancedMode;
 		console.log("Advanced Mode: " + String(advancedMode));
-
+		//TODO: actually implement the damn thing
 	}
+}
+function scrollToTop() {
+	if (helpMode) {
+		var toTopElement = doc.getElementById('helpMenu'); 
+	}
+	else {
+		var toTopElement = doc.getElementById('main');
+	}
+	toTopElement.scrollTo(0,0);
 }
 
 const doc = document;
@@ -345,8 +369,12 @@ var elapsed = 0;
 var fpsInt = 0;
 var currentframe = 0;
 var loopStart = 0;
+var scale = Number(doc.getElementById('scaleInput').value);
+var baseWidth = 0;
+var baseHeight = 0;
 var helpMode = false;
 var advancedMode = false;
+var loopingCheck = "yes";
 var list = doc.getElementsByTagName("SELECT");
 for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onchange", "loopStartCheck(event)");
