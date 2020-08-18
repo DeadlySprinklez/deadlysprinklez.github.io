@@ -9,6 +9,21 @@
 	<meta property="og:image" content="http://deadlysprinklez.github.io/rdtools/meta.png">
 	<link rel="stylesheet" href="style.css">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+	<script>
+		// nabbed code from user "gopi1410" on StackOverflow:
+		// https://stackoverflow.com/questions/10311341/confirmation-before-closing-of-tab-browser
+	window.onbeforeunload = function (e) {
+	    e = e || window.event;
+	
+	    // For IE and Firefox prior to version 4
+	    if (e) {
+	        e.returnValue = 'Sure?';
+	    }
+	
+	    // For Safari
+	    return 'Sure?';
+	};
+	</script>
 	<title>Rhythm Doctor Custom Character JSON Generator</title>
 </head>
 <body>
@@ -16,77 +31,153 @@
 		<div class="page">
 			<h1>Rhythm Doctor Custom Character JSON Generator</h1>
 			<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
-			<div id="advanced" onclick="toggleAdvanced(event)" title="Allows any value for frame X and Y, and allows for deleting the default four expressions.">
-				This is where the switch for advanced mode would be<br>IF WE HAD ONE
-			</div>
 			<span title="Upload a file here. Accepts .png and .json files. Will try to autofill some values for you! Allows for animation previews with .png files.">
 				<b>File Upload:</b> <input type="file" name="autofill"> (optional)
 			</span>
 			<br><br>
-			<b>Filename:</b> <input type="text" name="filename"> <span style="color: #FF3030">This MUST be the same as the spritesheet, or it won't work in the game!</span>
+			<b>Filename:</b> <input type="text" name="filename"> <b><span style="color: #FF3030">This MUST be the same as the spritesheet, or it won't work in the game!</span></b>
 			<br><br>
 			<span title="This is the size of one frame on the spritesheet. (if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)">
-				<b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)
+				<span id="framesizes" onclick="croppingMenu = false; toggleCroppingMenu()"><b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)</span>
 			</span>
 			<br><br>
 			<b>Clips:</b>
+			Displaying <select id="datadisplay" onchange="changeDisplay(event)">
+				<option value="0" selected="selected">animation data</option>
+				<option value="1">portrait data</option>
+			</select>
 			<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
 			<div class="expressionList">
-				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-					<select>
-						<option value="yes" selected="selected">Loop at end</option>
-						<option value="onBeat">Loop on beat</option>
-						<option value="no">Don't loop</option>
-					</select> |
-					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				<div class="expressionNoDelete expression">
+					<img class="removebutton" src="assets/remove button.png"> 
+					<b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | 
+					<span class="animationData">
+						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
+						<b>Loop:</b>
+						<select name="loopSelect">
+							<option value="yes" selected="selected">Loop at end</option>
+							<option value="onBeat">Loop on beat</option>
+							<option value="no">Don't loop</option>
+						</select> |
+						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
+						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+					</span>
+					<span class="portraitData">
+						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
+						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+					</span>
 				</div>
-				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-					<select>
-						<option value="yes" selected="selected">Loop at end</option>
-						<option value="onBeat">Loop on beat</option>
-						<option value="no">Don't loop</option>
-					</select> |
-					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				<div class="expressionNoDelete expression">
+					<img class="removebutton" src="assets/remove button.png"> 
+					<b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | 
+					<span class="animationData">
+						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
+						<b>Loop:</b>
+						<select name="loopSelect">
+							<option value="yes" selected="selected">Loop at end</option>
+							<option value="onBeat">Loop on beat</option>
+							<option value="no">Don't loop</option>
+						</select> |
+						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
+						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+					</span>
+					<span class="portraitData">
+						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
+						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+					</span>
+				</span>
 				</div>
-				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-					<select>
-						<option value="yes" selected="selected">Loop at end</option>
-						<option value="onBeat">Loop on beat</option>
-						<option value="no">Don't loop</option>
-					</select> |
-					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				<div class="expressionNoDelete expression">
+					<img class="removebutton" src="assets/remove button.png"> 
+					<b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | 
+					<span class="animationData">
+						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
+						<b>Loop:</b>
+						<select name="loopSelect">
+							<option value="yes" selected="selected">Loop at end</option>
+							<option value="onBeat">Loop on beat</option>
+							<option value="no">Don't loop</option>
+						</select> |
+						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
+						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+					</span>
+					<span class="portraitData">
+						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
+						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+					</span>
 				</div>
-				<div class="expressionNoDelete expression"><img class="removebutton" src="assets/remove button.png"> <b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | <b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | <b>Loop:</b>
-					<select>
-						<option value="yes" selected="selected">Loop at end</option>
-						<option value="onBeat">Loop on beat</option>
-						<option value="no">Don't loop</option>
-					</select> |
-					<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | <b>Loop Start:</b>
-					<input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-					<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+				<div class="expressionNoDelete expression">
+					<img class="removebutton" src="assets/remove button.png">
+					<b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | 
+					<span class="animationData">
+						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
+						<b>Loop:</b>
+						<select name="loopSelect">
+							<option value="yes" selected="selected">Loop at end</option>
+							<option value="onBeat">Loop on beat</option>
+							<option value="no">Don't loop</option>
+						</select> |
+						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
+						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+					</span>
+					<span class="portraitData">
+						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
+						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+					</span>
 				</div>
 				<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
-				<div id="animationDiv" style="display: none;">
-					<canvas id="animation" style="width: 0px; height: 0px;"></canvas><br>
-					<span>Scale: <input id="scaleInput" type="number" value="1.0" step="0.1">x</span><br>
-					<button onclick="currentframe = 0;">Play</button>
-					<button onclick="stopAnim = true;">Stop</button>
-				</div>
 			</div> 
+			<div id="animationDiv" style="display: none;">
+				<canvas id="animation" style="width: 0px; height: 0px;"></canvas><br>
+				<span>Scale: <input id="animationScaleInput" type="number" value="1.0" step="0.1">x</span><br>
+				<button onclick="redrawFrames(); currentframe = 0;">Play</button>
+				<button onclick="stopAnim = true;">Stop</button>
+			</div>
+			<div id="croppingDiv" style="display: none;">
+				<canvas id="cropping" style="width: 0px; height: 0px;"></canvas><br>
+				<span>Scale: <input id="croppingScaleInput" type="number" value="1.0" step="0.1">x</span><br>
+				<button onclick="toggleCroppingMenu(); document.getElementById('croppingOptions').setAttribute('style', 'display: none;')">Close</button><span id="optionsButton" onclick="document.getElementById('croppingOptions').setAttribute('style', 'display: initial;')">⚙️</span>
+				<div id="croppingOptions" style="display: none;">
+					<hr style="margin: 6px 0 6px 0;">
+					Layout: <select id="cropLayout" onupdate="cropping()">
+						<option value="0" selected="selected">Single frame</option>
+						<option value="1">Double frame, vertical</option>
+						<option value="2">Double frame, horizontal</option>
+						<option value="3">Quadruple frame, 2x2</option>
+					</select><br>
+					Transparency guide: <select id="cropGuide" onupdate="cropping()">
+						<option value="true" selected="selected">On</option>
+						<option value="false">Off</option>
+					</select><br>
+					Guide color: <select id="cropGuideColor" onupdate="cropping()">
+						<option value="black" selected="selected">Black</option>
+						<option value="white">White</option>
+						<option value="r">Red</option>
+						<option value="o">Orange</option>
+						<option value="y">Yellow</option>
+						<option value="g">Green</option>
+						<option value="b">Blue</option>
+						<option value="i">Indigo</option>
+						<option value="v">Violet</option>
+					</select><br>
+					<button onclick="this.parentElement.setAttribute('style', 'display: none;')">Close Options</button>
+				</div>
+			</div>
 		</div>
 		<h1 style="display: none;">export</h1>
 		<br>
 		<button id="export" onclick="exportJSON()"><h3>Export + Download JSON</h3></button>
 		<br>
 		<footer style="text-align: right; vertical-align: bottom; color: white;">
-			Tool ©️ DeadlySprinklez 2020.<br>
+			Tool ©️ DeadlySprinklez 2020. This tool is not affiliated with 7th Beat Games.<br>
 			Background art and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
 			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
 			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
@@ -101,10 +192,15 @@
 			<br><br>
 			<div id="contents">
 				<b>Jump To:</b><br>
-				<span onclick="document.getElementById('getting-started').scrollIntoView()"><a href="#">Getting Started</a></span><br>
-				<span onclick="document.getElementById('advanced-mode').scrollIntoView()"><a href="#">Advanced Mode</a></span><br>
-				<span onclick="document.getElementById('troubleshooting').scrollIntoView()"><a href="#">Troubleshooting</a></span><br>
-				<span onclick="document.getElementById('whats-next').scrollIntoView()"><a href="#">What's Next</a></span><span onclick="document.getElementById('secret').scrollIntoView()"><a href="#">?</a></span><br>
+				1. <span onclick="document.getElementById('getting-started').scrollIntoView()"><a href="#">Getting Started</a></span><br>
+				2. <span onclick="document.getElementById('advanced-mode').scrollIntoView()"><a href="#">Advanced Mode</a></span><br>
+				3. <span onclick="document.getElementById('troubleshooting').scrollIntoView()"><a href="#">Troubleshooting</a></span><br>
+				4. <span onclick="document.getElementById('changelog').scrollIntoView()"><a href="#">Changelog</a></span><span onclick="document.getElementById('secret').scrollIntoView()" style="opacity: 0;"><a href="#">?</a></span><br>
+			</div>
+			<div id="advanced">
+				<span class="hint advancedNotif disabled">Advanced Mode: </span><br>
+				<canvas onclick="toggleAdvanced(event)" width="50" height="25" id="advancedSwitch"></canvas><br>
+				<span class="hint" id="warning">(hold shift and click to toggle)</span>
 			</div>
 		</div><br><br id="getting-started">
 		<div class="page">
@@ -132,7 +228,12 @@
 		</div><br><br id="advanced-mode">
 		<div class="page">
 			<h2>Advanced Mode</h2>
-			Advanced Mode (if I added it hh) is a switch that <span class="highlight">disables limiters</span> on the frame X and frame Y inputs and allows you to <span class="highlight">delete the first four default expressions</span> to allow for complete liberty in JSON creation. The only downsides is that due to an unlimited frame X and Y input, the <span class="highlight">frame size automater is disabled</span>. Use this at your own risk and only if you know 100% what you are doing.
+			When you're just starting out with character creation, there are rules you need to follow. The minimum and default inputs of nine shows that <span class="highlight">sprites should have <b>four pixels of transparency</b> on <b>all four sides of each sprite</b></span>, and <span class="highlight">the first four expressions are needed for basic functionality.</span> At the time of the tool's creation, I thought of nothing past these standards.<br>
+			However, a chat with <span class="highlight">saladplainzone</span>, one of the admins of Rhythm Doctor Lounge and a friend of mine, showed that there are circumstances where those standards don't need to be followed. So, Advanced Mode was born!<br>
+			Advanced Mode, despite the name, is quite simple in nature. All it does is it allows for <span class="highlight">any number</span> to be entered into both the frame X and frame Y input boxes, and it allows you to <span class="highlight">modify and delete the first four preset expressions</span> as if they were just expressions you added yourself. However, this also disables the spritesheet analyzing function, and you will have to enter the size values yourself. With the new cropping preview, this will be a lot easier.<br>
+			<span class="highlight">NOTE:</span> YOU CAN STILL UPLOAD A SPRITESHEET FOR ANIMATION PREVIEWS AND FOR REFERENCE. The functions for automatically grabbing the size values are turned off, nothing else. 
+			<br>
+			Also note! Disabling Advanced Mode will <span class="highlight">only restore functionality to the frame input boxes</span>. If you deleted any of the first four expressions, they will need to be remade manually which will allow you to retain all of your progress so far, or you will have to reload the page which will mean you will lose any new expressions you created.
 		</div><br><br id="troubleshooting">
 		<div class="page">
 			<h2>Troubleshooting</h2>
@@ -144,12 +245,51 @@
 			Make sure you have Loop set to <span class="highlight">Loop on beat</span>! If you have it set to Loop at end, your frames will go a lot slower and will not loop correctly. Be warned!
 			<h4>My problem isn't listed here...</h4>
 			That's definitely not good, then! DM me on Discord (<span class="highlight">DeadlySprinklez#4327</span>) and I can help you out right away, or, if it's an issue with the tool itself, DM me on Discord or post an issue on the <span class="highlight">Github Issue Tracker</span> and I'll be sure to take care of it immediately and let you know when it's fixed. 
-		</div><br><br id="whats-next">
+		</div><br><br id="changelog">
 		<div class="page">
-			<h2>What's Next?</h2>
+			<h2>Changelog</h2>
+			<h4>August 6th, 2020 - snip, trim, shave, cut</h4>
+			<div><span class="change">~</span> repurposed a lot of the clutter, most of it is in tooltips now!</div>
+			<div><span class="change">~</span> moved the animation preview to it's own detached window</div>
+			<div><span class="change">~</span> clicking the Add Expression button now scrolls you to the bottom of the page</div>
+			<div><span class="addition">+</span> added help menu (you're here now! hi!)</div>
+			<div><span class="addition">+</span> added a cropping preview, so now you can actually see what your sprite will look like at a glance (access it by uploading a spritesheet and clicking on the frame x and y boxes!)</div>
+			<div style="margin-left: 10px;"><span class="addition">+</span> also there's an options menu for it for some extra help, like a transparency guide for where the four pixels of transparency should be, changing the color of the highlight, layout, and a lot more</div>
+			<div><span class="addition">+</span> added animation scaling so now you can see your sprites move as big or as small as you'd like them to</div>
+			<div><span class="addition">+</span> added non-looping animation for convenience, also a play button to replay non-looping or restart looping animations</div>
+			<div><span class="addition">+</span> added portrait data for custom characters! now your characters can appear in dialogue boxes - start a Show Dialogue event and put "[character name]_[expression name]: put dialogue text here!"</div>
+			<div><span class="addition">+</span> added Advanced Mode, which disables what few limits were on the tool (read up above)</div>
+			<div><span class="addition">+</span> added a "To The Top button", just in case you don't want to scroll back up manually</div>
+			<div><span class="addition">+</span> added no hidden secrets at all, whatsoever, especially not in the new help menu</div>
+			<div><span class="addition">+</span> added a warning for when you close the tab so you don't lose any data accidentally</div>
+			<div><span class="removal">-</span> removed the "reload frames" button, why was that there when I could've done the same thing without it and easier</div>
+
+			<h4>June 23rd, 2020 - move it, shake it, tap your feet</h4>
+			<div><span class="addition">+</span> added an animation preview - complete with looping, functional loopStart, and FPS</div>
+			<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: fixed a stupid mistake where I attempt to say a constant isn't a constant - it broke so I fixed it, dw</div>
+			<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: removed a LOT of the browser console logging, which would lag out your browser for a good while. some of it's still there just in case though</div>
+
+			<h4>June 21st, 2020 - it's called a sprite<i>sheet</i> for a reason</h4>
+			<div><span class="change">~</span> temporarily locked down the generator while I updated to the new standards, probably won't do that again</div>
+			<div><span class="change">~</span> while working on the new standards I also improved the analyzing function a bit, should be more efficient</div>
+			<div><span class="addition">+</span> added analyzing for 2-dimensional spritesheets</div>
+			<div><span class="addition">+</span> <b>minor update (2020-06-22)</b>: added in existing .json editing</div>
+			<div><span class="bugfix">*</span> <b>bugfix (2020-06-22)</b>: stopped the analyzer from cancelling itself early</div>
+
+			<h4>June 18th, 2020 - automated, innovated</h4>
+			<div><span class="addition">+</span> implemented the spritesheet analyzer tool (at the time just called spritesheet autofill)</div>
+			<div><span class="addition">+</span> added a title to the page (how did I FORGET that)</div>
+			<div><span class="removal">-</span> deleted a blank file github decided to add to the project</div>
+
+			<h4>June 16th, 2020 - we're live</h4>
+			<div><span class="addition">+</span> added the tool to my dead shell of a website (trust me this is a MUCH better use)</div>
+			<div><span class="removal">-</span> deleted everything I made in like...the 6th-10th grades</div>
+			<br>
+			<br>
+			<h3>Upcoming Changes</h3>
 			As far as what's to expect from this tool next, whatever's on this list is it!<br>
-			My next focus is adding the <span class="highlight">Advanced Mode</span> I talked about in it's own section.<br>
-			Right now, the only thing <i>planned</i> is adding support for <span class="highlight">clip groups</span>, if they get added to the game. <s>Hi Gia!</s><br>
+			I'm definitely looking to update the spritesheet analyzer, making it a bit more accurate. Right now, though, I have other projects to focus on. I've been giving this one a LOT of my time.<br>
+			Hopefully I'll be adding support for <span class="highlight">clip groups</span>, if they get added to the game. <s>Hi Gia!</s><br>
 			Hopefully I'll also get around to optimizing and improving the spritesheet analyzer so it's faster and more accurate.<br>
 			Otherwise, I'm always open to suggestions and other ideas! Message me on Discord at <span class="highlight">DeadlySprinklez#4327</span>. I'll be happy to hear you!
 		</div>
@@ -170,7 +310,7 @@
 			<span class="highlight" title=":clap:">the entire RDL community</span>
 			 - I made this for you guys! (Mostly Adipem but still, hush)<br>
 
-			Big thanks to a few people I know by name in the RDL community for keeping me sane - namely 
+			Big thanks to a few people I know by name in the RDL community for keeping me sane while I made this tool - namely 
 			<span class="highlight" title="'FUCK YOU BALTIMORE! IF YOU'RE DUMB ENOUGH TO BUY A NEW CAR THIS WEEKEND, YOU'RE A BIG ENOUGH SCHMUCK TO COME TO BIG BILL HELL'S CARS! BAD DEALS, CARS THAT BREAK DOWN, THIEVES! IF YOU THINK YOU'RE GOING TO FIND A BARGAIN AT BIG BILL'S, YOU CAN KISS MY ASS! IT'S OUR BELIEF THAT YOU'RE SUCH A STUPID MOTHERFUCKER THAT YOU'LL FALL FOR THIS BULLSHIT GUARANTEED! IF YOU FIND A BETTER DEAL: SHOVE IT UP YOUR UGLY ASS! YOU HEARD US RIGHT: SHOVE IT UP YOUR UGLY ASS! BRING YOUR TRADE, BRING YOUR TITLE, BRING YOUR WIFE, WE'LL FUCK HER! THAT'S RIGHT WE'LL FUCK YOUR WIFE! BECAUSE AT BIG BILL HELL'S, YOU'RE FUCKED SIX WAYS FROM SUNDAY! TAKE A HIKE TO BIG BILL HELL'S! HOME OF CHALLENGE PISSING, THAT'S RIGHT, CHALLENGE PISSING. HOW DOES IT WORK? IF YOU CAN PISS 6 FEET IN THE AIR STRAIGHT UP AND NOT GET WET, YOU GET NO DOWN PAYMENT. DON'T WAIT, DON'T DELAY, DON'T FUCK WITH US OR WE'LL RIP YOUR NUTS OFF! ONLY AT BIG BILL'S HELL, THE ONLY DEALER THAT TELLS YOU TO FUCK OFF. HURRY UP, ASSHOLE! THIS EVENT ENDS THE MINUTE YOU WRITE US A CHECK AND IT BETTER NOT BOUNCE OR YOU'RE A DEAD MOTHERFUCKER. GO TO HELL. BIG BILL HELL'S CARS - BALTIMORE'S FILTHIEST AND EXCLUSIVE HOME OF THE MEANEST SONS OF BITCHES IN THE STATE OF MARYLAND, GUARANTEED!!' -plastermaster">plastermaster</span>, 
 			<span class="highlight" title="'| || || |_, miaow' -Morphious86">Morphious86</span>, 
 			<span class="highlight" title="'h' -Szprycha">Szprycha</span>, 
@@ -179,9 +319,11 @@
 			<span class="highlight" title="':skateboard: zzshhhhhh clk clk zshhhhhh clk clk szhhhhhhh clk clk' -Axobotl">Axobotl</span>, 
 			<span class="highlight" title="Hey guys, it's me, DPS2004. DeadlySprinklez has trapped me inside the source code to this tool. Everytime you upload an image I am forced to generate JSON files. If you have the time, can you please upload an image of some chips or something so I can eat? I am not fed well. Hold on, new image is being uploaded, talk to you later!">DPS2004</span>, 
 			<span class="highlight" title="'trans rights' -FireOcta">FireOcta</span>, 
-			<span class="highlight" title="'Kusane isn't getting acknowledged so I shall 😳 in their place' -definitely_not_HIM">definitely_not_HIM</span>, 
-			<span class="highlight" title="">Fancybird</span>, 
-			<span class="highlight" title="">fartiliumstation</span>, 
+			<span class="highlight" title="'Kusane isn't getting acknowledged so I shall 😳 in their place' -definitely_not_HIM
+
+oh shoutouts to kusane">definitely_not_HIM</span>, 
+			<span class="highlight" title="chirp">Fancybird</span>, 
+			<span class="highlight" title="'straighten your backs, you banana-shaped focks' -fartiliumstation">fartiliumstation</span>, 
 			<span class="highlight" title="'sans peepee' -saladplainzone">saladplainzone</span>, 
 			<span class="highlight" title="'Never trust China; you've seen what they can do. Defend your values while you still can.' -Hex4Nova
 
@@ -194,7 +336,10 @@ Support Hong Kong from abroad: https://bit.ly/HelpHongKong
 			(shoutouts specifically to 
 			<span class="highlight" title="author of many Python and Lua tools for the RDL community!">DPS2004</span> and 
 			<span class="highlight" title="author of the Lyric Tapper, which is honestly revolutionary and it is not possible to convince me otherwise">Morphious86</span> - RD tool gang represent)<br>
-
+			<br>
+			Thanks to the <span class="highlight" title="This includes, in no particular order:
+Hex4Nova, Rikri, fizzd, fartiliumstation, Fancybird, Emdyion, CV35W, Axobotl, AdipemDragon, giacomo, ♢noche♢, Nocallia, saladplainzone, plastermaster, Kneeckoh, Klyzx, Year of the notRat (Donte), Random Guy JCI, and FireOcta">RDRPG team</span> and the events' contestants for inspiring the creation of the tool! Literally wouldn't have happened without y'all.<br>
+			<br>
 			Also thanks to my friends who aren't a part of the Rhythm Doctor community, regardless if they left it, never talk in there, or never joined in the first place - namely 
 			<span class="highlight" title="'tbh i think i'd be happier if i was an ai running on a computer,,,,,;;;;no body or anythingggg,just vibes,,,' -pipelinks">pipelinks</span>, 
 			<span class="highlight" title="'Alex is the light of my life, an incredible person, is amazingly talented, and makes awesome things! Support them if you can please!
@@ -213,7 +358,7 @@ also brothers in arms, X' -TVtheTV">TVtheTV</span> (<3),
 and [client's name] always cares">you</span>, specifically, for using the tool and taking time out of your day to read this mess.<br>
 			Anyway, that's all the filler I got. This is actually the end of the page now.
 		</div>
-		<div class="spacer"></div>
+		<div class="spacer" title="oh also shoutouts to simpleflips"></div>
 	</div>
 	<div id="help" onclick="toggleHelp()">
 		<img src="assets/help button.png">
