@@ -1,8 +1,16 @@
 html {
 	font-family: 'Open Sans', sans-serif;
+}
+#main {
 	background-image: url('assets/background.png');
 	background-attachment: fixed;
-	background-size: 100%;
+	background-size: 100vmax;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: auto;
 }
 a, a:active, a:hover, a:visited {
 	font-style: normal;
@@ -21,7 +29,8 @@ h1 {
 	text-align: center;
 	font-weight: 700;
 }
-#page {
+.page {
+	position: relative;
 	width: 80%;
 	margin: 10px 9.557% 10px 9.557%;
 	padding: 0px 15px 5px 15px;
@@ -32,6 +41,9 @@ h1 {
 	color: white;
 	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
 				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+.page > * {
+	max-width: 100%;
 }
 .expressionNoDelete > .removebutton {
 	filter: grayscale(100);
@@ -45,10 +57,11 @@ h1 {
 .addbutton {
 	width: 50px;
 	height: 50px;
-	margin: 0px 47% 0px 48%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 	padding-top: 5px;
 	cursor: pointer;
-	transition:;
 }
 .addbutton:hover {
 	filter: brightness(.85);
@@ -58,9 +71,210 @@ h1 {
 }
 .hint {
 	font-size: 8pt;
-	margin-right: 75%;
+}
+.hint:required {
+	color: red;
 }
 input[readonly] {
 	background-color: #afafaf;
 	color: #313131;
+}
+#help {
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	border-radius: 20px;
+	position: absolute;
+	top: 1%;
+	right: 1%;
+}
+#toTop {
+	cursor: pointer;
+	position: absolute;
+	bottom: 50vh;
+	right: 2vw;
+	color: white;
+	background-color: #2C4FDB;
+	border-radius: 10px;
+	padding: 10px;
+	box-shadow: 0px 0px 5px 0px black;
+}
+#helpMenu {
+	overflow: hidden;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.8);
+	left: 0;
+	top: 0;
+	z-index: -50;
+	overflow: auto;
+}
+.example {
+	border: 1px solid rgb(22,39,201);
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+#helpMenu .page {
+	text-shadow: none;
+	padding: 10px 20px 10px 20px;
+}
+.highlight, .change, .addition, .removal, .bugfix {
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+.highlight, .bugfix { color: gold; }
+.change { color: white; }
+.addition { color: limegreen; }
+.removal { color: red; }
+#advanced {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	background-color: #2C4FDB;
+	padding: 3px;
+	border-radius: 8px;
+	box-shadow: 0 0 5px 0 black;
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+#advanced * {
+	display: block;
+}
+#advanced:last-child {
+	position: ;
+	top: px;
+	display: inline;
+}
+#advanced canvas {
+	margin: 0 auto 0 auto;
+}
+.advancedNotif {
+	text-align: center;
+}
+.advancedNotif.disabled::after {
+	color: red;
+	content: "OFF";
+}
+.advancedNotif.enabled::after {
+	color: limegreen;
+	content: "ON";
+}
+#animationDiv, #croppingDiv {
+	position: fixed;
+	left: 1vw;
+	bottom: 1vh;
+	background-color: #2C4FDB;
+	padding: 3px;
+	border-radius: 8px;
+	text-align: center;
+	overflow: auto;
+	max-height: 50vh;
+	max-width: 50vw;
+	box-shadow: 0 0 5px 0 black;
+}
+#croppingDiv {
+	overflow-x: hidden;
+	overflow-y: auto;
+	z-index: 1;
+}
+#animationDiv *, #croppingDiv * {
+	margin: 0 auto;
+}
+#croppingOptions {
+
+}
+#animationScaleInput, #croppingScaleInput {
+	width: 50px;
+}
+#contents {
+	display:  inline-block;
+	border: 1px solid black;
+	padding: 3px 8px 3px 8px;
+	background-color: rgba(0,0,0,0.25);
+}
+.spacer {
+	height: 50vh;
+}
+.center {
+	display: flex;
+	flex-wrap: wrap;
+	text-align: center;
+}
+#animation, #cropping {
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: crisp-edges;
+}
+#cropping {
+	border: 2px solid rgba(255,0,0,0.5);
+}
+#optionsButton {
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	cursor: pointer;
+	position: absolute;
+	right: 0;
+}
+#warning {
+	animation: warning 0.5s linear 0s 1 forwards;
+	-webkit-animation: warning 0.5s linear 0s 1 forwards;
+	display: block;
+}
+
+
+
+@keyframes warning {
+	0% { color: white; transform: translateX(0); }
+	1% { color: #FF6666; }
+	33% { color: white; }
+	66% { color: #FF6666; }
+	
+	/* haha warning machine go a-shaka-shaka */
+	12.5% { transform: translateX(-3px); }
+	25% { transform: translateX(0); }
+	37.5% { transform: translateX(3px); }
+	50% { transform: translateX(0); }
+	62.5% { transform: translateX(-3px); }
+	75% { transform: translateX(0); }
+	87.5% { transform: translateX(3px); }
+
+	100% { color: white; transform: translateX(0); }
+}
+@-webkit-keyframes warning {
+	0% { color: white; transform: translateX(0); }
+	1% { color: #FF6666; }
+	33% { color: white; }
+	66% { color: #FF6666; }
+	
+	/* haha warning machine go a-shaka-shaka */
+	12.5% { transform: translateX(-3px); }
+	25% { transform: translateX(0); }
+	37.5% { transform: translateX(3px); }
+	50% { transform: translateX(0); }
+	62.5% { transform: translateX(-3px); }
+	75% { transform: translateX(0); }
+	87.5% { transform: translateX(3px); }
+	
+	100% { color: white; transform: translateX(0); }
+}
+@-moz-keyframes warning {
+	0% { color: white; transform: translateX(0); }
+	1% { color: #FF6666; }
+	33% { color: white; }
+	66% { color: #FF6666; }
+	
+	/* haha warning machine go a-shaka-shaka */
+	12.5% { transform: translateX(-3px); }
+	25% { transform: translateX(0); }
+	37.5% { transform: translateX(3px); }
+	50% { transform: translateX(0); }
+	62.5% { transform: translateX(-3px); }
+	75% { transform: translateX(0); }
+	87.5% { transform: translateX(3px); }
+	
+	100% { color: white; transform: translateX(0); }
 }
