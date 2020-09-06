@@ -1,25 +1,83 @@
 function fileHandling(e) {
 	var reader = new FileReader();
+	var statusOutput = doc.getElementById('uploadStatus');
+	statusOutput.style = "";
 	// New spritesheet handler
 	if (e.currentTarget.value.endsWith('.png')) {
 	    reader.onload = function(event){
 	        var img = new Image();
 	        img.onload = function(){
-	        	if (img.width < 9 || img.height < 9) {
+	        	if (!advancedMode && (img.width < 9 || img.height < 9)) { //won't run if advanced mode is on, otherwise checks if image is too small
 					alert('Your image is too small to be a valid spritesheet!\nSpritesheets need to have multiple frames, each frame having four rows/columns of blank pixels on each side.\nIf you need a sample, there are plenty in #custom-assets at https://discord.com/rhythmdr/');
+					statusOutput.innerHTML = "<span class='highlight removal'>Failure:</span> Invalid spritesheet";
 					return;
 				}
 				//doc.getElementsByName('sizeX')[0].value = img.width; (OBSOLETE AS OF JUNE 20th, R.I.P.)
 				canvas.width = img.width;
 				canvas.height = img.height;
 				context.drawImage(img,0,0);
-				if (lastUploadedFilename.endsWith(".json")) {
+				// THESE NEXT IF/IFELSES SKIP ADVANCED MODE'S DISABLER
+				if (lastUploadedFilename.endsWith(".json")) { //runs contingency if JSON was uploaded last
 					if (window.confirm("Last file uploaded was a .json file.\n\nPress OK to keep data from the .json, or press Cancel to clear past data.")) {
+						statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> JSON substitution";
 						redrawFrames();
 						return;
 					}
 				}
-				if (advancedMode) {
+				/* ========================================
+						Autofill Options start here
+				======================================== */
+	        	if (doc.getElementById('AFOptFullRes').checked) { //if AutoFill Option "full resolution" is ticked, run this
+	        		//literally just nab the full image resolution
+	        		inputx.value = img.width;
+	        		inputy.value = img.height;
+	        		statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> Upload successful, full res mod used";
+	        		redrawFrames();
+	        		return; 
+	        	}
+	        	else if (doc.getElementById('AFOptRowsColumns').checked) { //or if AutoFill Option "rows and columns" is ticked, run this
+	        		var aforcCheck = [];
+	        		//ask user for input (rows,columns)
+	        		var rowcolumn = prompt("Please input how many rows and columns are in your spritesheet.\n(Separate them with a comma, starting with rows first. Ex. \"12, 4\")");
+	        		if (rowcolumn == null) { //if user cancels the dialogue box, stop
+	        			statusOutput.innerHTML = "<span class='highlight removal'>Failure:</span> Rows + columns mod failed or was cancelled.";
+	        			return;
+	        		}
+	        		do //if any were stored as true, throw errors and try again
+	        		{	
+	        			if (rowcolumn == null) { //if the user cancels the dialogue box or prevents additional input, stop
+	        				statusOutput.innerHTML = "<span class='highlight removal'>Failure:</span> Rows + columns mod failed, was cancelled, or was prevented.";
+	        				return;
+	        			}
+	        			else if (aforcCheck[0]) //if there's not two strings, throw invalid format error
+	        			{
+	        				rowcolumn = prompt("Invalid format! Please try again.\n\nPlease input how many rows and columns are in your spritesheet.\n(Separate them with a comma, starting with rows first. Ex. \"12, 4\")");
+	        			}
+	        			else if (aforcCheck[1]) //if they can't be converted to numbers, throw invalid input error
+	        			{
+	        				rowcolumn = prompt("Invalid input! Only numbers are accepted. Please try again.\n\nPlease input how many rows and columns are in your spritesheet.\n(Separate them with a comma, starting with rows first. Ex. \"12, 4\")");
+	        			}
+	        			else if (aforcCheck[2] || aforcCheck[3]) //if they aren't positive or integers, throw different invalid input error
+	        			{
+	        				rowcolumn = prompt("Invalid input! Only non-zero, positive integers are accepted. Please try again.\n\nPlease input how many rows and columns are in your spritesheet.\n(Separate them with a comma, starting with rows first. Ex. \"12, 4\")");
+	        			}
+	        			rowcolumn = rowcolumn.split(",");
+	        			aforcCheck[0] = (rowcolumn.length != 2); //store True if rowcolumn does not have two entries exactly
+	        			aforcCheck[1] = rowcolumn.some(x => isNaN(x)); //store True if one of the two entries does not convert to a number
+	        			aforcCheck[2] = rowcolumn.some(x => Number(x) <= 0); //store True if one of the two entries is less than or equal to zero
+	        			aforcCheck[3] = rowcolumn.some(x => !Number.isInteger(Number(x))); //store True if one of the two entries isn't an integer
+	        		} while (aforcCheck.some(x => x == true));
+	        		inputx.value = Math.round(img.width/rowcolumn[1]);
+	        		inputy.value = Math.round(img.height/rowcolumn[0]);
+	        		statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> Upload successful, rows + columns mod used";
+	        		redrawFrames();
+	        		return;
+	        	}
+	        	/* ======================================
+	        			Autofill Options end here
+	        	====================================== */
+				if (advancedMode) { //if advanced mode is on, skip analysis
+	        		statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> Advanced mode on with no additional options. Upload successful.";
 					redrawFrames();
 					return;
 				}
@@ -30,39 +88,73 @@ function fileHandling(e) {
 				}
 				chain = 0;
 				ready = false;
+				//warning: you are entering some heavily undercommented territory and I flat out did NOT want to comment the analyzer I'm sorry, good luck
 				//finding Y value
-				outY: for (y = 4; y <= canvas.height-1; y++) {
+				outY:
+				for (y = 4; y <= canvas.height-1; y++) {
 					for (x = 4; x <= canvas.width-1; x++) {
 						if (alphaData[x+canvas.width*y] != 0 && chain < 8 && y != canvas.height - 4) {
-							console.log("BREAK ",x,y);
+							logDebug("BREAK ",x,y);
 							ready = true;
 							chain = 0;
 							break;
 						}
 						else if ((chain >= 8 && alphaData[x+canvas.width*y] != 0) || y == canvas.height - 4) {
-							console.log("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
+							logDebug("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
 							y--;
+							var possibleSizeY = [];
 							while (chain >= 4) {
-								console.log(chain,y,canvas.height%y)
+								logDebug(chain,y,canvas.height%y)
 								if (canvas.height % y == 0) {
-									console.log("Y STATUS: FOUND, ",y);
-									doc.getElementsByName('sizeY')[0].value = y;
+									/*
+									logDebug("Y STATUS: FOUND, ",y);
+									inputy.value = y;
 									var sizeY = y;
 									break outY;
+									 !! DEPRECATED CODE !!
+									*/
+									//log each valid Y value and check each one later
+									possibleSizeY[possibleSizeY.length] = y;
 								}
 								chain--;
 								y--;
 							}
-							console.log("Y STATUS: FAILURE, FILLING IN IMAGE HEIGHT AS FALLBACK");
+							var validator = [];
+							var invalid = false;
+							while (possibleSizeY.length > 0) { 							//if Y values WERE logged, run through them until there aren't any or until broken
+								logDebug("possible heights: ",possibleSizeY); 			//log it in debug mode, just in case
+								let focus = possibleSizeY.pop(); 						//pop/remove the last saved Y value, save to temp variable
+								for (i = 1; i < (canvas.height/focus); i++) { 			//run as long as there are slices to be made
+									invalid = false;
+									let z = context.getImageData(0, (i*focus)-4,
+															canvas.width-1, 8).data; 	//nab image data from each slice w/ temp variable
+									for (j = 1; j*4-1 < z.length; j++) {
+										validator[j] = z[j*4-1];						//take alpha data from each slice, put it in validator variable
+									}
+									logDebug(validator);								//log validator, again just in case
+									if (validator.some(x => x != 0)) {					//if there are ANY non-zero transparency pixels,
+										logDebug("Invalidated! ",focus)
+										invalid = true;									//mark this run as invalid,
+										break;											//and break out of the "slices" loop
+									}
+								}
+								if (!invalid) {											//if the run was not invalid,
+									logDebug("Y STATUS: FOUND, ",focus);				//celebrate,
+									inputy.value = focus;								//mark it down not once, (once for input box)
+									var sizeY = focus;									//but twice,			 (twice for future algorithm)
+									break outY;											//and break out of this entire shi-bang
+								}
+							}
+							logDebug("Y STATUS: FAILURE, ASKING TO FILL IN IMAGE HEIGHT AS FALLBACK");
 							if (window.confirm("Couldn't find frame Y! Press OK to fill in image height as a fallback, or press Cancel to leave your Y value as it is.")) {
-								doc.getElementsByName('sizeY')[0].value = canvas.height;
+								inputy.value = canvas.height;
 							}
 							sizeY = canvas.height;
 							break outY;
 						}
 						else if (x == canvas.width-1 && ready) {
 							chain++;
-							console.log("ROW ",y," GOOD, CHAIN: ",chain);
+							logDebug("ROW ",y," GOOD, CHAIN: ",chain);
 							continue;
 						}
 					}
@@ -73,33 +165,62 @@ function fileHandling(e) {
 				outX: for (x = 4; x <= canvas.width-1; x++) {
 					for (y = 4; y <= sizeY; y++) {
 						if (alphaData[x+canvas.width*y] != 0 && chain < 8 && x != canvas.width - 4) {
-							console.log("BREAK ",x,y);
+							logDebug("BREAK ",x,y);
 							ready = true;
 							chain = 0;
 							break;
 						}
 						else if ((chain >= 8 && alphaData[x+canvas.width*y] != 0) || x == canvas.width - 4) {
-							console.log("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
+							logDebug("CHAIN BROKEN @ ",x,y,", ROLLING BACK");
 							x--;
+							var possibleSizeX = [];
 							while (chain >= 4) {
-								console.log(chain,x,canvas.width%x)
+								logDebug(chain,x,canvas.width%x)
 								if (canvas.width % x == 0) {
-									console.log("X STATUS: FOUND, ",x);
-									doc.getElementsByName('sizeX')[0].value = x;
+									/*
+									logDebug("X STATUS: FOUND, ",x);
+									inputx.value = x;
 									break outX;
+									 !! DEPRECATED CODE !!
+									*/
+									//log each valid Y value and check each one later
+									possibleSizeX[possibleSizeX.length] = x;
 								}
 								chain--;
 								x--;
 							}
-							console.log("X STATUS: FAILURE, FILLING IN IMAGE WIDTH AS FALLBACK");
+							while (possibleSizeX.length > 0) { 							//if X values WERE logged, run through them until there aren't any or until broken
+								logDebug("possible widths: ",possibleSizeX); 			//log it in debug mode, just in case
+								let focus = possibleSizeX.pop(); 						//pop/remove the last saved X value, save to temp variable
+								for (i = 1; i < (canvas.width/focus); i++) { 			//run as long as there are slices to be made
+									invalid = false;
+									let z = context.getImageData((i*focus)-4, 0,
+															8, sizeY-1).data; 			//nab image data from each slice w/ temp variable
+									for (j = 1; j*4-1 < z.length; j++) {
+										validator[j] = z[j*4-1];						//take alpha data from each slice, put it in validator variable
+									}
+									logDebug(validator);								//log validator, again just in case
+									if (validator.some(x => x != 0)) {					//if there are ANY non-zero transparency pixels,
+										logDebug("Invalidated! ",focus)
+										invalid = true;									//mark this run as invalid,
+										break;											//and break out of the "slices" loop
+									}
+								}
+								if (!invalid) {											//if the run was not invalid,
+									logDebug("X STATUS: FOUND, ",focus);				//celebrate,
+									inputx.value = focus;								//mark it down only once this time, for input box
+									break outX;											//and break out of this entire shi-bang
+								}
+							}
+							logDebug("X STATUS: FAILURE, ASKING TO FILL IN IMAGE WIDTH AS FALLBACK");
 							if (window.confirm("Couldn't find frame X! Press OK to fill in image width as a fallback, or press Cancel to leave your X value as it is.")) {
-								doc.getElementsByName('sizeX')[0].value = canvas.width;
+								inputx.value = canvas.width;
 							}
 							break outX;
 						}
 						else if (y == sizeY-1 && ready) {
 							chain++;
-							console.log("COLUMN ",x," GOOD, CHAIN: ",chain);
+							logDebug("COLUMN ",x," GOOD, CHAIN: ",chain);
 							continue;
 						}
 					}
@@ -109,14 +230,15 @@ function fileHandling(e) {
 			}
 			img.src = event.target.result;
 		}
+		statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> Analyzing complete, autofilled";
 		reader.readAsDataURL(e.target.files[0]);
 	}
 	// Pre-existing JSON handler 
 	else if (e.currentTarget.value.endsWith('.json')) {
 		reader.onload = function(event) {
 			var jsonObj = JSON.parse(event.target.result);
-			doc.getElementsByName('sizeX')[0].value = jsonObj.size[0];
-			doc.getElementsByName('sizeY')[0].value = jsonObj.size[1];
+			inputx.value = jsonObj.size[0];
+			inputy.value = jsonObj.size[1];
 			list = doc.getElementsByClassName("expression");
 			for (i = list.length; i > 4; i--) {
 				list[i].getElementsByClassName("removebutton")[0].dispatchEvent(clickevent);
@@ -152,11 +274,17 @@ function fileHandling(e) {
 				}	
 			}
 		}
+		statusOutput.innerHTML = "<span class='highlight addition'>Success:</span> JSON uploaded";
 		reader.readAsText(event.target.files[0]);
 	}
 	// fallback, skips filename autofill
 	else {
-		alert('Invalid filetype! Accepted filetypes are \'.json\'s and \'.png\'s!')
+		alert('Invalid filetype! Accepted filetypes are \'.json\'s and \'.png\'s!');
+		if (e.currentTarget.value.split(".").length == 1) {
+			statusOutput.innerHTML = "<span class='highlight removal'>Failure:</span> No filetype (make sure it's .json or .png)";
+			return;
+		}
+		statusOutput.innerHTML = "<span class='highlight removal'>Failure:</span> Invalid filetype \"." + e.currentTarget.value.split(".")[e.currentTarget.value.split(".").length - 1] + "\" (make sure it's .json or .png)";
 		return;
 	}
 	lastUploadedFilename = e.currentTarget.value;
@@ -167,10 +295,10 @@ function fileHandling(e) {
 }
 function redrawFrames() {
 	framedata = [];
-	canvasX = Number(doc.getElementsByName('sizeX')[0].value);
-	framecountx = (canvas.width)/canvasX;
-	canvasY = Number(doc.getElementsByName('sizeY')[0].value);
-	framecounty = (canvas.height)/canvasY;
+	canvasX = Number(inputx.value);
+	framecountx = Math.ceil(canvas.width/canvasX);
+	canvasY = Number(inputy.value);
+	framecounty = Math.ceil(canvas.height/canvasY);
 	for (y = 1; y <= framecounty; y++) {
 		for (x = 1; x <= framecountx; x++) {
 			framedata[x+y*framecountx-framecountx-1] = context.getImageData(x*canvasX-canvasX,y*canvasY-canvasY,canvasX,canvasY);
@@ -189,8 +317,8 @@ function previewAnim(event) {
 		alert("You can't preview an animation with no frames!");
 		return;
 	}
-	let x = doc.getElementsByName('sizeX')[0].value;
-	let y = doc.getElementsByName('sizeY')[0].value;
+	let x = inputx.value;
+	let y = inputy.value;
 	framework = [];
 	framework = focus.parentNode.querySelector("*[name=frames]").value;
 	framework = framework.split(",");
@@ -229,8 +357,8 @@ function startAnim(fpsArg) {
 	if (fpsArg == 0) {
 		fpsArg = 12;
 	}
-	animBaseWidth = Number(doc.getElementsByName('sizeX')[0].value);
-	animBaseHeight = Number(doc.getElementsByName('sizeY')[0].value);
+	animBaseWidth = Number(inputx.value);
+	animBaseHeight = Number(inputy.value);
 	animCanvas.width = animBaseWidth;
 	animCanvas.height = animBaseHeight;
 	currentframe = 0;
@@ -342,19 +470,19 @@ function toggleAdvanced(event) {
 			while (doc.querySelectorAll("[readonly]").length > 0) {
 				doc.querySelectorAll("[readonly]")[0].removeAttribute("readonly");
 			}
-			doc.getElementsByName('sizeX')[0].removeAttribute("min");
-			doc.getElementsByName('sizeY')[0].removeAttribute("min");
+			inputx.removeAttribute("min");
+			inputy.removeAttribute("min");
 			doc.getElementsByClassName("advancedNotif")[0].setAttribute("class", "hint advancedNotif enabled");
 		}
 		else {
-			if (doc.getElementsByName('sizeX')[0].value < 9) {
-				doc.getElementsByName('sizeX')[0].value = 9;
+			if (inputx.value < 9) {
+				inputx.value = 9;
 			}
-			if (doc.getElementsByName('sizeY')[0].value < 9) {
-				doc.getElementsByName('sizeY')[0].value = 9;
+			if (inputy.value < 9) {
+				inputy.value = 9;
 			}
-			doc.getElementsByName('sizeX')[0].setAttribute("min","9");
-			doc.getElementsByName('sizeY')[0].setAttribute("min","9");
+			inputx.setAttribute("min","9");
+			inputy.setAttribute("min","9");
 			doc.getElementsByClassName("advancedNotif")[0].setAttribute("class", "hint advancedNotif disabled");
 		}
 		advancedContext.clearRect(0,0,advancedCanvas.width,advancedCanvas.height);
@@ -404,8 +532,8 @@ function cropping() {
 	let layout = doc.getElementById("cropLayout").options[doc.getElementById("cropLayout").selectedIndex].value;
 	let guide = doc.getElementById("cropGuide").options[doc.getElementById("cropGuide").selectedIndex].value;
 	let color = doc.getElementById("cropGuideColor").options[doc.getElementById("cropGuideColor").selectedIndex].value;
-	let x = doc.getElementsByName('sizeX')[0].value;
-	let y = doc.getElementsByName('sizeY')[0].value;
+	let x = inputx.value;
+	let y = inputy.value;
 	switch (layout) {
 		case "0": // single frame (default)
 		cropBaseWidth = x;
@@ -591,10 +719,35 @@ function exportJSON() {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click(); 
 }
+function logDebug() {
+	if (debug == true) {
+		console.log((Array.prototype.slice.call(arguments)).join(' '));
+	}
+}
 
 const doc = document; //document shorthand - convenience
+const inputx = doc.getElementsByName('sizeX')[0];
+const inputy = doc.getElementsByName('sizeY')[0];
 const changeevent = new Event('change'); //used to activate the onchange events specified in the HTML
 const clickevent = new Event('click'); //used to activate the onclick events specified in the HTML
+var debug = (window.location.href.startsWith("file://") ? true : false);
+var debugActivator = '';
+if (!debug) {
+	window.addEventListener('keyup', function checkDebug(e) {
+		if (e.key.length == 1 && isNaN(e.key)) {
+			debugActivator = debugActivator + e.key.toLowerCase();
+			if (debugActivator.length > 13) {
+				debugActivator = debugActivator.substring(1);
+			}
+			console.log(debugActivator);
+			if (debugActivator == 'posttoconsole') {
+				console.log('printing to console')
+				debug = true;
+				window.removeEventListener('keyup', checkDebug);
+			}
+		}
+	});
+}
 var stopAnim = false; //determines when to stop animation
 var framedata = []; //stores image data for each frame
 var framework = []; //stores sequence of frames to play matching above
@@ -631,8 +784,8 @@ const animCanvas = doc.getElementById('animation');
 var animContext = animCanvas.getContext("2d");
 const cropCanvas = doc.getElementById("cropping");
 var cropContext = cropCanvas.getContext("2d");
-doc.getElementsByName('sizeX')[0].addEventListener('change', cropping, false);
-doc.getElementsByName('sizeY')[0].addEventListener('change', cropping, false);
+inputx.addEventListener('change', cropping, false);
+inputy.addEventListener('change', cropping, false);
 doc.getElementById('croppingScaleInput').addEventListener('change', scaleCropping, false);
 doc.getElementById("cropLayout").addEventListener('change', cropping, false);
 doc.getElementById("cropGuide").addEventListener('change', cropping, false);

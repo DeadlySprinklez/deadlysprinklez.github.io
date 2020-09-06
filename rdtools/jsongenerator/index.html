@@ -34,7 +34,10 @@
 			<span title="Upload a file here. Accepts .png and .json files. Will try to autofill some values for you! Allows for animation previews with .png files.">
 				<b>File Upload:</b> <input type="file" name="autofill"> (optional)
 			</span>
-			<br><br>
+			<a href="#" id="autofillOptions" onclick="doc.getElementById('AFOptionsWindow').style = 'z-index: 1;'">Autofill Options</a>
+			<br>
+			<div id="uploadStatus" style="display: none;"></div>
+			<br>	
 			<b>Filename:</b> <input type="text" name="filename"> <b><span style="color: #FF3030">This MUST be the same as the spritesheet, or it won't work in the game!</span></b>
 			<br><br>
 			<span title="This is the size of one frame on the spritesheet. (if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)">
@@ -134,6 +137,9 @@
 					</span>
 				</div>
 				<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
+				<span class="portraitData">
+					<canvas id="portraitDialogue"></canvas>
+				</span>
 			</div> 
 			<div id="animationDiv" style="display: none;">
 				<canvas id="animation" style="width: 0px; height: 0px;"></canvas><br>
@@ -182,6 +188,43 @@
 			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
 			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
 		</footer>
+	</div>
+	<div id="AFOptionsWindow">
+		<div class="page">
+			<img src="assets/remove button.png"
+				style="position: absolute; right: 10px; cursor: pointer;"
+				onclick="this.parentElement.parentElement.style = 'z-index: -50 !important;'">
+			<h1>Autofill Options</h1>
+			<form>
+				<span title="The default - will run as intended.">
+					<input type="radio" name="skipAnalysis" id="AFOptDefault" checked>
+					<label for="AFOptDefault">Don't skip analysis, allow the generator to run without modifiers</label>
+				</span>
+				<br>
+				<b>Skip analysis, and... <i>(Advanced mode will not disable these!)</i></b>
+				<br>
+				<span title="requested by Year of the NotRat (Donte)!">
+					<input type="radio" name="skipAnalysis" id="AFOptFullRes">
+					<label for="AFOptFullRes">autofill the image's full resolution</label>
+				</span>
+				<br>
+				<span title="requested by Axobotl!">
+					<input type="radio" name="skipAnalysis" id="AFOptRowsColumns">
+					<label for="AFOptRowsColumns">instead ask the user for amount of rows and columns in the image</label>
+				</span>
+			</form>
+			<br>
+			<input type="checkbox" id="AFOptPlaceholder" onclick="
+				if (typeof funnyNumber == 'undefined')
+					{funnyNumber = 0;}
+				if (funnyNumber == 100)
+					{alert('You havin\' a good time there?')} 
+				if (funnyNumber <= 100)
+					{funnyNumber++}">
+				Does nothing, just a placeholder for more options
+			<br>
+			More to come?
+		</div>
 	</div>
 	<canvas id="initialCanvas" style="display: none;"></canvas>
 	<div id="helpMenu">
