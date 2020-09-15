@@ -307,20 +307,22 @@ function redrawFrames() {
 }
 function previewAnim(event) {
 	stopAnim = true;
+	animate();
+	animateDialogue();
 	redrawFrames();
-	var focus = event.currentTarget;
+	focusFrame = event.currentTarget;
 	if (doc.getElementsByName("autofill")[0].value.endsWith('.png') != true) {
 		alert("Previewing animations won't work unless you have a .png uploaded! Press the \"Browse\" button at the top of the page to upload a spritesheet.")
 		return;
 	}
-	else if (focus.parentNode.querySelector("*[name=frames]").value == "") {
+	else if (focusFrame.closest(".expression").querySelector("*[name=frames]").value == "") {
 		alert("You can't preview an animation with no frames!");
 		return;
 	}
 	let x = inputx.value;
 	let y = inputy.value;
 	framework = [];
-	framework = focus.parentNode.querySelector("*[name=frames]").value;
+	framework = focusFrame.closest(".expression").querySelector("*[name=frames]").value;
 	framework = framework.split(",");
 	for (i = 0; i < framework.length; i++) {
 		framework[i] = Number(framework[i]);
@@ -329,10 +331,21 @@ function previewAnim(event) {
 			return;
 		}
 	}
-	if (focus.parentNode.querySelector("*[name=loopStart]").value && Number(focus.parentNode.querySelector("*[name=loopStart]").value) <= framework.length) {
-		loopStart = Number(focus.parentNode.querySelector("*[name=loopStart]").value);
+	if (doc.getElementById('datadisplay').options[doc.getElementById('datadisplay').selectedIndex].value == 1) {
+		neutralfw = focusFrame.closest(".expressionList").querySelector("*[name=frames]").value;
+		neutralfw = neutralfw.split(",");
+		for (i = 0; i < neutralfw.length; i++) {
+			neutralfw[i] = Number(neutralfw[i]);
+			if (framedata[neutralfw[i]] == undefined) {
+				alert("Spritesheet does not have frame " + neutralfw[i] + "! Wrong framesize maybe?");
+				return;
+			}
+		}
 	}
-	else if (Number(focus.parentNode.querySelector("*[name=loopStart]").value) > framework.length) {
+	if (focusFrame.closest(".expression").querySelector("*[name=loopStart]").value && Number(focusFrame.closest(".expression").querySelector("*[name=loopStart]").value) <= framework.length) {
+		loopStart = Number(focusFrame.closest(".expression").querySelector("*[name=loopStart]").value);
+	}
+	else if (Number(focusFrame.closest(".expression").querySelector("*[name=loopStart]").value) > framework.length) {
 		alert("Loop start works by the \"Frames\" field, not the actual frames in the spritesheet! Example: if you wanted the first frame, frame " + framework[0] + ", you would put Loop Start as 0!\n\nDefaulting to no loop start.");
 		loopStart = 0;
 	}
@@ -340,31 +353,51 @@ function previewAnim(event) {
 		loopStart = 0;
 	}
 
-	let loopSelect = focus.parentNode.querySelector("select");
+	let loopSelect = focusFrame.closest(".expression").querySelector("select");
 	loopingCheck = loopSelect.options[loopSelect.selectedIndex].value;
 	if (loopSelect.options[loopSelect.selectedIndex].value == "no" || loopStart != 0) {
 		//make play button appear
 	}
-	startAnim(focus.parentNode.querySelector("*[name=fps]").value);
+	startAnim(focusFrame.closest(".expression").querySelector("*[name=fps]").value);
 	//this line goes at the end of the function
-	animCanvas.parentNode.setAttribute("style", "display: inline-block;");
-	toggleCroppingMenu();
-	setTimeout(toggleCroppingMenu(), 10);
+	if (doc.getElementById('datadisplay').options[doc.getElementById('datadisplay').selectedIndex].value == 0) {
+		animCanvas.parentNode.setAttribute("style", "display: inline-block;");
+		toggleCroppingMenu();
+		setTimeout(toggleCroppingMenu(), 10);
+	}
 }
 function startAnim(fpsArg) {
 	stopAnim = false;
+	logDebug("Starting!");
 	fpsArg = Number(fpsArg);
 	if (fpsArg == 0) {
 		fpsArg = 12;
 	}
-	animBaseWidth = Number(inputx.value);
-	animBaseHeight = Number(inputy.value);
-	animCanvas.width = animBaseWidth;
-	animCanvas.height = animBaseHeight;
 	currentframe = 0;
 	fpsInt = 1000/fpsArg;
 	then = window.performance.now();
-	animate();
+	let switchcase = doc.getElementById('datadisplay').options[doc.getElementById('datadisplay').selectedIndex].value;
+	switch (Number(switchcase)) {
+		case 0:
+		animBaseWidth = Number(inputx.value);
+		animBaseHeight = Number(inputy.value);
+		animCanvas.width = animBaseWidth;
+		animCanvas.height = animBaseHeight;
+		animate();
+		break;
+
+		case 1:
+		tempCanvasScale = Number(focusFrame.closest(".expression").querySelector("[name=\"portraitScale\"]").value);
+		tempCanvasOffsetX = Number(focusFrame.closest(".expression").querySelector("[name=\"portraitOffsetX\"]").value);
+		tempCanvasOffsetY = Number(focusFrame.closest(".expression").querySelector("[name=\"portraitOffsetY\"]").value);
+		tempCanvasCWidth = Number(focusFrame.closest(".expression").querySelector("[name=\"portraitSizeX\"]").value);
+		tempCanvasCHeight = Number(focusFrame.closest(".expression").querySelector("[name=\"portraitSizeY\"]").value);
+		let temp = (tempCanvasCHeight * tempCanvasScale) - imgDialogue.height/2;
+		console.log(String(temp) + ", (" + String(tempCanvasCWidth) + " * " + String(tempCanvasScale) + ") * 2 - " + imgDialogue.height/2);
+		diaCanvas.height = diaCanvas.height + (temp > 0 ? temp : 0);
+		setTimeout(animateDialogue(), 1000);
+		break;
+	}
 }
 function animate(frametime) {
 	if (stopAnim) {
@@ -396,9 +429,67 @@ function animate(frametime) {
 		}
 	}
 }
+function animateDialogue(frametime) {
+	if (stopAnim) { //if the animation is called to stop
+		diaContext.clearRect(0,0, diaCanvas.width,diaCanvas.height); //clear everything,
+		diaCanvas.width = imgDialogue.width*2; //set the width back to default
+		diaCanvas.height = imgDialogue.height*2; //the height too
+		diaContext.setTransform(2,0,0,2,0,0); //set the transform to scale the dialogue box x2 
+											  //(why is it XScale, XSkew, YSkew, YScale, XTranslate, YTranslate, javascript what the fuck)
+		diaContext.imageSmoothingEnabled = false; //let pixels be pixels, god dammit
+		diaContext.drawImage(imgDialogue,0,0); //draw the dialogue box
+		neutralSwitch = false; //turn off the neutral switch (explained below)
+		logDebug("Stopping!"); //yell stopping if debug mode is on
+		return;
+	}
+	requestAnimationFrame(animateDialogue); //call this same function every frame
+	let tempCanvas = doc.createElement("canvas"); //have a temp canvas to hold frame data temporarily
+	tempCanvas.width = tempCanvasCWidth; //set the temp canvas' width
+	tempCanvas.height = tempCanvasCHeight; //and height to the portrait size given
+	const tempContext = tempCanvas.getContext("2d"); //save the context to it's own variable
+	now = frametime; //do generic animation stuff
+	elapsed = now - then; //more generic animation stuff, I honestly just copy/pasted this from stackexchange
+						  //and only vaguely understand how it works, it's basically like...timing shit for FPSes
+	var focal; //we save frame data to this to draw later
+	if (elapsed > fpsInt) { //if time for new frame has come, then...
+		then = now - (elapsed % fpsInt); //more timing shit, I'm sorry I'm really just not aware of how this shit works lmao
+		if (currentframe == framework.length && loopingCheck != "no") { //if there's a loop to the chosen animation,
+			currentframe = loopStart; //loop it to loopStart (back to frame one by default)
+		}
+		if (framedata[framework[currentframe]] && currentframe < framework.length && !neutralSwitch) { //if the current frame exists,
+																									   //is less then the amount of available frames, and
+																									   //the neutral switch is off,
+			focal = framedata[framework[currentframe]]; //make the current frame the frame to draw
+			currentframe++; //and move to the next frame for next time around
+		}
+		else if (!neutralSwitch) { //if the other conditions don't apply but the neutral switch is still off,
+			neutralSwitch = true;  //turn on the neutral switch
+			currentframe = 0;	   //and set the current frame back to the first frame
+		}
+		if (neutralSwitch) { //if the neutral switch is on,
+			if (currentframe >= neutralfw.length) { //(also!) if the current frame is more than the amount of neutral frames, 
+				currentframe = 0; //set current frame back to the first frame
+			}
+			focal = framedata[neutralfw[currentframe]]; //display neutral animation instead
+			currentframe++; //and advance to the next frame
+		}
+		//okay, time to actually draw the draw
+		tempContext.putImageData(focal,-tempCanvasOffsetX,-tempCanvasOffsetY); //first put the image data for the frame in temp canvas, offset by the offsets
+																			   //(X moves right and Y moves down, negatives turn that around which is how RD does it)
+		diaContext.setTransform(1,0,0,1,0,0); //set transform to normal to try to...
+		diaContext.clearRect(0,0,diaCanvas.width,diaCanvas.height); //...clear the entire canvas
+		diaContext.setTransform(2,0,0,2,0,diaCanvas.height-imgDialogue.height*2); //set transform to 2x scale and ALSO! move everything to the bottom of the canvas for redrawing
+		diaContext.imageSmoothingEnabled = false; //pixels GODDAMMIT I need to reapply this every time a transformation happens WHY
+		diaContext.drawImage(imgDialogue,0,0); //draw dialogue box first,
+		diaContext.setTransform(2*tempCanvasScale,0,0,2*tempCanvasScale,4,diaCanvas.height-tempCanvas.height*2*tempCanvasScale); //set transform again, scale 2*portraitscale,
+																															//move down to the bottom, move up by frame size * 2 * scale
+		diaContext.drawImage(tempCanvas,0,0); //draw the frame
+		diaContext.setTransform(2,0,0,2,0,diaCanvas.height-imgDialogue.height*2); //set transform one final time, move down to where the dialogue box is,
+		diaContext.drawImage(imgDialogueBorder,0,0); //and draw the bottom + left borders
+	}
+}
 function addExpression(event) {
-	newExpressionNumber += 1;
-	event.currentTarget.insertAdjacentHTML("beforebegin", "<div class=\"expression\"><img class=\"removebutton\" src=\"assets/remove button.png\" onclick=\"deleteExpression(event)\"> <b>Expression:</b> <input type=\"text\" name=\"expressionname\" value=\"newExpression" + newExpressionNumber + "\"> | <span class=\"animationData\"><b>Frames:</b> <input type=\"text\" name=\"frames\" placeholder=\"0,1,2,3,4...4,3,2,1,0\"> | <b>Loop:</b>\n<select name=\"loopSelect\">\n<option value=\"yes\" selected=\"selected\">Loop at end</option>\n<option value=\"onBeat\">Loop on beat</option>\n<option value=\"no\">Don't loop</option>\n</select> |\n<b>FPS:</b> <input type=\"number\" min=0 value=0 name=\"fps\" style=\"width: 50px;\"> | <b>Loop Start:</b>\n<input type=\"number\" name=\"loopStart\" placeholder=\"(optional)\"> | \n<img src=\"assets/play button.png\" class=\"preview\" onclick=\"previewAnim(event)\"></span><span class=\"portraitData\"><b>Portrait Size:</b> <input type=\"number\" value=\"25\" min=\"0\" name=\"portraitSizeX\" style=\"width: 60px\">x<input type=\"number\" value=\"25\" min=\"0\" name=\"portraitSizeY\" style=\"width: 60px\"> | <b>Portrait Offset:</b> <input type=\"number\" value=\"0\" name=\"portraitOffsetX\" style=\"width: 60px\">x<input type=\"number\" value=\"0\" name=\"portraitOffsetY\" style=\"width: 60px\"> | <b>Portrait Scale:</b> <input type=\"number\" value=\"2.0\" step=\"0.1\" name=\"portraitScale\" style=\"width: 60px\">x</span></div>");
+	event.currentTarget.insertAdjacentHTML("beforebegin", expressionBase.innerHTML);
 	doc.getElementById('datadisplay').dispatchEvent(changeevent);
 	doc.getElementById('main').scrollBy(0,1e6);
 }
@@ -407,7 +498,6 @@ function deleteExpression(event) {
 		alert("The first four expressions cannot be deleted; they are required!")
 	}
 	else {
-		newExpressionNumber -= 1;
 		event.currentTarget.parentNode.remove();
 	}
 }
@@ -707,6 +797,10 @@ function exportJSON() {
 	"clips":
 		expressiondata,
 	};
+	if (doc.getElementById('rowPreviewOnOff').checked) {
+		JSONStorage.rowPreviewFrame = doc.getElementsByName('rowPreviewFrame')[0].value;
+		JSONStorage.rowPreviewOffset = [Number(doc.getElementsByName('rowPreviewOffsetY')[0]), Number(doc.getElementsByName('rowPreviewOffsetY')[0])]
+	}
 
 	// code snippet from codevoila.com
 	let dataStr = JSON.stringify(JSONStorage, null, 4);
@@ -730,27 +824,41 @@ const inputx = doc.getElementsByName('sizeX')[0];
 const inputy = doc.getElementsByName('sizeY')[0];
 const changeevent = new Event('change'); //used to activate the onchange events specified in the HTML
 const clickevent = new Event('click'); //used to activate the onclick events specified in the HTML
+
+
 var debug = (window.location.href.startsWith("file://") ? true : false);
 var debugActivator = '';
+const debugPhrase = 'posttoconsole';
 if (!debug) {
 	window.addEventListener('keyup', function checkDebug(e) {
 		if (e.key.length == 1 && isNaN(e.key)) {
 			debugActivator = debugActivator + e.key.toLowerCase();
-			if (debugActivator.length > 13) {
+			if (debugActivator.length > debugPhrase.length) {
 				debugActivator = debugActivator.substring(1);
 			}
-			console.log(debugActivator);
-			if (debugActivator == 'posttoconsole') {
-				console.log('printing to console')
+			if (debugActivator == debugPhrase) {
+				console.log('printing to console');
 				debug = true;
 				window.removeEventListener('keyup', checkDebug);
 			}
 		}
 	});
 }
+
+
+let date = new Date();
+if (date.getMonth() == 8 && date.getDate() == 15) {
+	doc.getElementById("birthday").setAttribute('style', 'position: absolute; right: 3px; bottom: 3px;');
+}
+
+//just gonna set a lot of variables here don't mind me
+const expressionBase = doc.getElementById("newExpression");
+var focusFrame = doc.createElement("p");
 var stopAnim = false; //determines when to stop animation
 var framedata = []; //stores image data for each frame
 var framework = []; //stores sequence of frames to play matching above
+var neutralfw = []; //stores sequences of frames to play neutral expressions
+var neutralSwitch = false;
 var now = 0; //used for animation FPS
 var then = 0;
 var elapsed = 0;
@@ -759,37 +867,66 @@ var currentframe = 0; //used for animation
 var loopStart = 0;
 var animScale = Number(doc.getElementById('animationScaleInput').value); //used for animation scaling
 var cropScale = Number(doc.getElementById('croppingScaleInput').value);
+var tempCanvasScale = 0;
+var tempCanvasOffsetX = 0;
+var tempCanvasOffsetY = 0;
+var tempCanvasCWidth = 0;
+var tempCanvasCHeight = 0;
 var animBaseWidth = 0;
 var animBaseHeight = 0;
 var cropBaseWidth = 0;
 var cropBaseHeight = 0;
-var newExpressionNumber = 0; //determines what to put in the name box for each new expression
 var helpMode = false; //determines if the help menu should be open or not
 var advancedMode = false; //determines if advanced mode is on or not
 var croppingMenu = false;
 var loopingCheck = "x"; //determines if images will loop
 var lastUploadedFilename = "";
+
+
 var list = doc.getElementsByClassName("removebutton"); //applies onclick to each pre-existing delete expression button
 for (i = 0; i < list.length; i++) {
 	list[i].setAttribute("onclick", "deleteExpression(event)");
 }
 list = null; //clears list for later use
+
+
+//here's a bunch of event listeners
 doc.getElementsByName('autofill')[0].addEventListener('change', fileHandling, false); 
-if (doc.getElementsByName('autofill')[0].value) {
-	doc.getElementsByName('autofill')[0].dispatchEvent(changeevent);
-}
-const canvas = doc.getElementById("initialCanvas");
-var context = canvas.getContext("2d");
-const animCanvas = doc.getElementById('animation');
-var animContext = animCanvas.getContext("2d");
-const cropCanvas = doc.getElementById("cropping");
-var cropContext = cropCanvas.getContext("2d");
-inputx.addEventListener('change', cropping, false);
-inputy.addEventListener('change', cropping, false);
 doc.getElementById('croppingScaleInput').addEventListener('change', scaleCropping, false);
 doc.getElementById("cropLayout").addEventListener('change', cropping, false);
 doc.getElementById("cropGuide").addEventListener('change', cropping, false);
 doc.getElementById("cropGuideColor").addEventListener('change', cropping, false);
+if (doc.getElementsByName('autofill')[0].value) {
+	doc.getElementsByName('autofill')[0].dispatchEvent(changeevent);
+}
+if (doc.getElementById('rowPreviewOnOff').checked == false) {
+	doc.getElementsByName('rowPreviewFrame')[0].setAttribute('readonly', '');
+	doc.getElementsByName('rowPreviewOffsetX')[0].setAttribute('readonly', '');
+	doc.getElementsByName('rowPreviewOffsetY')[0].setAttribute('readonly', '');
+}
+
+
+const canvas = doc.getElementById("initialCanvas");
+const context = canvas.getContext("2d");					//learned this one from patcailmemer - this can stay a constant since we're just editing the ATTRIBUTES, not the variable itself
+const animCanvas = doc.getElementById('animation');
+const animContext = animCanvas.getContext("2d");
+const cropCanvas = doc.getElementById("cropping");
+const cropContext = cropCanvas.getContext("2d");
+const diaCanvas = doc.getElementById("portraitDialogue");
+const diaContext = diaCanvas.getContext("2d");
+const imgDialogue = new Image();
+imgDialogue.addEventListener('load', function() {
+	diaCanvas.width = imgDialogue.width*2;
+	diaCanvas.height = imgDialogue.height*2;
+	diaContext.scale(2,2);
+	diaContext.imageSmoothingEnabled = false;
+	diaContext.drawImage(imgDialogue,0,0);
+}, false)
+imgDialogue.src = "assets/dialogue.png";
+const imgDialogueBorder = new Image();
+imgDialogueBorder.src = "assets/dialogueBorder.png"
+inputx.addEventListener('change', cropping, false);
+inputy.addEventListener('change', cropping, false);
 const advancedCanvas = doc.getElementById('advancedSwitch');
 var advancedContext = advancedCanvas.getContext('2d');
 drawSwitch(advancedContext,0,0,50,25,advancedMode);

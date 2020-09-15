@@ -24,6 +24,46 @@
 	    return 'Sure?';
 	};
 	</script>
+
+	<template id="newExpression">
+		<div class="expression">
+			<img class="removebutton" src="assets/remove button.png" onclick="deleteExpression(event)">
+			<b>Expression:</b> <input type="text" name="expressionname" value=""> |
+			<span class="animationData">
+				<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> |
+				<b>Loop:</b>
+				<select name="loopSelect">
+					<option value="yes" selected="selected">Loop at end</option>
+					<option value="onBeat">Loop on beat</option>
+					<option value="no">Don't loop</option>
+				</select> | 
+				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> |
+				<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)"> | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
+			</span>
+			<span class="portraitData">
+				<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
+				<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
+				<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
+				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
+				<input type="button" value="Set All To These Settings" onclick="
+					if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
+						let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
+						let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
+						let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
+						let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
+						let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
+						doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
+						doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
+						doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
+						doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
+						doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
+					}
+				">
+			</span>
+		</div>
+	</template>
+
 	<title>Rhythm Doctor Custom Character JSON Generator</title>
 </head>
 <body>
@@ -44,9 +84,24 @@
 				<span id="framesizes" onclick="croppingMenu = false; toggleCroppingMenu()"><b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)</span>
 			</span>
 			<br><br>
+			<span><input type="checkbox" id="rowPreviewOnOff" checked onclick="
+				if (event.currentTarget.checked == false) {
+					doc.getElementsByName('rowPreviewFrame')[0].setAttribute('readonly', '');
+					doc.getElementsByName('rowPreviewOffsetX')[0].setAttribute('readonly', '');
+					doc.getElementsByName('rowPreviewOffsetY')[0].setAttribute('readonly', '');
+				}
+				else {
+					doc.getElementsByName('rowPreviewFrame')[0].removeAttribute('readonly');
+					doc.getElementsByName('rowPreviewOffsetX')[0].removeAttribute('readonly');
+					doc.getElementsByName('rowPreviewOffsetY')[0].removeAttribute('readonly');
+				}
+			"> <b>Row Preview Options</b> (uncheck if you want the character's name to be displayed in-game instead)</span><br>
+			<span><b>Row Preview Frame:</b> <input type="number" value=0 name="rowPreviewFrame" style="width: 50px;"></span><br>
+			<span><b>Row Preview Offset:</b> <input type="number" value=0 name="rowPreviewOffsetX" style="width: 50px;">x<input type="number" value=0 name="rowPreviewOffsetY" style="width: 50px;"></span>
+			<br><br>
 			<b>Clips:</b>
-			Displaying <select id="datadisplay" onchange="changeDisplay(event)">
-				<option value="0" selected="selected">animation data</option>
+			Displaying <select id="datadisplay" onchange="changeDisplay(event); stopAnim = true;">
+				<option value="0">animation data</option>
 				<option value="1">portrait data</option>
 			</select>
 			<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
@@ -69,7 +124,22 @@
 					<span class="portraitData">
 						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
 						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
+						<input type="button" value="Set All To These Settings" onclick="
+							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
+								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
+								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
+								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
+								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
+								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
+								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
+								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
+								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
+								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
+								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
+							}
+						">
 					</span>
 				</div>
 				<div class="expressionNoDelete expression">
@@ -90,7 +160,22 @@
 					<span class="portraitData">
 						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
 						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
+						<input type="button" value="Set All To These Settings" onclick="
+							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
+								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
+								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
+								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
+								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
+								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
+								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
+								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
+								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
+								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
+								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
+							}
+						">
 					</span>
 				</span>
 				</div>
@@ -112,7 +197,22 @@
 					<span class="portraitData">
 						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
 						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
+						<input type="button" value="Set All To These Settings" onclick="
+							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
+								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
+								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
+								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
+								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
+								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
+								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
+								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
+								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
+								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
+								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
+							}
+						">
 					</span>
 				</div>
 				<div class="expressionNoDelete expression">
@@ -133,20 +233,39 @@
 					<span class="portraitData">
 						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
 						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x
+						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
+						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
+						<input type="button" value="Set All To These Settings" onclick="
+							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
+								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
+								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
+								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
+								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
+								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
+								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
+								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
+								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
+								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
+								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
+							}
+						">
 					</span>
 				</div>
 				<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
-				<span class="portraitData">
-					<canvas id="portraitDialogue"></canvas>
-				</span>
 			</div> 
+			<div class="portraitData" style="display: none;">
+				<canvas id="portraitDialogue"></canvas>
+			</div>
+			<!-- BIRTHDAY INDICATOR (literally just a for-fun thing) -->
+			<div id="birthday" class="highlight" style="display: none; position: absolute; right: 3px; bottom: 3px;">Happy Birthday Deadly!</div>
+			<!-- -->
 			<div id="animationDiv" style="display: none;">
 				<canvas id="animation" style="width: 0px; height: 0px;"></canvas><br>
 				<span>Scale: <input id="animationScaleInput" type="number" value="1.0" step="0.1">x</span><br>
 				<button onclick="redrawFrames(); currentframe = 0;">Play</button>
 				<button onclick="stopAnim = true;">Stop</button>
 			</div>
+
 			<div id="croppingDiv" style="display: none;">
 				<canvas id="cropping" style="width: 0px; height: 0px;"></canvas><br>
 				<span>Scale: <input id="croppingScaleInput" type="number" value="1.0" step="0.1">x</span><br>
@@ -184,7 +303,7 @@
 		<br>
 		<footer style="text-align: right; vertical-align: bottom; color: white;">
 			Tool ©️ DeadlySprinklez 2020. This tool is not affiliated with 7th Beat Games.<br>
-			Background art and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
+			Background art, dialogue box, and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
 			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
 			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
 		</footer>
@@ -291,6 +410,19 @@
 		</div><br><br id="changelog">
 		<div class="page">
 			<h2>Changelog</h2>
+			<h4>September 15th, 2020 - picturesque</h4>
+			<div><span class="change">~</span> optimized a few of the backend methods of doing things</div>
+			<div><span class="change">~</span> new expressions are also saved to a hidden template in the code so uhhh...be careful when fiddling with Inspect Element please</div>
+			<div><span class="change">~</span> improved the frame size autofinder - it should be a good 70% more accurate now!! (it verifies other slices now instead of stopping at the first slice)</div>
+			<div><span class="change">~</span> changed the copyright blurb at the bottom of the page, because...</div>
+			<div><span class="addition">+</span> there's a dialogue portrait preview now!! just swap over to Portrait Data and click the new play buttons!</div>
+			<div><span class="addition">+</span> added Autofill Options! includes two new methods of autofill that skip the normal way of doing things, suggested by two friends. try them out!</div>
+			<div><span class="addition">+</span> there's a secret new debug mode that's not really secret at all if you ask nicely</div>
+			<div><span class="addition">+</span> added upload status output so you know exactly what went wrong with the process</div>
+			<div><span class="addition">+</span> added an optional input for the new row preview spots - if the check box is ticked you can edit them and they will be put in the resulting file. if it's not, however, it won't be present, so be aware of that!</div>
+			<div><span class="addition">+</span> added a "Set All To These Settings" button to portrait data! now if you have a standard for your sprites, you can copy it everywhere else easily!</div>
+			<div><span class="removal">-</span> removed new expression names, they really did nothing but get in the way to be fair</div>
+
 			<h4>August 6th, 2020 - snip, trim, shave, cut</h4>
 			<div><span class="change">~</span> repurposed a lot of the clutter, most of it is in tooltips now!</div>
 			<div><span class="change">~</span> moved the animation preview to it's own detached window</div>
