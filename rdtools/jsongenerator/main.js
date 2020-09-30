@@ -797,9 +797,10 @@ function exportJSON() {
 	"clips":
 		expressiondata,
 	};
-	if (doc.getElementById('rowPreviewOnOff').checked) {
+	if (doc.getElementById('rowPreviewOnOff').checked && doc.getElementsByName('rowPreviewOffsetX')[0]
+		&& doc.getElementsByName('rowPreviewOffsetY')[0] && ) {
 		JSONStorage.rowPreviewFrame = doc.getElementsByName('rowPreviewFrame')[0].value;
-		JSONStorage.rowPreviewOffset = [Number(doc.getElementsByName('rowPreviewOffsetY')[0]), Number(doc.getElementsByName('rowPreviewOffsetY')[0])]
+		JSONStorage.rowPreviewOffset = [Number(doc.getElementsByName('rowPreviewOffsetX')[0].value), Number(doc.getElementsByName('rowPreviewOffsetY')[0].value)]
 	}
 
 	// code snippet from codevoila.com
