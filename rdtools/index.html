@@ -7,7 +7,161 @@
 	<meta property="og:description" content="A collection of tools made by DeadlySprinklez#4327 for Rhythm Doctor, free for anyone to use.">
 	<meta property="og:url" content="http://deadlysprinklez.github.io/rdtools/">
 	<meta property="og:image" content="http://deadlysprinklez.github.io/rdtools/meta.png">
-	<title>Redirecting...</title>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
+	<title>Deadly's Rhythm Doctor Tools</title>
 </head>
-<body onload="alert('Currently only one tool. Redirecting!');  window.location.replace('http://deadlysprinklez.github.io/rdtools/jsongenerator');">
+<body>
+	<div id="disclaimer" style="text-shadow: none; color: white;">
+		©️ DeadlySprinklez 2020. This website is not affiliated with 7th Beat Games.<br>
+		Character art used in thumbnail previews from Rhythm Doctor, made by Winston Lee.<br>
+		Tab icons from the Rhythm Doctor Level Editor, property of 7th Beat Games.
+	</div>
+	<div class="page sound">
+		<h1>Sound</h1>
+		<h3>My Tools:</h3>
+		None! I haven't made anything for this tab yet.
+		<h4>Tools Made By Others:</h4>
+		None! I haven't been given nor have I found anything for this tab yet.
+	</div>
+	<div class="page rows">
+		<h1>Rows</h1>
+		<h3>My Tools:</h3>
+		<a href="jsongenerator">
+			<div class="entry">
+				<table><tr><td>
+					<img src="jsongenerator.png">
+				</td><td>
+					<span class="entryTitle">
+						Custom Character JSON Generator
+					</span><br>
+					<span class="entryDescription">
+						Create the JSON necessary for editor import in seconds!
+					</span>
+				</td></tr></table>
+			</div>
+		</a>
+		<br>
+		<div class="entry" style="filter: contrast(0.1); user-select: none;">
+			<table>
+				<tr>
+					<td>
+						<img src="ccmerger.png">
+					</td>
+					<td>
+						<span class="entryTitle">
+						Custom Character Merger
+						</span><br>
+						<span class="entryDescription">
+						Merge two or more characters' JSON and spritesheets together! (Coming soon...)
+						</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<h4>Tools Made By Others:</h4>
+		None! I haven't been given nor have I found anything for this tab yet.
+	</div>
+	<div class="page vfx">
+		<h1>VFX</h1>
+		<h3>My Tools:</h3>
+		None! I haven't made anything for this tab yet.
+		<h4>Tools Made By Others:</h4>
+		<a href="https://cdn.discordapp.com/attachments/400683594605002752/731341440818479134/autosyllable.py">
+			<div class="entry">
+				<table><tr><td>
+					<img src="external.png">
+				</td><td>
+					<span class="entryTitle">
+						AutoSyllable
+					</span>
+					<span>
+						by DPS2004#5143 on Discord <a class="initial" href="">(click here to see the message if you're in RDL)</a>
+					</span><br>
+					<span class="entryDescription">
+						A [tool] that automatically adds syllable markers for floating text.
+					</span>
+				</td></tr></table>
+				<b>REQUIRES:</b> <a class="initial" href="https://www.python.org/downloads/">Python</a>, <a class="initial" href="https://pypi.org/project/PyHyphen/">PyHyphen</a>
+			</div>
+		</a>
+		<a href="https://drive.google.com/file/d/1QmD43S2Xjr1R-XCLOOQK7uEikHkdIZBh/view?usp=sharing">
+			<div class="entry">
+				<table><tr><td>
+					<img src="external.png">
+				</td><td>
+					<span class="entryTitle">
+						Lyric Tapper
+					</span>
+					<span>
+						by Morphious86#6617 on Discord <a class="initial" href="">(click here to see the message if you're in RDL)</a>
+					</span><br>
+					<span class="entryDescription">
+						A tool that lets you add lyric events to levels by tapping along with the song.
+					</span>
+				</td></tr></table>
+				<b>REQUIRES:</b> a Windows-based Operating System, or WINE if you're on Mac or Linux
+			</div>
+		</a>
+	</div>
+	<div class="page rooms">
+		<h1>Rooms</h1>
+		<h3>My Tools:</h3>
+		None! I haven't made anything for this tab yet.
+		<h4>Tools Made By Others:</h4>
+		None! I haven't been given nor have I found anything for this tab yet.
+	</div>
+	<span style="position: absolute; left: 5%; top: 5%; text-align: center; transform: translate(-50%, -50%)">
+		Click/tap to<br>change tabs!
+	</span>
+	<div class="tab sound"></div>
+	<div class="tab rows" id="selected"></div>
+	<div class="tab vfx"></div>
+	<div class="tab rooms"></div>
+
+
+	<script>
+		function changeTab(tabName) {
+			if (typeof tabName != "string") {
+				return false;
+			}
+			tabs.find(e => e.id == "selected").removeAttribute("id");
+			window.setTimeout(function() {
+				tabs.find(e => e.classList[1] == tabName).setAttribute("id", "selected");
+			}, 125);
+			pages.find(e => e.style.display != "none").style.filter = "opacity(0)";
+			window.setTimeout(function() {
+				pages.filter(e => e.classList[1] != tabName).forEach(e => e.style.display = "none");
+				let focus = pages.find(e => e.classList[1] == tabName)
+				focus.style.display = "initial";
+				window.setTimeout(function() {
+					focus.style.filter = "opacity(1)";
+				}, 50);
+			}, 125);
+		}
+		const sound = document.querySelector(".sound.page");
+		const rows = document.querySelector(".rows.page");
+		const vfx = document.querySelector(".vfx.page");
+		const rooms = document.querySelector(".rooms.page");
+		const pages = [sound, rows, vfx, rooms];
+
+		const soundTab = document.querySelector(".sound.tab");
+		const rowsTab = document.querySelector(".rows.tab");
+		const vfxTab = document.querySelector(".vfx.tab");
+		const roomsTab = document.querySelector(".rooms.tab");
+		const tabs = [soundTab, rowsTab, vfxTab, roomsTab];
+
+		for (i in tabs) {
+			tabs[i].addEventListener("mousedown", e => changeTab(e.target.classList[1]));
+		}
+
+		document.addEventListener("DOMContentLoaded", function() {
+			sound.style.display = "none";
+			sound.style.filter = "opacity(0)";
+			vfx.style.display = "none";
+			vfx.style.filter = "opacity(0)";
+			rooms.style.display = "none";
+			rooms.style.filter = "opacity(0)";
+		});
+	</script>
 </body>
