@@ -6,7 +6,7 @@
 				"url": "https://github.com/DPS2004#5143/scalpel",
 				"title": "Scalpel",
 				"author": "DPS2004#5143 on Discord",
-				"source": "https://ptb.discord.com/channels/296802696243970049/304720987319173121/574377696214253593",
+				"source": "https://github.com/DPS2004/scalpel",
 				"description": "An outdated Python tool for Rhythm Doctor. (note from author: please only use the BPM tools)",
 				"requires": "<a class=\"initial\" href=\"https://www.python.org/downloads/\">Python</a>, <a class=\"initial\" href=\"https://pillow.readthedocs.io/en/stable/installation.html\">Pillow</a>"
 			}
@@ -14,7 +14,7 @@
 		"rows": [
 			{
 				"thumbnail": "jsongenerator.png",
-				"url": "/jsongenerator/",
+				"url": "jsongenerator",
 				"title": "Custom Character JSON Generator",
 				"author": "DeadlySprinklez",
 				"description": "Create the JSON necessary for editor import in seconds!"
