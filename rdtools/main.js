@@ -42,7 +42,7 @@ function buildTab(dataFill, targetTab) {
 		// go into the "entry" <div>
 		focus = focus.firstElementChild;
 		if (dataFill[i].disabled == true) {
-			focus.setAttribute("class", focus.class + " disabled")
+			focus.setAttribute("class", focus.className + " disabled")
 		}
 		// either fill in or delete the "entryRequires" section
 		if (dataFill[i].requires != null || typeof dataFill[i].requires != "undefined") {
