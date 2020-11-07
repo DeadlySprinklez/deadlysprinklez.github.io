@@ -17,8 +17,9 @@ a, a:active, a:hover, a:visited {
 	color: white;
 }
 #export {
-	width: 90%;
-	margin: 0px 5% 0px 5%;
+	width: auto;
+	margin-left: 50%;
+	transform: translate(-50%, 0%);
 	text-align: center;
 	border: none;
 	border-radius: 15px;

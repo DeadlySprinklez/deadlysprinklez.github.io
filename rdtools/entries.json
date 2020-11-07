@@ -1,0 +1,73 @@
+{
+	"tabs": {
+		"sound": [
+			{
+				"thumbnail": "external.png",
+				"url": "https://github.com/DPS2004#5143/scalpel",
+				"title": "Scalpel",
+				"author": "DPS2004#5143 on Discord",
+				"source": "https://ptb.discord.com/channels/296802696243970049/304720987319173121/574377696214253593",
+				"description": "An outdated Python tool for Rhythm Doctor. (note from author: please only use the BPM tools)",
+				"requires": "<a class=\"initial\" href=\"https://www.python.org/downloads/\">Python</a>, <a class=\"initial\" href=\"https://pillow.readthedocs.io/en/stable/installation.html\">Pillow</a>"
+			}
+		],
+		"rows": [
+			{
+				"thumbnail": "jsongenerator.png",
+				"url": "/jsongenerator/",
+				"title": "Custom Character JSON Generator",
+				"author": "DeadlySprinklez",
+				"description": "Create the JSON necessary for editor import in seconds!"
+			},
+			{
+				"thumbnail": "ccmerger.png",
+				"url": "#",
+				"title": "Custom Character Merger",
+				"author": "DeadlySprinklez",
+				"description": "Merge two or more characters' JSON and spritesheets together! (Coming soon...)",
+				"disabled": true
+			}
+		],
+		"vfx": [
+			{
+				"thumbnail": "external.png",
+				"url": "https://cdn.discordapp.com/attachments/400683594605002752/731341440818479134/autosyllable.py",
+				"title": "AutoSyllable",
+				"author": "DPS2004#5143 on Discord",
+				"source": "https://ptb.discord.com/channels/296802696243970049/400683594605002752/731341440994639952",
+				"description": "A [tool] that automatically adds syllable markers for floating text.",
+				"requires": "<a class=\"initial\" href=\"https://www.python.org/downloads/\">Python</a>, <a class=\"initial\" href=\"https://pypi.org/project/PyHyphen/\">PyHyphen</a>"
+			},
+			{
+				"thumbnail": "external.png",
+				"url": "https://drive.google.com/file/d/1QmD43S2Xjr1R-XCLOOQK7uEikHkdIZBh/view?usp=sharing",
+				"title": "Lyric Tapper",
+				"author": "Morphious86#6617 on Discord",
+				"source": "https://ptb.discord.com/channels/296802696243970049/400683594605002752/734938889541779607",
+				"description": "A tool that lets you add lyric events to levels by tapping along with the song.",
+				"requires": "A Windows-based Operating System, or <a class\"initial\" href=\"https://www.winehq.org/\">WINE</a> if you're on Linux or Mac"
+			}
+		],
+		"rooms": [
+
+		]
+	},
+	"template": {
+		"thumbnail": "the-image-url-to-appear-alongside-the-tool",
+		"url": "the-url-to-download-or-use-the-tool",
+		"title": "The title of the tool",
+		"author": "The author of the tool (supports HTML)",
+		"source": "the-source-url-for-discord-redirects (optional)",
+		"description": "The description of the tool",
+		"requires": "The dependencies of the tool (supports HTML, optional)"
+	},
+	"emptyTemplate": {
+		"thumbnail": "",
+		"url": "",
+		"title": "",
+		"author": "",
+		"source": "",
+		"description": "",
+		"requires": ""
+	}
+}

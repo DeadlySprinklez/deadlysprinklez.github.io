@@ -46,8 +46,11 @@ a.initial {
 	z-index: 1;
 	border-radius: 15px;
 	overflow-y: auto;
-	overflow-x: none;
 	transition: filter 0.125s ease-in;
+}
+.disabled {
+	filter: contrast(0.1);
+	user-select: none;
 }
 
 .sound {

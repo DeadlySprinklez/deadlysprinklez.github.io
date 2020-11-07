@@ -269,7 +269,7 @@
 			<div id="croppingDiv" style="display: none;">
 				<canvas id="cropping" style="width: 0px; height: 0px;"></canvas><br>
 				<span>Scale: <input id="croppingScaleInput" type="number" value="1.0" step="0.1">x</span><br>
-				<button onclick="toggleCroppingMenu(); document.getElementById('croppingOptions').setAttribute('style', 'display: none;')">Close</button><span id="optionsButton" onclick="document.getElementById('croppingOptions').setAttribute('style', 'display: initial;')">⚙️</span>
+				<button onclick="toggleCroppingMenu(); document.getElementById('croppingOptions').setAttribute('style', 'display: none;')">Close</button><span id="optionsButton" onclick="document.getElementById('croppingOptions').setAttribute('style', 'display: initial;')">&#9881;</span>
 				<div id="croppingOptions" style="display: none;">
 					<hr style="margin: 6px 0 6px 0;">
 					Layout: <select id="cropLayout" onupdate="cropping()">
@@ -301,12 +301,12 @@
 		<br>
 		<button id="export" onclick="exportJSON()"><h3>Export + Download JSON</h3></button>
 		<br>
-		<footer style="text-align: right; vertical-align: bottom; color: white;">
-			Tool ©️ DeadlySprinklez 2020. This tool is not affiliated with 7th Beat Games.<br>
+		<div class="page" style="width: auto !important; text-align: right; right: 0%; left: 0%">
+			Tool &#169; DeadlySprinklez 2020. This tool is not affiliated with 7th Beat Games.<br>
 			Background art, dialogue box, and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
 			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
 			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
-		</footer>
+		</div>
 	</div>
 	<div id="AFOptionsWindow">
 		<div class="page">
@@ -410,6 +410,11 @@
 		</div><br><br id="changelog">
 		<div class="page">
 			<h2>Changelog</h2>
+			<h4>November 7th, 2020 - unique code (minor update)</h4>
+			<div><span class="change">~</span> traded out the cogwheel in the crop preview and the copyright symbol in the copyright disclaimer for HTML entities instead of straight unicode <b>(TL;DR - made things look better for everyone hopefully)</b></div>
+			<div><span class="change">~</span> made the export button smaller (DM me if that's not a good change and I'll make it big again in the next update)</div>
+			<div><span class="bugfix">?</span> new update soon with bugfixes galore - I have a to do list to get through hh</div>
+
 			<h4>September 15th, 2020 - picturesque</h4>
 			<div><span class="change">~</span> optimized a few of the backend methods of doing things</div>
 			<div><span class="change">~</span> new expressions are also saved to a hidden template in the code so uhhh...be careful when fiddling with Inspect Element please</div>
