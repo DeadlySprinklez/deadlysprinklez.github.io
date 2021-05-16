@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="RD Custom Character JSON Generator">
+	<meta property="og:description" content="A JSON Generator made by DeadlySprinklez#4327 for Rhythm Doctor, free for anyone to use.
+Tested in Firefox 88, report bugs to DeadlySprinklez - DMs open!">
+	<meta property="og:url" content="http://deadlysprinklez.github.io/rdtools/jsongenerator">
+	<meta property="og:image" content="http://deadlysprinklez.github.io/rdtools/meta.png">
+	<link rel="stylesheet" href="style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+	<script>
+		// nabbed code from user "gopi1410" on StackOverflow:
+		// https://stackoverflow.com/questions/10311341/confirmation-before-closing-of-tab-browser
+	window.onbeforeunload = function (e) {
+		if (sessionStorage) {
+			sessionStorage.setItem("expressions", JSON.stringify(expressionArray));
+		}
+
+	    e = e || window.event;
+	
+	    // For IE and Firefox prior to version 4
+	    if (e) {
+	        e.returnValue = 'Sure?';
+	    }
+	
+	    // For Safari
+	    return 'Sure?';
+	};
+	</script>
+
+	<!--
+		FRAME REFERENCE TEMPLATE:
+	-->
+
+	<template id="frameRefTemplate">
+		<div class="frameRef" onclick="
+		if (doc.querySelector('.t5').classList.contains('active') && selExp != null) {
+			expFrames.value += (expFrames.value.endsWith(',') || expFrames.value == '' ? '' : ',') + this.querySelector('.frameRefNum').innerHTML;
+			saveExpression();
+		}
+		">
+			<img src="" class="frameRefImg"><br>
+			<span class="frameRefNum"></span>
+		</div>
+	</template>
+
+	<!--
+		EXPRESSION TEMPLATE:
+	-->
+
+	<template id="expressionTemplate">
+		<div class="expression" onclick="changeToExpression(event)">
+			<table>
+				<tr>
+					<td>
+						<b>NAME:</b>
+						<span class="expressionName">
+							Something broke.
+						</span>
+						<br>
+						<b>FRAMES:</b>
+						<span class="expressionFrames"></span>
+						<br>
+						<b>FPS:</b>
+						<span class="expressionFramerate"></span>
+						<br>
+						<b>LOOP:</b>
+						<span class="expressionLoop"></span>
+					</td>
+					<td style="text-align: right !important">
+						<b>LOOP FRAME:</b>
+						<span class="expressionLoopFrame"></span>
+						<br>
+						<b>PORTRAIT OFFSET:</b>
+						<span class="expressionPortraitOffset"></span>
+						<br>
+						<b>PORTRAIT SIZE:</b>
+						<span class="expressionPortraitSize"></span>
+						<br>
+						<b>PORTRAIT SCALE:</b>
+						<span class="expressionPortraitScale"></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</template>
+
+	<!--
+		END OF TEMPLATES
+	-->
+
+	<title>Rhythm Doctor Custom Character JSON Generator</title>
+</head>
+<body>
+	<div id="main">
+		<div class="page">
+			<h1>Rhythm Doctor Custom Character JSON Generator</h1>
+			<table id="tabsContainer">
+				<tr>
+					<td>
+						<div id="tabs">
+							<span class="tab t1 active">
+								&#128221;<span class="tabName"> - <b>File Upload</b></span>
+							</span>
+							<span class="tab t2">
+								&#128247;<span class="tabName"> - <b>Frame Data</b></span>
+							</span>
+							<span class="tab t3">
+								&#128269;<span class="tabName"> - <b>Row Preview</b></span>
+							</span>
+							<span class="tab t4">
+								&#128578;<span class="tabName"> - <b>Expressions</b></span>
+							</span>
+							<span class="tab t5">
+								&#127939;<span class="tabName"> - <b>Anim. Data</b></span>
+							</span>
+							<span class="tab t6">
+								&#128172;<span class="tabName"> - <b>Dialogue Data</b></span>
+							</span>
+							<span class="tab t7">
+								&#9989;<span class="tabName"> - <b>Export</b></span>
+							</span>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="doc t1 active">
+							<h4>File Upload</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>Preview image:</b>
+											<br>
+											<canvas id="sheetPreview"><span style="color: red; font-weight: 800;">JavaScript is not enabled!</span><br>Please use a<br>JavaScript-compatible<br>browser, or enable<br>JavaScript!</canvas>
+										</div>
+									</td>
+									<td>
+										<div style="text-align: center">
+											Upload either a .png file of a spritesheet or a pre-existing .json file here!
+											<span style="display: block; text-align: center"><input type="file" id="fileUpload" style="background-color: #00000030" ></span>
+											This is optional, but will <i style="text-decoration: underline;">greatly assist</i> in creating your custom character!
+											<hr>
+											<span style="color: red">*</span><b>Filename</b>: <input type="text" id="fileName"><span class="hidden autofilledConfirmation"><br>Name automatically filled from uploaded file!</span>
+											<span style="display: block; text-align: center">This is <span style="color:red;font-weight:800">required</span>, and must be the same name as the spritesheet file for the character <b>WITHOUT</b> the file type (so don't include the .png)</span>
+											<hr>
+											<i>When you're done here, click on the </i>&#128247;<i> <b>camera</b> button at the top, next to where it says <b>File Upload</b>!</i>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t2">
+							<h4>Frame Data</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>Click and drag</b> the marker until the grid lines evenly divide your spritesheet!
+											<br>
+											<div id="sheetDivHolder">
+												<canvas id="sheetDivider"></canvas>
+											</div><br>
+											Zoom: <input type="number" id="sheetDividerZoom" max="8" min="1" value="1" style="width: 50px">x
+										</div>
+									</td>
+									<td>
+										<div style="text-align: center">
+											You can also fine tune the marker's position until it looks right!<br>
+											<input type="number" id="frameX" placeholder="Marker X" min="1" value="9">, <input type="number" id="frameY" placeholder="Marker Y" min="1" value="9"><br>
+											<input type="button" onclick="//detectSlices() - NYI" value="Estimate for me! (NOT YET IMPLEMENTED)" disabled><br>
+											<span class="warning hidden"><b>Warning:</b> Spritesheet does not seem evenly divided!<br>You can continue, but your frames may be a little bit jank.</span>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t3">
+							<h4>Row Preview</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>In-Game Approximation</b><br>
+											You can also <b>click and drag</b> here to move the preview!<br>
+											<canvas id="rowPrevPreview" width=184 height=152></canvas>
+										</div>
+									</td>
+									<td style="text-align: center">
+										<span style="display: inline-block; vertical-align: middle; width: 100%">
+											<label class="switch">
+												<input type="checkbox" id="rowPrevToggle" onchange="
+												if (this.checked) {
+													rowPrevFrameNumber.setAttribute('disabled', '');
+													rowPrevOffsetX.setAttribute('disabled', '');
+													rowPrevOffsetY.setAttribute('disabled', '');
+													rowPrevFrame.getContext('2d').clearRect(0,0,rowPrevFrame.width,rowPrevFrame.height);
+												}
+												else {
+													rowPrevFrameNumber.removeAttribute('disabled');
+													rowPrevOffsetX.removeAttribute('disabled');
+													rowPrevOffsetY.removeAttribute('disabled');
+													rowPrevFrameNumber.dispatchEvent(changeevent);
+												}">
+												<span class="slider"></span>
+											</label>
+											<table style="display: inline-block; text-align: left; width: 50%; position: relative; top: 25px">
+												<tr>
+													<td>
+														<span>Show a portrait of the character</span>
+													</td>
+												</tr>
+												<tr>
+													<td style="font-size: 6px;">
+														<br>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<span>Show the file's name</span>
+													</td>
+												</tr>
+											</table>
+										</span>
+										<hr>
+										<table>
+											<tr>
+												<td style="text-align: center; width: 50%">
+													Frame to use:<br>
+													<input type="number" id="rowPrevFrameNumber" min=0 value=0 style="width: 50px"><br>
+													<canvas id="rowPrevFrame"></canvas>
+												</td>
+												<td style="text-align: center; width: 50%">
+													Offset:<br>
+													<input type="number" id="rowPrevOffsetX" value=0 style="width: 50px">, <input type="number" id="rowPrevOffsetY" value=0 style="width: 50px"><br>
+													<span style="font-size: 8pt">(Note: going positive moves left and down respectively,<br>going negative moves right and up respectively)</span>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t4"><h4>Expressions</h4></div>
+						<div class="doc t5"><h4>Animation Data</h4></div>
+						<div class="doc t6"><h4>Dialogue Data</h4></div>
+						<table class="doc t4 t5 t6" style="vertical-align: middle;">
+							<tr>
+								<td>
+									<div id="expressionsHolder">
+										<table>
+											<tr>
+												<td>
+													<b>Expression List</b> <span id="expressionExtra" onclick="toggleExpressions()" style="user-select: none; cursor: pointer; text-decoration: underline;">(show only names?)</span>
+												</td>
+											</tr>
+											<tr>
+												<td id="expList">
+													<div id="expAdd" class="doc t4" onclick="addExpression(); expList.scrollTop = expList.scrollTopMax">
+														<span>+</span>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+								<td class="doc t4">
+									<div style="width: 40vw">
+										<b>Hey!</b><br>
+										This is the one place where you can modify expression names, or add and remove expressions.<br>
+										Need to manage expressions? <b>Come back to this tab</b>.<br>
+										<br>
+										<b>Click on the green plus (+) button</b> to create an expression,<br>
+										then <b>click on an expression</b> to select it!<br>
+										<br>
+										To start off, you need to have four important expressions,<br>
+										one of each named <b>neutral</b>, <b>happy</b>, <b>barely</b>, and <b>missed</b>.<br>
+										<b style="color: #FF6666">You will not be able to generate your JSON file without these.</b>
+										<hr>
+										<div id="expressionManager">
+											<b>NAME:</b> <input class="expInput" id="expressionNameInput" type="text" value="" disabled><br>
+											<input class="expInput" type="button" value="Delete Selected Expression" id="deleteExpression" onclick="removeExpression(event)" disabled>
+										</div>
+										<hr>
+										Once you're done here, <i>click on the <b>running person</b></i> &#127939; <i>icon to move on.</i>
+									</div>
+								</td>
+								<td class="doc t5">
+									<div style="width: 40vw">
+										<span style="display: block">Frames: <input class="expInput" type="text" id="expFrames" placeholder="ex. 0,1,2,3,4,5" disabled></span>
+										<span style="display: block">Animation Speed (FPS): <input class="expInput" type="number" id="expFPS" min="0" placeholder="0 = quarter beat" disabled></span>
+										<span style="display: block;">Loop:
+											<form id="loopType">
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="no" checked="checked" disabled>
+													<span class="loopButton">Off</span>
+												</label>
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="onBeat" disabled>
+													<span class="loopButton">On beat</span>
+												</label>
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="yes" disabled>
+													<span class="loopButton">At end</span>
+												</label>
+											</form>
+										</span>
+										<span style="display: block">Loop Start Frame: <input class="expInput" type="number" id="expLoopStart" min="0" placeholder="0 = first of Frames" disabled></span>
+										<canvas id="animationPreview">You're not supposed to see this at all ;)</canvas>
+									</div>
+								</td>
+								<td class="doc t6">
+									<div style="width: 40vw">
+										<span style="font-size: 8pt">(Note: going positive moves left and down respectively, going negative moves right and up respectively)</span><br>
+										Portrait Offset: <input class="expInput" type="number" id="expPOffX" placeholder="Offset X (px)" disabled>, <input class="expInput" type="number" id="expPOffY" placeholder="Offset Y (px)" disabled><br>
+										Portrait Size: <input class="expInput" type="number" id="expPSizeX" placeholder="Width (px)" disabled> by <input class="expInput" type="number" id="expPSizeY" placeholder="Height (px)" disabled><br>
+										Portrait Scale: <input class="expInput" type="number" id="expPScale" placeholder="Scale (multiplier)" disabled>x<br>
+										<canvas id="dialoguePreview" width=336 height=42>You're also not supposed to see this! :O</canvas>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<div class="doc t7" style="user-select: none">
+							<h4>Finalize + Export</h4>
+							<b>Before you export,</b> make sure you go back and make sure everything is correct.<br>
+							<br>
+							<span id="exportButton" onclick="exportJSON()">
+								<br>
+								<b>Everything looks good, let's export!</b>
+							</span>
+							<br>
+							<br>
+							<span>
+								Tool &#169; DeadlySprinklez 2020-2021. This tool is not affiliated with 7th Beat Games.<br>
+								Background art, dialogue box, and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
+								Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
+								<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
+							</span>
+						</div>
+						<div class="doc t3 t4 t5 t6" id="frameReferenceHolder">
+							<br><hr>
+							<h4>Frame Reference</h4>
+							<div id="frameRefs">
+								Upload a spritesheet in <b><i>the first tab</i></b>, then visit the &#128247; <b><i>camera</i></b> (Frame Data) tab to enable this!
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	-->
+	<div id="helpMenu">
+		<div class="page">
+			<h1>Help</h1>
+			TODO: Pending rewrite
+			<br><br>
+			<div id="contents">
+				<b>Jump To:</b><br>
+				1. <span onclick="document.getElementById('getting-started').scrollIntoView()"><a href="#">Getting Started</a></span><br>
+				2. <span onclick="document.getElementById('advanced-mode').scrollIntoView()"><a href="#">Advanced Mode</a></span><br>
+				3. <span onclick="document.getElementById('troubleshooting').scrollIntoView()"><a href="#">Troubleshooting</a></span><br>
+				4. <span onclick="document.getElementById('changelog').scrollIntoView()"><a href="#">Changelog</a></span><span onclick="document.getElementById('secret').scrollIntoView()" style="opacity: 0;"><a href="#">?</a></span><br>
+			</div>
+		</div><br><br id="getting-started">
+		<div class="page">
+			<h2>Getting Started</h2>
+			To start, you should have either a pre-existing .json file, or a .png spritesheet! Most spritesheets are vertical, but with a recent update they can be actual sheets now - with both verticality AND horizon...tality? They can go both up and down and side to side.<br>
+			As an example, we'll be using <span class="highlight">MarioMak967#6308</span>'s Logun sprite, reworked by RD developer <span class="highlight">giacomo</span> for the sake of demonstration.<br>
+			<img src="assets/help/logun2.png" class="example">
+			To begin with, we'll upload the spritesheet. To do so, click on the Browse... button and find your spritesheet!
+			<div class="hint"><span class="highlight">TIP:</span> You can also click and drag the file from your file browser onto the Browse... button.</div><br>
+			Next to your Browse... button should be the name of the spritesheet. It should look like this!<br>
+			<img src="assets/help/fileUpload.png" class="example">
+			If all goes well, the image should go through and the tool will pick it up and analyze it a bit. Computer magic! It should grab the size of a <i>single frame</i> automatically. If it's not able to find either the width or the height of the frame, it'll pop up with an error message saying it wasn't able to find one or the other! Don't worry - the tool isn't broken if this happens. If you hit the OK button, you can have it <span class="highlight">autofill the image's width (X) OR height (Y) as a fallback</span>; this helps with purely vertical and horizontal spritesheets, since those are perfectly made to fit the image's width or height respectively. If this doesn't apply to you, you can hit the cancel button and fill those values in yourself.
+			<div class="hint"><span class="highlight">TIP:</span> If you don't know what you're doing, you can always contact me or others for help! My Discord tag is <span class="highlight">DeadlySprinklez#4327.</span></div><br>
+			Now the first three inputs should look like this!<br>
+			<img src="assets/help/postUpload.png" class="example">
+			<div class="hint">Note that the frame size does not need to be the same for both X and Y - it just so happens that the logun sprite is completely square!</div>
+			<div class="hint">Also, pay attention to the red text - this will be the name of your .json file! It needs to be the same name as your spritesheet!</div>
+			Now we can move on to the final part of the JSON and character creation - the expressions! Below the Frame Size input should be the Clips section, with four pre-made and non-deletable slots: neutral, happy, barely, and missed. Before we get into those, you need to know a few things.<br><br>
+			Frames are <span class="highlight">zero-indexed</span>, which means that the first frame on the spritesheet is actually the 0th frame. This is because computers commonly use zero as the first digit - so if you want to use your first frame, second frame, third frame, and fourth frame in that order, it would go into the frame input box as "0, 1, 2, 3".<br>
+			Another thing is that there exists a such thing as 0 FPS, or 0 frames per second, in the game. This makes it so that sprites advance to the next frame on <span class="highlight">every quarter beat</span> but <span class="highlight">this will only work with the Loop on beat option selected</span>. If the loop on beat option isn't selected, having 0 FPS will mess up the animation.<br><br>
+			Now that we know these things, we can get to filling in the different slots in an expression! The "neutral" expression is what plays when the character isn't reacting to a hit or a miss - it's their <span class="highlight">idle, waiting state</span>. The "happy" expression is what plays when the player <span class="highlight">hits a beat properly</span> on the character's row. The "barely" and "missed" expressions play when the player makes a <span class="highlight">small</span> or <span class="highlight">big mistake</span>, respectively.<br><br>
+			With that out of the way, you're on the last few steps of making your first custom character! There's not much that I can do to help you here - it's all up to you now. If you want to see a preview of your sprite and your animation, click the <img src="assets/play button.png" style="width:12px;height:12px;"> yellow play button on the right of each expression! Other than that, once you're done click on the <span class="highlight">Export + Download JSON</span> button, save the file in the same place as your spritesheet, and import your custom character by going into the Level Editor, going into the blue Rows tab, adding a new row, and clicking on the folder button next to the character dropdown box!<br>
+			<img src="assets/help/inEditor.png" class="example">
+			Once you've done that, you've done it! You've made a custom character! If it comes out looking glitched or messed up, don't worry - everybody messes up sometimes. Just jump to <a href="#"><span class="highlight" onclick="document.getElementById('troubleshooting').scrollIntoView()">Troubleshooting</span></a> or contact anyone with the RD Editor Helper role on the 7th Beat Games' official Discord server, <a href="https://discord.gg/rhythmdr">Rhythm Doctor Lounge</a>.
+		</div><br><br id="advanced-mode">
+		<div class="page">
+			<h2>Advanced Mode</h2>
+			When you're just starting out with character creation, there are rules you need to follow. The minimum and default inputs of nine shows that <span class="highlight">sprites should have <b>four pixels of transparency</b> on <b>all four sides of each sprite</b></span>, and <span class="highlight">the first four expressions are needed for basic functionality.</span> At the time of the tool's creation, I thought of nothing past these standards.<br>
+			However, a chat with <span class="highlight">saladplainzone</span>, one of the admins of Rhythm Doctor Lounge and a friend of mine, showed that there are circumstances where those standards don't need to be followed. So, Advanced Mode was born!<br>
+			Advanced Mode, despite the name, is quite simple in nature. All it does is it allows for <span class="highlight">any number</span> to be entered into both the frame X and frame Y input boxes, and it allows you to <span class="highlight">modify and delete the first four preset expressions</span> as if they were just expressions you added yourself. However, this also disables the spritesheet analyzing function, and you will have to enter the size values yourself. With the new cropping preview, this will be a lot easier.<br>
+			<span class="highlight">NOTE:</span> YOU CAN STILL UPLOAD A SPRITESHEET FOR ANIMATION PREVIEWS AND FOR REFERENCE. The functions for automatically grabbing the size values are turned off, nothing else. 
+			<br>
+			Also note! Disabling Advanced Mode will <span class="highlight">only restore functionality to the frame input boxes</span>. If you deleted any of the first four expressions, they will need to be remade manually which will allow you to retain all of your progress so far, or you will have to reload the page which will mean you will lose any new expressions you created.
+		</div><br><br id="troubleshooting">
+		<div class="page">
+			<h2>Troubleshooting</h2>
+			<h4>My sprite looks glitched/squished!</h4>
+			This is likely due to using a sheet format on an outdated editor/preorder build of the game! Make sure you're up to date, or if the latest stable version for the preorder is still 0.6.1, use the beta. If that's not the issue, your frame size is likely wrong! Try tweaking it and using the Play preview on the site.
+			<h4>My sprite constantly slides like it was tiled!</h4>
+			Either your frame X or your frame Y is wrong! Sometimes the frame size algorithm performs poorly - it's more there for convenience and not to be relied on. If you need help finding the actual frame X or Y, ask for help on <a href="https://discord.gg/rhythmdr">Rhythm Doctor Lounge</a> - 7th Beat Games' official Discord server.
+			<h4>I have my FPS set to 0 but my character is much slower than a frame every quarter beat!</h4>
+			Make sure you have Loop set to <span class="highlight">Loop on beat</span>! If you have it set to Loop at end, your frames will go a lot slower and will not loop correctly. Be warned!
+			<h4>My problem isn't listed here...</h4>
+			That's definitely not good, then! DM me on Discord (<span class="highlight">DeadlySprinklez#4327</span>) and I can help you out right away, or, if it's an issue with the tool itself, DM me on Discord or post an issue on the <span class="highlight">Github Issue Tracker</span> and I'll be sure to take care of it immediately and let you know when it's fixed. 
+		</div><br><br id="changelog">
+		<div class="page">
+			<h2>Changelog</h2>
+
+			<details>
+				<summary>May 16th, 2021 - up and over</summary>
+				<div><span class="change">~</span> overhauled EVERYTHING. like...</div>
+				<div><span class="change">~</span> oh my god so much. it's not even funny.</div>
+				<div><span class="change">~</span> okay I guess I have to actually write patch notes</div>
+				<hr>
+				<div><span class="change">~</span> rewrote almost every line of code by hand, only keeping a select few tidbits</div>
+				<div><span class="change">~</span> moved legacy JSON generator to <a href="https://deadlysprinklez.github.io/rdtools/jsongenerator-old">jsongenerator-old</a> if anyone wants to still use that</div>
+				<div><span class="change">~</span> put all the changelogs into expandable &#60;details&#62; elements, because they were getting out of hand</div>
+				<div><span class="addition">+</span> added a tab-based navigation system</div>
+				<div><span class="addition">+</span> added more tutorial writing with all the new screen space we gained</div>
+				<div><span class="addition">+</span> added a new frame splitting method - now you can accurately divide your spritesheet by SEEING where it gets divided at</div>
+				<div><span class="addition">+</span> added a preview for row...er, previews</div>
+				<div><span class="addition">+</span> added click'n'drag implementation to the new frame splitter and row preview...previews.</div>
+				<div><span class="addition">+</span> added a brand new expression navigation system - now you can click to select an expression. no more overwhelming the user! hopefully!</div>
+				<div><span class="addition">+</span> added a warning and error system to the export button</div>
+				<div><span class="removal">-</span> <b>TEMPORARILY</b> removed the automatic spritesheet divider</div>
+				<div><span class="removal">-</span> <b>TEMPORARILY</b> removed auto-fill options</div>
+				<br>
+				<span style="text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">If there aren't any bugs for me to squash this is probably gonna be the last major update from me. I'm planning on adding localization in a minor update, but I'm glad to have built and improved this as much as I did ^^<br>
+				Thank you all so much for using my stuff. I love you all. -<span style="color: red">D</span><span style="color: cyan">S</span></span>
+			</details>
+
+			<details>
+				<summary>November 7th, 2020 - unique code (minor update)</summary>
+				<div><span class="change">~</span> traded out the cogwheel in the crop preview and the copyright symbol in the copyright disclaimer for HTML entities instead of straight unicode <b>(TL;DR - made things look better for everyone hopefully)</b></div>
+				<div><span class="change">~</span> made the export button smaller (DM me if that's not a good change and I'll make it big again in the next update)</div>
+				<div><span class="bugfix">?</span> new update soon with bugfixes galore - I have a to do list to get through hh</div>
+			</details>
+
+			<details>
+				<summary>September 15th, 2020 - picturesque</summary>
+				<div><span class="change">~</span> optimized a few of the backend methods of doing things</div>
+				<div><span class="change">~</span> new expressions are also saved to a hidden template in the code so uhhh...be careful when fiddling with Inspect Element please</div>
+				<div><span class="change">~</span> improved the frame size autofinder - it should be a good 70% more accurate now!! (it verifies other slices now instead of stopping at the first slice)</div>
+				<div><span class="change">~</span> changed the copyright blurb at the bottom of the page, because...</div>
+				<div><span class="addition">+</span> there's a dialogue portrait preview now!! just swap over to Portrait Data and click the new play buttons!</div>
+				<div><span class="addition">+</span> added Autofill Options! includes two new methods of autofill that skip the normal way of doing things, suggested by two friends. try them out!</div>
+				<div><span class="addition">+</span> there's a secret new debug mode that's not really secret at all if you ask nicely</div>
+				<div><span class="addition">+</span> added upload status output so you know exactly what went wrong with the process</div>
+				<div><span class="addition">+</span> added an optional input for the new row preview spots - if the check box is ticked you can edit them and they will be put in the resulting file. if it's not, however, it won't be present, so be aware of that!</div>
+				<div><span class="addition">+</span> added a "Set All To These Settings" button to portrait data! now if you have a standard for your sprites, you can copy it everywhere else easily!</div>
+				<div><span class="removal">-</span> removed new expression names, they really did nothing but get in the way to be fair</div>
+			</details>
+
+			<details>
+				<summary>August 6th, 2020 - snip, trim, shave, cut</summary>
+				<div><span class="change">~</span> repurposed a lot of the clutter, most of it is in tooltips now!</div>
+				<div><span class="change">~</span> moved the animation preview to it's own detached window</div>
+				<div><span class="change">~</span> clicking the Add Expression button now scrolls you to the bottom of the page</div>
+				<div><span class="addition">+</span> added help menu (you're here now! hi!)</div>
+				<div><span class="addition">+</span> added a cropping preview, so now you can actually see what your sprite will look like at a glance (access it by uploading a spritesheet and clicking on the frame x and y boxes!)</div>
+				<div style="margin-left: 10px;"><span class="addition">+</span> also there's an options menu for it for some extra help, like a transparency guide for where the four pixels of transparency should be, changing the color of the highlight, layout, and a lot more</div>
+				<div><span class="addition">+</span> added animation scaling so now you can see your sprites move as big or as small as you'd like them to</div>
+				<div><span class="addition">+</span> added non-looping animation for convenience, also a play button to replay non-looping or restart looping animations</div>
+				<div><span class="addition">+</span> added portrait data for custom characters! now your characters can appear in dialogue boxes - start a Show Dialogue event and put "[character name]_[expression name]: put dialogue text here!"</div>
+				<div><span class="addition">+</span> added Advanced Mode, which disables what few limits were on the tool (read up above)</div>
+				<div><span class="addition">+</span> added a "To The Top button", just in case you don't want to scroll back up manually</div>
+				<div><span class="addition">+</span> added no hidden secrets at all, whatsoever, especially not in the new help menu</div>
+				<div><span class="addition">+</span> added a warning for when you close the tab so you don't lose any data accidentally</div>
+				<div><span class="removal">-</span> removed the "reload frames" button, why was that there when I could've done the same thing without it and easier</div>
+				<div><span class="change">~</span> <b>minor update (2020-09-30)</b>: row preview now only gets added to the generated JSON file if the box is checked <i>and</i> if everything is filled in correctly</div>
+				<div><span class="bugfix">*</span> <b>bugfix (2020-09-30)</b>: row preview was trying to fill in the element data for Y in both slots, instead of the user-inputted value for both - fixed!</div>
+			</details>
+	
+			<details>
+				<summary>June 23rd, 2020 - move it, shake it, tap your feet</summary>
+				<div><span class="addition">+</span> added an animation preview - complete with looping, functional loopStart, and FPS</div>
+				<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: fixed a stupid mistake where I attempt to say a constant isn't a constant - it broke so I fixed it, dw</div>
+				<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: removed a LOT of the browser console logging, which would lag out your browser for a good while. some of it's still there just in case though</div>
+			</details>
+
+			<details>
+				<summary>June 21st, 2020 - it's called a sprite<i>sheet</i> for a reason</summary>
+				<div><span class="change">~</span> temporarily locked down the generator while I updated to the new standards, probably won't do that again</div>
+				<div><span class="change">~</span> while working on the new standards I also improved the analyzing function a bit, should be more efficient</div>
+				<div><span class="addition">+</span> added analyzing for 2-dimensional spritesheets</div>
+				<div><span class="addition">+</span> <b>minor update (2020-06-22)</b>: added in existing .json editing</div>
+				<div><span class="bugfix">*</span> <b>bugfix (2020-06-22)</b>: stopped the analyzer from cancelling itself early</div>
+			</details>
+
+			<details>
+				<summary>June 18th, 2020 - automated, innovated</summary>
+				<div><span class="addition">+</span> implemented the spritesheet analyzer tool (at the time just called spritesheet autofill)</div>
+				<div><span class="addition">+</span> added a title to the page (how did I FORGET that)</div>
+				<div><span class="removal">-</span> deleted a blank file github decided to add to the project</div>
+			</details>
+
+			<details>
+				<summary>June 16th, 2020 - we're live</summary>
+				<div><span class="addition">+</span> added the tool to my dead shell of a website (trust me this is a MUCH better use)</div>
+				<div><span class="removal">-</span> deleted everything I made in like...the 6th-10th grades</div>
+			</details>
+		</div>
+		<div class="spacer"></div>
+		<div class="spacer"></div>
+		<div class="spacer"></div>
+		<div class="spacer"></div>
+		<div class="spacer"></div>
+		<div class="spacer"></div>
+		<br id="secret">
+		<div class="page">
+			<h2>Hidden Acknowledgements</h2>
+			Because I want to. It's my tool, <b>I</b> get to choose the appreciation!<br>
+			Side note, everything that's highlighted here has a tooltip! Hover over to see some blurbs from the people I thanked!<br><br>
+			Big thanks to 
+			<span class="highlight" title="一二三四五六七">the entire crew of 7th Beat Games</span> for making an incredible game!<br>
+			Thanks to 
+			<span class="highlight" title=":clap:">the entire RDL community</span>
+			 - I made this for you guys! (Mostly Adipem)<br>
+
+			Big thanks to a few people I know by name in the RDL community for keeping me sane while I made this tool - namely 
+			<span class="highlight" title="'FUCK YOU BALTIMORE! IF YOU'RE DUMB ENOUGH TO BUY A NEW CAR THIS WEEKEND, YOU'RE A BIG ENOUGH SCHMUCK TO COME TO BIG BILL HELL'S CARS! BAD DEALS, CARS THAT BREAK DOWN, THIEVES! IF YOU THINK YOU'RE GOING TO FIND A BARGAIN AT BIG BILL'S, YOU CAN KISS MY ASS! IT'S OUR BELIEF THAT YOU'RE SUCH A STUPID MOTHERFUCKER THAT YOU'LL FALL FOR THIS BULLSHIT GUARANTEED! IF YOU FIND A BETTER DEAL: SHOVE IT UP YOUR UGLY ASS! YOU HEARD US RIGHT: SHOVE IT UP YOUR UGLY ASS! BRING YOUR TRADE, BRING YOUR TITLE, BRING YOUR WIFE, WE'LL FUCK HER! THAT'S RIGHT WE'LL FUCK YOUR WIFE! BECAUSE AT BIG BILL HELL'S, YOU'RE FUCKED SIX WAYS FROM SUNDAY! TAKE A HIKE TO BIG BILL HELL'S! HOME OF CHALLENGE PISSING, THAT'S RIGHT, CHALLENGE PISSING. HOW DOES IT WORK? IF YOU CAN PISS 6 FEET IN THE AIR STRAIGHT UP AND NOT GET WET, YOU GET NO DOWN PAYMENT. DON'T WAIT, DON'T DELAY, DON'T FUCK WITH US OR WE'LL RIP YOUR NUTS OFF! ONLY AT BIG BILL'S HELL, THE ONLY DEALER THAT TELLS YOU TO FUCK OFF. HURRY UP, ASSHOLE! THIS EVENT ENDS THE MINUTE YOU WRITE US A CHECK AND IT BETTER NOT BOUNCE OR YOU'RE A DEAD MOTHERFUCKER. GO TO HELL. BIG BILL HELL'S CARS - BALTIMORE'S FILTHIEST AND EXCLUSIVE HOME OF THE MEANEST SONS OF BITCHES IN THE STATE OF MARYLAND, GUARANTEED!!' -plastermaster">plastermaster</span>, 
+			<span class="highlight" title="'| || || |_, miaow' -Morphious86">Morphious86</span>, 
+			<span class="highlight" title="'h' -Szprycha">Szprycha</span>, 
+			<span class="highlight" title="'H-Hello? Can somebody hear this? I'm currently trapped in the void. I don't know how I got here, all I know is this Samurai looking person came up to me and now I ended up here. I need an escape, I have no idea if I am safe. Please if anyone can hear this, please help me! I don't know if I c- *cronch*' -Nocallia">Nocallia</span>, 
+			<span class="highlight" title="'Remember to hydrate' -Kin">Kin</span>, 
+			<span class="highlight" title="':skateboard: zzshhhhhh clk clk zshhhhhh clk clk szhhhhhhh clk clk' -Axobotl">Axobotl</span>, 
+			<span class="highlight" title="Hey guys, it's me, DPS2004. DeadlySprinklez has trapped me inside the source code to this tool. Everytime you upload an image I am forced to generate JSON files. If you have the time, can you please upload an image of some chips or something so I can eat? I am not fed well. Hold on, new image is being uploaded, talk to you later!">DPS2004</span>, 
+			<span class="highlight" title="'trans rights' -FireOcta">FireOcta</span>, 
+			<span class="highlight" title="'ime fuckign gameing' -definitely_not_HIM">definitely_not_HIM</span>, 
+			<span class="highlight" title="chirp">Fancybird</span>, 
+			<span class="highlight" title="'straighten your backs, you banana-shaped focks' -fartiliumstation">fartiliumstation</span>, 
+			<span class="highlight" title="'sans peepee' -saladplainzone">saladplainzone</span>, 
+			<span class="highlight" title="'Never trust China; you've seen what they can do. Defend your values while you still can.' -Hex4Nova
+
+Support Hong Kong from abroad: https://bit.ly/HelpHongKong
+(These views are strictly personal and does NOT represent the stance of 7th Beat Games.)">Hex4Nova</span>, 
+			<span class="highlight" title="'I'm thorsty' -megaminerzero">megaminerzero</span>, 
+			<span class="highlight" title="'hee hoo vinyl go wicky wicky' -CV35W">CV35W</span>, and 
+			<span class="highlight" title="'haha JSON printer goes brr' -SpikedJackson">SpikedJackson</span>!<br>
+
+			(shoutouts specifically to 
+			<span class="highlight" title="author of many Python and Lua tools for the RDL community!">DPS2004</span> and 
+			<span class="highlight" title="author of the Lyric Tapper, which is honestly revolutionary and it is not possible to convince me otherwise">Morphious86</span> - RD tool gang represent)<br>
+			<br>
+			Thanks to the <span class="highlight" title="This includes, in no particular order:
+Hex4Nova, Rikri, fizzd, fartiliumstation, Fancybird, Emdyion, CV35W, Axobotl, AdipemDragon, giacomo, ♢noche♢, Nocallia, saladplainzone, plastermaster, Kneeckoh, Klyzx, Year of the notRat (Donte), Random Guy JCI, and FireOcta">RDRPG team</span> and the events' contestants for inspiring the creation of the tool! Literally wouldn't have happened without y'all.<br>
+			<br>
+			Also thanks to my friends who aren't a part of the Rhythm Doctor community, regardless if they left it, never talk in there, or never joined in the first place - namely 
+			<span class="highlight" title="'tbh i think i'd be happier if i was an ai running on a computer,,,,,;;;;no body or anythingggg,just vibes,,,' -pipelinks">pipelinks</span>, 
+			<span class="highlight" title="'Alex is the light of my life, an incredible person, is amazingly talented, and makes awesome things! Support them if you can please!
+also brothers in arms, X' -TVtheTV">TVtheTV</span> (<3), 
+			<span class="highlight" title="'behold' [Image of a tipped over steak sauce bottle on a white background. Steak sauce is pooling underneath the bottle opening. A cut off shutterstock logo is seen to the left of the image.] -MadzoGoneMad">MadzoGoneMad</span>, 
+			<span class="highlight" title="'99 Firemaking!! Anyway, here's Wonderwall.' -DJ_54">DJ_54</span>, 
+			<span class="highlight" title="Still waiting for that tabletop killing game, bud! When's it gonna happen?!">aethermaster144</span>, 
+			<span class="highlight" title="Civ is actually the first person I ever met online and it was through a Garry's Mod Murder game! He's the reason why I'm here at all, truth be told.">Civlian</span>, 
+			my friend <span class="highlight" title="Breaking news: reports of a crazed trucker broke out recently all across the nation. Many sources say the trucker was seen at common rest stops muttering something about 'becoming divine' and 'having to build more quantum storage units.' Attempts at conversation were met with more ramblings about 'having to gather more soul fragments and lamb crystals' for a 'thaumaturgic ritual.' More info at 11.">Kyle</span>, 
+			<span class="highlight" title="My first REAL friend I've ever kept for more than a year, still good friends now. Not too invested in RD, though, so I didn't bother asking for a quote lol">MidnightMan</span>, 
+			<span class="highlight" title="Met through MidnightMan, but also a very good friend who's been there for me a lot recently. Also not invested in RD though so I didn't ask for a quote from him either lmao">DirtMann</span>, and all of my other IRL friends who I didn't mention by name! You likely won't see this but you're here anyway!<br>
+			<br>
+
+			Also thank
+			<span class="highlight" title="and [client's name] is always there
+and [client's name] always cares">you</span>, specifically, for using the tool and taking time out of your day to read this mess.<br>
+			Anyway, that's all the filler I got. This is actually the end of the page now.
+		</div>
+		<div class="spacer" title="oh also shoutouts to simpleflips"></div>
+	</div>
+	<div id="help" onclick="toggleHelp()">
+		<img src="assets/help button.png">
+	</div>
+	<script src="main.js"></script>
+</body>

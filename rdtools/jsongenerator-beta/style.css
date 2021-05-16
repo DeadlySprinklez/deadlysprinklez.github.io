@@ -1,0 +1,425 @@
+html {
+	font-family: 'Open Sans', sans-serif;
+}
+#main {
+	background-image: url('assets/background.png');
+	background-attachment: fixed;
+	background-size: 100vmax;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: auto;
+}
+a, a:active, a:hover, a:visited {
+	font-style: normal;
+	color: white;
+}
+h1 {
+	text-align: center;
+	font-weight: 700;
+}
+summary {
+	text-decoration: underline;
+	font-weight: 700;
+	padding: 5px;
+}
+.page {
+	position: relative;
+	width: 80vw;
+	margin: 10px 9.557% 10px 9.557%;
+	padding: 0px 15px 5px 15px;
+	border: 0px none black;
+	border-radius: 15px;
+	box-shadow: 0px 0px 5px 0px black;
+	background-color: #2C4FDB;
+	color: white;
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+	overflow: hidden;
+}
+.page > * {
+	max-width: 100%;
+}
+
+/*
+
+MAIN PAGE SETUP DONE
+
+TABS SETUP START
+
+*/
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+table tr td {
+	border-left: solid white 2px;
+	border-right: solid white 2px;
+}
+table tr td:first-child {
+	border-left: none;
+}
+table tr td:last-child {
+	border-right: none;
+}
+table.doc * {
+	border: none;
+}
+#tabsContainer {
+	width: 100%;
+	text-align: center;
+}
+#tabs {
+	width: 100%;
+	border-bottom: 3px solid white;
+	height: 28px;
+}
+.tab {
+	width: 25px;
+	overflow: hidden;
+	max-width: 25px;
+	height: 25px;
+	margin-left: -5px;
+	display: inline-block;
+	user-select: none;
+	cursor: pointer;
+	border: 3px solid white;
+	border-bottom: none;
+	border-radius: 10px 10px 0px 0px;
+	text-shadow: none;
+	background-color: #FFFFFF30;
+	transition: max-width 0s, border-color 0.25s;
+}
+.tab.active {
+	width: max-content;
+	max-width: 333px;
+	border-color: #60FF60;
+	padding-right: 3px;
+	padding-left: 3px;
+	transition: max-width 1s, border-color 0.25s;
+}
+.tab .tabName {
+	display: none;
+	white-space: nowrap;
+}
+.tab.active .tabName {
+	display: initial;
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+
+.doc {
+	display: none;
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.doc.active {
+	display: unset;
+	visibility: unset;
+	width: unset;
+	height: unset;
+}
+hr {
+	border: 1px solid white !important;
+	color: white;
+}
+#expressionsHolder {
+	min-width: 50%;
+	min-height: 10px;
+}
+
+/*
+
+TABS SETUP DONE
+
+CANVAS RULES START
+
+*/
+
+#sheetPreview {
+	max-width: 33vw;
+}
+#sheetDivider, #rowPrevPreview, #dialoguePreview {
+	border: solid black 2px;
+}
+#sheetDivHolder {
+	display: inline-block;
+	overflow: auto;
+	max-width: 33vw;
+}
+#rowPrevFrame, #sheetDivider, #rowPrevPreview, #animationPreview, #dialoguePreview {
+	image-rendering: crisp-edges;
+}
+
+
+/*
+
+CANVAS RULES DONE
+
+MISCELLANEOUS RULES START
+
+*/
+
+.noFileBlur {
+	content: "yo";
+	filter: blur(1px) saturate(10%) grayscale(100%);
+}
+
+#loopType {
+	display: inline-block;
+}
+
+.loopButton {
+	position: relative;
+	display: inline-block;
+	background-color: rgba(255,255,255,0.15);
+	user-select: none;
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 10px;
+	transition: .2s ease-out;
+	border: 2px solid white !important;
+}
+
+#expList {
+	display: block;
+	border: 3px solid white;
+	border-radius: 10px;
+	position: relative;
+	text-align: center;
+	overflow-x: visible; 
+	overflow-y: auto;
+	max-height: 40vh;
+	min-width: 33vw;
+	scrollbar-width: none;
+}
+
+#expList::-webkit-scrollbar {
+	display: none; /* this should work for Chrome, Safari, + Opera browsers, 
+	but this has only been tested on Firefox. sorry if it doesn't work! -DS */
+}
+#expAdd {
+	display: none;
+}
+
+#expAdd.active {
+	min-width: 30%;
+	font-size: 24pt;
+	text-align: center;
+	display: inline-block;
+	background-color: #33CC33;
+	border-radius: 10px;
+	user-select: none;
+	cursor: pointer;
+	transition: 0.25s background-color ease-out;
+}
+
+#expAdd:hover {
+	background-color: #66DD66;
+}
+
+#expAdd:active {
+	background-color: #16AA16;
+}
+
+.expression {
+	padding: 5px;
+	margin: 1px;
+	text-align: left;
+	width: 33vw;
+	border: 1px solid white !important;
+	border-radius: 15px;
+	user-select: none;
+	cursor: pointer;
+}
+.expression.selectedExpression {
+	padding: 4px;
+	border: 2px solid white !important;
+	background-color: rgba(255,255,255,0.33);
+}
+#deleteExpression {
+	color: white;
+	background-color: #ff0000;
+	border-radius: 3px;
+	font: unset;
+}
+#deleteExpression:active:not(:disabled) {
+	background-color: #ff3333;
+	transform: translate(0, 1px);
+}
+#deleteExpression:disabled {
+	background-color: #aa3333;
+}
+
+#exportButton {
+	display: inline-block;
+	min-width: 30%;
+	max-width: 30%;
+	min-height: 64px;
+	max-height: 64px;
+	background-color: #33CC33;
+	border-radius: 10px;
+	user-select: none;
+	cursor: pointer;
+	transition: 0.25s background-color ease-out;
+}
+
+#exportButton:hover {
+	background-color: #66DD66;
+}
+
+#exportButton:active {
+	background-color: #16AA16;
+}
+
+label input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+input:checked + .loopButton {
+	background-color: rgba(255,255,255,0.8);
+}
+
+/* thanks w3schools */
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 60px;
+  vertical-align: middle;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2196F3;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+  box-shadow: 0 0 2px black;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  top: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 0 4px black;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateY(26px);
+  -ms-transform: translateY(26px);
+  transform: translateY(26px);
+}
+
+#frameRefs {
+	display: block;
+	align-content: center;
+	padding: auto;
+}
+.warning {
+	color: #FF8080;
+	width: max-content;
+	position: absolute;
+	transform: translateX(-50%);
+}
+.frameRef {
+	display: inline-block;
+	border: solid white 2px;
+}
+.frameRefImg {
+	image-rendering: crisp-edges;
+}
+.hidden {
+	display: none;
+}
+
+.autofilledConfirmation {
+	color: limegreen;
+}
+
+.hint {
+	font-size: 8pt;
+}
+.hint:required {
+	color: red;
+}
+#help {
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	border-radius: 20px;
+	position: absolute;
+	top: 1%;
+	right: 1%;
+}
+#helpMenu {
+	overflow: hidden;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.8);
+	left: 0;
+	top: 0;
+	z-index: -50;
+	overflow: auto;
+}
+.example {
+	border: 1px solid rgb(22,39,201);
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+#helpMenu .page {
+	text-shadow: none;
+	padding: 10px 20px 10px 20px;
+}
+.highlight, .change, .addition, .removal, .bugfix {
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+.highlight, .bugfix { color: gold; }
+.change { color: white; }
+.addition { color: limegreen; }
+.removal { color: red; }
+#contents {
+	display:  inline-block;
+	border: 1px solid black;
+	padding: 3px 8px 3px 8px;
+	background-color: rgba(0,0,0,0.25);
+}
+.spacer {
+	height: 50vh;
+}
+.center {
+	display: flex;
+	flex-wrap: wrap;
+	text-align: center;
+}
