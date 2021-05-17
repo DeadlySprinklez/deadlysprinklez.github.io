@@ -186,7 +186,8 @@ function removeExpression(e) {
 function saveExpression(justWriteToElements = false) {
 	// first, check if an expression is selected
 	// if there is no selected expression, don't save
-	if (selExp == null) return null; 
+	if (selExp == null) return null;
+	if (typeof justWriteToElements != "boolean") justWriteToElements = false;
 
 	// after, save the values to the objects UNLESS SPECIFIED NOT TO
 	if (!justWriteToElements) {
