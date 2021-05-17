@@ -4,7 +4,8 @@
 	<meta charset="utf-8">
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="RD Custom Character JSON Generator">
-	<meta property="og:description" content="A JSON Generator made by DeadlySprinklez#4327 for Rhythm Doctor, free for anyone to use.">
+	<meta property="og:description" content="A JSON Generator made by DeadlySprinklez#4327 for Rhythm Doctor, free for anyone to use.
+Tested in Firefox 88, report bugs to DeadlySprinklez - DMs open!">
 	<meta property="og:url" content="http://deadlysprinklez.github.io/rdtools/jsongenerator">
 	<meta property="og:image" content="http://deadlysprinklez.github.io/rdtools/meta.png">
 	<link rel="stylesheet" href="style.css">
@@ -13,6 +14,10 @@
 		// nabbed code from user "gopi1410" on StackOverflow:
 		// https://stackoverflow.com/questions/10311341/confirmation-before-closing-of-tab-browser
 	window.onbeforeunload = function (e) {
+		if (sessionStorage) {
+			sessionStorage.setItem("expressions", JSON.stringify(expressionArray));
+		}
+
 	    e = e || window.event;
 	
 	    // For IE and Firefox prior to version 4
@@ -25,44 +30,66 @@
 	};
 	</script>
 
-	<template id="newExpression">
-		<div class="expression">
-			<img class="removebutton" src="assets/remove button.png" onclick="deleteExpression(event)">
-			<b>Expression:</b> <input type="text" name="expressionname" value=""> |
-			<span class="animationData">
-				<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> |
-				<b>Loop:</b>
-				<select name="loopSelect">
-					<option value="yes" selected="selected">Loop at end</option>
-					<option value="onBeat">Loop on beat</option>
-					<option value="no">Don't loop</option>
-				</select> | 
-				<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> |
-				<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)"> | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-			</span>
-			<span class="portraitData">
-				<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
-				<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-				<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
-				<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
-				<input type="button" value="Set All To These Settings" onclick="
-					if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
-						let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
-						let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
-						let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
-						let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
-						let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
-						doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
-						doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
-						doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
-						doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
-						doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
-					}
-				">
-			</span>
+	<!--
+		FRAME REFERENCE TEMPLATE:
+	-->
+
+	<template id="frameRefTemplate">
+		<div class="frameRef" onclick="
+		if (doc.querySelector('.t5').classList.contains('active') && selExp != null) {
+			expFrames.value += (expFrames.value.endsWith(',') || expFrames.value == '' ? '' : ',') + this.querySelector('.frameRefNum').innerHTML;
+			saveExpression();
+		}
+		">
+			<img src="" class="frameRefImg"><br>
+			<span class="frameRefNum"></span>
 		</div>
 	</template>
+
+	<!--
+		EXPRESSION TEMPLATE:
+	-->
+
+	<template id="expressionTemplate">
+		<div class="expression" onclick="changeToExpression(event)">
+			<table>
+				<tr>
+					<td>
+						<b>NAME:</b>
+						<span class="expressionName">
+							Something broke.
+						</span>
+						<br>
+						<b>FRAMES:</b>
+						<span class="expressionFrames"></span>
+						<br>
+						<b>FPS:</b>
+						<span class="expressionFramerate"></span>
+						<br>
+						<b>LOOP:</b>
+						<span class="expressionLoop"></span>
+					</td>
+					<td style="text-align: right !important">
+						<b>LOOP FRAME:</b>
+						<span class="expressionLoopFrame"></span>
+						<br>
+						<b>PORTRAIT OFFSET:</b>
+						<span class="expressionPortraitOffset"></span>
+						<br>
+						<b>PORTRAIT SIZE:</b>
+						<span class="expressionPortraitSize"></span>
+						<br>
+						<b>PORTRAIT SCALE:</b>
+						<span class="expressionPortraitScale"></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</template>
+
+	<!--
+		END OF TEMPLATES
+	-->
 
 	<title>Rhythm Doctor Custom Character JSON Generator</title>
 </head>
@@ -70,287 +97,305 @@
 	<div id="main">
 		<div class="page">
 			<h1>Rhythm Doctor Custom Character JSON Generator</h1>
-			<noscript>Sorry, you kinda sorta need Javascript to run this page properly, and by properly I mean at all. Upgrade your browser or enable Javascript!</noscript>
-			<span title="Upload a file here. Accepts .png and .json files. Will try to autofill some values for you! Allows for animation previews with .png files.">
-				<b>File Upload:</b> <input type="file" name="autofill"> (optional)
-			</span>
-			<a href="#" id="autofillOptions" onclick="doc.getElementById('AFOptionsWindow').style = 'z-index: 1;'">Autofill Options</a>
-			<br>
-			<div id="uploadStatus" style="display: none;"></div>
-			<br>	
-			<b>Filename:</b> <input type="text" name="filename"> <b><span style="color: #FF3030">This MUST be the same as the spritesheet, or it won't work in the game!</span></b>
-			<br><br>
-			<span title="This is the size of one frame on the spritesheet. (if you don't know why this is a minimum of 9, you need to recreate your spritesheet with four pixels of padding on each side of each frame to account for automatic glow/outline mapping)">
-				<span id="framesizes" onclick="croppingMenu = false; toggleCroppingMenu()"><b>Frame Size:</b> <input type="number" name="sizeX" min=9 value=9 style="width: 50px;">x<input type="number" name="sizeY" min=9 value=9 style="width: 50px;"> (X by Y, width by height)</span>
-			</span>
-			<br><br>
-			<span><input type="checkbox" id="rowPreviewOnOff" checked onclick="
-				if (event.currentTarget.checked == false) {
-					doc.getElementsByName('rowPreviewFrame')[0].setAttribute('readonly', '');
-					doc.getElementsByName('rowPreviewOffsetX')[0].setAttribute('readonly', '');
-					doc.getElementsByName('rowPreviewOffsetY')[0].setAttribute('readonly', '');
-				}
-				else {
-					doc.getElementsByName('rowPreviewFrame')[0].removeAttribute('readonly');
-					doc.getElementsByName('rowPreviewOffsetX')[0].removeAttribute('readonly');
-					doc.getElementsByName('rowPreviewOffsetY')[0].removeAttribute('readonly');
-				}
-			"> <b>Row Preview Options</b> (uncheck if you want the character's name to be displayed in-game instead)</span><br>
-			<span><b>Row Preview Frame:</b> <input type="number" value=0 name="rowPreviewFrame" style="width: 50px;"></span><br>
-			<span><b>Row Preview Offset:</b> <input type="number" value=0 name="rowPreviewOffsetX" style="width: 50px;">x<input type="number" value=0 name="rowPreviewOffsetY" style="width: 50px;"></span>
-			<br><br>
-			<b>Clips:</b>
-			Displaying <select id="datadisplay" onchange="changeDisplay(event); stopAnim = true;">
-				<option value="0">animation data</option>
-				<option value="1">portrait data</option>
-			</select>
-			<div class="hint">(remember that frames start on zero, and that putting 0 for fps makes it play one frame every quarter beat!)</div>
-			<div class="expressionList">
-				<div class="expressionNoDelete expression">
-					<img class="removebutton" src="assets/remove button.png"> 
-					<b>Expression:</b> <input type="text" value="neutral" readonly name="expressionname"> | 
-					<span class="animationData">
-						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
-						<b>Loop:</b>
-						<select name="loopSelect">
-							<option value="yes" selected="selected">Loop at end</option>
-							<option value="onBeat">Loop on beat</option>
-							<option value="no">Don't loop</option>
-						</select> |
-						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
-						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-					</span>
-					<span class="portraitData">
-						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
-						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
-						<input type="button" value="Set All To These Settings" onclick="
-							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
-								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
-								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
-								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
-								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
-								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
-								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
-								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
-								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
-								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
-								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
-							}
-						">
-					</span>
-				</div>
-				<div class="expressionNoDelete expression">
-					<img class="removebutton" src="assets/remove button.png"> 
-					<b>Expression:</b> <input type="text" value="happy" readonly name="expressionname"> | 
-					<span class="animationData">
-						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
-						<b>Loop:</b>
-						<select name="loopSelect">
-							<option value="yes" selected="selected">Loop at end</option>
-							<option value="onBeat">Loop on beat</option>
-							<option value="no">Don't loop</option>
-						</select> |
-						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
-						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-					</span>
-					<span class="portraitData">
-						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
-						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
-						<input type="button" value="Set All To These Settings" onclick="
-							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
-								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
-								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
-								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
-								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
-								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
-								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
-								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
-								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
-								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
-								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
-							}
-						">
-					</span>
-				</span>
-				</div>
-				<div class="expressionNoDelete expression">
-					<img class="removebutton" src="assets/remove button.png"> 
-					<b>Expression:</b> <input type="text" value="barely" readonly name="expressionname"> | 
-					<span class="animationData">
-						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
-						<b>Loop:</b>
-						<select name="loopSelect">
-							<option value="yes" selected="selected">Loop at end</option>
-							<option value="onBeat">Loop on beat</option>
-							<option value="no">Don't loop</option>
-						</select> |
-						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
-						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-					</span>
-					<span class="portraitData">
-						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
-						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
-						<input type="button" value="Set All To These Settings" onclick="
-							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
-								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
-								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
-								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
-								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
-								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
-								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
-								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
-								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
-								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
-								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
-							}
-						">
-					</span>
-				</div>
-				<div class="expressionNoDelete expression">
-					<img class="removebutton" src="assets/remove button.png">
-					<b>Expression:</b> <input type="text" value="missed" readonly name="expressionname"> | 
-					<span class="animationData">
-						<b>Frames:</b> <input type="text" name="frames" placeholder="0,1,2,3,4...4,3,2,1,0"> | 
-						<b>Loop:</b>
-						<select name="loopSelect">
-							<option value="yes" selected="selected">Loop at end</option>
-							<option value="onBeat">Loop on beat</option>
-							<option value="no">Don't loop</option>
-						</select> |
-						<b>FPS:</b> <input type="number" min=0 value=0 name="fps" style="width: 50px;"> | 
-						<b>Loop Start:</b> <input type="number" name="loopStart" placeholder="(optional)" min=0> | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)">
-					</span>
-					<span class="portraitData">
-						<b>Portrait Size:</b> <input type="number" value="25" min="0" name="portraitSizeX" style="width: 60px">x<input type="number" value="25" min="0" name="portraitSizeY" style="width: 60px"> | 
-						<b>Portrait Offset:</b> <input type="number" value="0" name="portraitOffsetX" style="width: 60px">x<input type="number" value="0" name="portraitOffsetY" style="width: 60px"> | 
-						<b>Portrait Scale:</b> <input type="number" value="2.0" step="0.1" name="portraitScale" style="width: 60px">x | 
-						<img src="assets/play button.png" class="preview" onclick="previewAnim(event)"> | 
-						<input type="button" value="Set All To These Settings" onclick="
-							if (window.confirm('Are you sure you want to copy all portrait data settings from this expression to ALL of the others?')) {
-								let savedSizeX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeX&quot;]').value);
-								let savedSizeY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitSizeY&quot;]').value);
-								let savedOffsetX = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetX&quot;]').value);
-								let savedOffsetY = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitOffsetY&quot;]').value);
-								let savedScale = Number(event.currentTarget.closest('.expression').querySelector('[name=&quot;portraitScale&quot;]').value);
-								doc.getElementsByName('portraitSizeX').forEach(x => x.value = savedSizeX);
-								doc.getElementsByName('portraitSizeY').forEach(x => x.value = savedSizeY);
-								doc.getElementsByName('portraitOffsetX').forEach(x => x.value = savedOffsetX);
-								doc.getElementsByName('portraitOffsetY').forEach(x => x.value = savedOffsetY);
-								doc.getElementsByName('portraitScale').forEach(x => x.value = savedScale);
-							}
-						">
-					</span>
-				</div>
-				<img src="assets/add button.png" class="addbutton" onclick="addExpression(event)">
-			</div> 
-			<div class="portraitData" style="display: none;">
-				<canvas id="portraitDialogue"></canvas>
-			</div>
-			<!-- BIRTHDAY INDICATOR (literally just a for-fun thing) -->
-			<div id="birthday" class="highlight" style="display: none; position: absolute; right: 3px; bottom: 3px;">Happy Birthday Deadly!</div>
-			<!-- -->
-			<div id="animationDiv" style="display: none;">
-				<canvas id="animation" style="width: 0px; height: 0px;"></canvas><br>
-				<span>Scale: <input id="animationScaleInput" type="number" value="1.0" step="0.1">x</span><br>
-				<button onclick="redrawFrames(); currentframe = 0;">Play</button>
-				<button onclick="stopAnim = true;">Stop</button>
-			</div>
+			<table id="tabsContainer">
+				<tr>
+					<td>
+						<div id="tabs">
+							<span class="tab t1 active">
+								&#128221;<span class="tabName"> - <b>File Upload</b></span>
+							</span>
+							<span class="tab t2">
+								&#128247;<span class="tabName"> - <b>Frame Data</b></span>
+							</span>
+							<span class="tab t3">
+								&#128269;<span class="tabName"> - <b>Row Preview</b></span>
+							</span>
+							<span class="tab t4">
+								&#128578;<span class="tabName"> - <b>Expressions</b></span>
+							</span>
+							<span class="tab t5">
+								&#127939;<span class="tabName"> - <b>Anim. Data</b></span>
+							</span>
+							<span class="tab t6">
+								&#128172;<span class="tabName"> - <b>Dialogue Data</b></span>
+							</span>
+							<span class="tab t7">
+								&#9989;<span class="tabName"> - <b>Export</b></span>
+							</span>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div class="doc t1 active">
+							<h4>File Upload</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>Preview image:</b>
+											<br>
+											<canvas id="sheetPreview"><span style="color: red; font-weight: 800;">JavaScript is not enabled!</span><br>Please use a<br>JavaScript-compatible<br>browser, or enable<br>JavaScript!</canvas>
+										</div>
+									</td>
+									<td>
+										<div style="text-align: center">
+											Upload either a .png file of a spritesheet or a pre-existing .json file here!
+											<span style="display: block; text-align: center"><input type="file" id="fileUpload" style="background-color: #00000030" ></span>
+											This is optional, but will <i style="text-decoration: underline;">greatly assist</i> in creating your custom character!
+											<hr>
+											<span style="color: red">*</span><b>Filename</b>: <input type="text" id="fileName"><span class="hidden autofilledConfirmation"><br>Name automatically filled from uploaded file!</span>
+											<span style="display: block; text-align: center">This is <span style="color:red;font-weight:800">required</span>, and must be the same name as the spritesheet file for the character <b>WITHOUT</b> the file type (so don't include the .png)</span>
+											<hr>
+											<i>When you're done here, click on the </i>&#128247;<i> <b>camera</b> button at the top, next to where it says <b>File Upload</b>!</i>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t2">
+							<h4>Frame Data</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>Click and drag</b> the marker until the grid lines evenly divide your spritesheet!
+											<br>
+											<div id="sheetDivHolder">
+												<canvas id="sheetDivider"></canvas>
+											</div><br>
+											Zoom: <input type="number" id="sheetDividerZoom" max="8" min="1" value="1" style="width: 50px">x
+										</div>
+									</td>
+									<td>
+										<div style="text-align: center">
+											You can also fine tune the marker's position until it looks right!<br>
+											<input type="number" id="frameX" placeholder="Marker X" min="1" value="9">, <input type="number" id="frameY" placeholder="Marker Y" min="1" value="9"><br>
+											<input type="button" onclick="//detectSlices() - NYI" value="Estimate for me! (NOT YET IMPLEMENTED)" disabled><br>
+											<span class="warning hidden"><b>Warning:</b> Spritesheet does not seem evenly divided!<br>You can continue, but your frames may be a little bit jank.</span>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t3">
+							<h4>Row Preview</h4>
+							<table>
+								<tr>
+									<td>
+										<div style="text-align: center">
+											<b>In-Game Approximation</b><br>
+											You can also <b>click and drag</b> here to move the preview!<br>
+											<canvas id="rowPrevPreview" width=184 height=152></canvas>
+										</div>
+									</td>
+									<td style="text-align: center">
+										<span style="display: inline-block; vertical-align: middle; width: 100%">
+											<label class="switch">
+												<input type="checkbox" id="rowPrevToggle" onchange="
+												if (this.checked) {
+													rowPrevFrameNumber.setAttribute('disabled', '');
+													rowPrevOffsetX.setAttribute('disabled', '');
+													rowPrevOffsetY.setAttribute('disabled', '');
+													rowPrevFrame.getContext('2d').clearRect(0,0,rowPrevFrame.width,rowPrevFrame.height);
+												}
+												else {
+													rowPrevFrameNumber.removeAttribute('disabled');
+													rowPrevOffsetX.removeAttribute('disabled');
+													rowPrevOffsetY.removeAttribute('disabled');
+													rowPrevFrameNumber.dispatchEvent(changeevent);
+												}">
+												<span class="slider"></span>
+											</label>
+											<table style="display: inline-block; text-align: left; width: 50%; position: relative; top: 25px">
+												<tr>
+													<td>
+														<span>Show a portrait of the character</span>
+													</td>
+												</tr>
+												<tr>
+													<td style="font-size: 6px;">
+														<br>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<span>Show the file's name</span>
+													</td>
+												</tr>
+											</table>
+										</span>
+										<hr>
+										<table>
+											<tr>
+												<td style="text-align: center; width: 50%">
+													Frame to use:<br>
+													<input type="number" id="rowPrevFrameNumber" min=0 value=0 style="width: 50px"><br>
+													<canvas id="rowPrevFrame"></canvas>
+												</td>
+												<td style="text-align: center; width: 50%">
+													Offset:<br>
+													<input type="number" id="rowPrevOffsetX" value=0 style="width: 50px">, <input type="number" id="rowPrevOffsetY" value=0 style="width: 50px"><br>
+													<span style="font-size: 8pt">(Note: going positive moves left and down respectively,<br>going negative moves right and up respectively)</span>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div class="doc t4"><h4>Expressions</h4></div>
+						<div class="doc t5"><h4>Animation Data</h4></div>
+						<div class="doc t6"><h4>Dialogue Data</h4></div>
+						<table class="doc t4 t5 t6" style="vertical-align: middle;">
+							<tr>
+								<td>
+									<div id="expressionsHolder">
+										<table>
+											<tr>
+												<td>
+													<b>Expression List</b> <span id="expressionExtra" onclick="toggleExpressions()" style="user-select: none; cursor: pointer; text-decoration: underline;">(show only names?)</span>
+												</td>
+											</tr>
+											<tr>
+												<td id="expList">
+													<div id="expAdd" class="doc t4" onclick="addExpression(); expList.scrollTop = expList.scrollTopMax">
+														<span>+</span>
+													</div>
+												</td>
+											</tr>
+										</table>
+									</div>
+								</td>
+								<td class="doc t4">
+									<div style="width: 40vw">
+										<b>Hey!</b><br>
+										This is the one place where you can modify expression names, or add and remove expressions.<br>
+										Need to manage expressions? <b>Come back to this tab</b>.<br>
+										<br>
+										<b>Click on the green plus (+) button</b> to create an expression,<br>
+										then <b>click on an expression</b> to select it!<br>
+										<br>
+										To start off, you need to have four important expressions,<br>
+										one of each named <b>neutral</b>, <b>happy</b>, <b>barely</b>, and <b>missed</b>.<br>
+										<b style="color: #FF6666">You will not be able to generate your JSON file without these.</b>
+										<hr>
+										<div id="expressionManager">
+											<b>NAME:</b> <input class="expInput" id="expressionNameInput" type="text" value="" disabled><br>
+											<input class="expInput" type="button" value="Delete Selected Expression" id="deleteExpression" onclick="removeExpression(event)" disabled>
+										</div>
+										<hr>
+										Once you're done here, <i>click on the <b>running person</b></i> &#127939; <i>icon to move on.</i>
+									</div>
+								</td>
+								<td class="doc t5">
+									<div style="width: 40vw">
+										<span style="display: block">Frames: <input class="expInput" type="text" id="expFrames" placeholder="ex. 0,1,2,3,4,5" disabled></span>
+										<span style="display: block">Animation Speed (FPS): <input class="expInput" type="number" id="expFPS" min="0" placeholder="0 = quarter beat" disabled></span>
+										<span style="display: block;">Loop:
+											<form id="loopType">
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="no" checked="checked" disabled>
+													<span class="loopButton">Off</span>
+												</label>
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="onBeat" disabled>
+													<span class="loopButton">On beat</span>
+												</label>
+												<label>
+													<input class="expInput" type="radio" name="loopType" value="yes" disabled>
+													<span class="loopButton">At end</span>
+												</label>
+											</form>
+										</span>
+										<span style="display: block">Loop Start Frame: <input class="expInput" type="number" id="expLoopStart" min="0" placeholder="0 = first of Frames" disabled></span><br>
+										<br>
+										Click to start/stop an animation preview!<br>
+										<canvas id="animationPreview" width=9 height=9>You're not supposed to see this at all ;)</canvas>
+									</div>
+								</td>
+								<td class="doc t6">
+									<div style="width: 40vw">
+										<span style="font-size: 8pt">(Note: going positive moves left and up respectively, going negative moves right and down respectively)</span><br>
+										Portrait Offset: <input class="expInput" type="number" id="expPOffX" placeholder="Offset X (px)" disabled>, <input class="expInput" type="number" id="expPOffY" placeholder="Offset Y (px)" disabled><br>
+										Portrait Size: <input class="expInput" type="number" id="expPSizeX" placeholder="Width (px)" disabled> by <input class="expInput" type="number" id="expPSizeY" placeholder="Height (px)" disabled><br>
+										Portrait Scale: <input class="expInput" type="number" id="expPScale" placeholder="Scale (multiplier)" disabled>x<br>
+										<br>
+										Click to start/stop an animation preview!
+										<br>
+										(APPROXIMATION ONLY, MAY NOT BE ACCURATE)<br>
+										<canvas id="dialoguePreview" width=336 height=42>You're also not supposed to see this! :O</canvas>
+									</div>
+								</td>
+							</tr>
+						</table>
+						<div class="doc t7" style="user-select: none">
+							<h4>Finalize + Export</h4>
+							<b>Before you export,</b> make sure you go back and make sure everything is correct.<br>
+							<br>
+							<span id="exportButton" onclick="exportJSON()">
+								<br>
+								<b>Everything looks good, let's export!</b>
+							</span>
+							<br>
+							<br>
+							<span>
+								Tool &#169; DeadlySprinklez 2020-2021. This tool is not affiliated with 7th Beat Games.<br>
+								Background, row menu preview, and dialogue box preview art are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
+								<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
+							</span>
+						</div>
+						<div class="doc t3 t4 t5 t6" id="frameReferenceHolder">
+							<br><hr>
+							<h4>Frame Reference</h4>
+							<div id="frameRefs">
+								Upload a spritesheet in <b><i>the first tab</i></b>, then visit the &#128247; <b><i>camera</i></b> (Frame Data) tab to enable this!
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!--
 
-			<div id="croppingDiv" style="display: none;">
-				<canvas id="cropping" style="width: 0px; height: 0px;"></canvas><br>
-				<span>Scale: <input id="croppingScaleInput" type="number" value="1.0" step="0.1">x</span><br>
-				<button onclick="toggleCroppingMenu(); document.getElementById('croppingOptions').setAttribute('style', 'display: none;')">Close</button><span id="optionsButton" onclick="document.getElementById('croppingOptions').setAttribute('style', 'display: initial;')">&#9881;</span>
-				<div id="croppingOptions" style="display: none;">
-					<hr style="margin: 6px 0 6px 0;">
-					Layout: <select id="cropLayout" onupdate="cropping()">
-						<option value="0" selected="selected">Single frame</option>
-						<option value="1">Double frame, vertical</option>
-						<option value="2">Double frame, horizontal</option>
-						<option value="3">Quadruple frame, 2x2</option>
-					</select><br>
-					Transparency guide: <select id="cropGuide" onupdate="cropping()">
-						<option value="true" selected="selected">On</option>
-						<option value="false">Off</option>
-					</select><br>
-					Guide color: <select id="cropGuideColor" onupdate="cropping()">
-						<option value="black" selected="selected">Black</option>
-						<option value="white">White</option>
-						<option value="r">Red</option>
-						<option value="o">Orange</option>
-						<option value="y">Yellow</option>
-						<option value="g">Green</option>
-						<option value="b">Blue</option>
-						<option value="i">Indigo</option>
-						<option value="v">Violet</option>
-					</select><br>
-					<button onclick="this.parentElement.setAttribute('style', 'display: none;')">Close Options</button>
-				</div>
-			</div>
-		</div>
-		<h1 style="display: none;">export</h1>
-		<br>
-		<button id="export" onclick="exportJSON()"><h3>Export + Download JSON</h3></button>
-		<br>
-		<div class="page" style="width: auto !important; text-align: right; right: 0%; left: 0%">
-			Tool &#169; DeadlySprinklez 2020. This tool is not affiliated with 7th Beat Games.<br>
-			Background art, dialogue box, and add button are from Rhythm Doctor, property of Hafiz Azman and 7th Beat Games.<br>
-			Remove, help, and play preview buttons are edited add buttons, again from Rhythm Doctor.<br>
-			<a href="https://ko-fi.com/DeadlySprinklez" style="color: white;">(also please consider donating to my Ko-Fi, I did a lot of work on this and would appreciate the help)</a>
-		</div>
-	</div>
-	<div id="AFOptionsWindow">
-		<div class="page">
-			<img src="assets/remove button.png"
-				style="position: absolute; right: 10px; cursor: pointer;"
-				onclick="this.parentElement.parentElement.style = 'z-index: -50 !important;'">
-			<h1>Autofill Options</h1>
-			<form>
-				<span title="The default - will run as intended.">
-					<input type="radio" name="skipAnalysis" id="AFOptDefault" checked>
-					<label for="AFOptDefault">Don't skip analysis, allow the generator to run without modifiers</label>
-				</span>
-				<br>
-				<b>Skip analysis, and... <i>(Advanced mode will not disable these!)</i></b>
-				<br>
-				<span title="requested by Year of the NotRat (Donte)!">
-					<input type="radio" name="skipAnalysis" id="AFOptFullRes">
-					<label for="AFOptFullRes">autofill the image's full resolution</label>
-				</span>
-				<br>
-				<span title="requested by Axobotl!">
-					<input type="radio" name="skipAnalysis" id="AFOptRowsColumns">
-					<label for="AFOptRowsColumns">instead ask the user for amount of rows and columns in the image</label>
-				</span>
-			</form>
-			<br>
-			<input type="checkbox" id="AFOptPlaceholder" onclick="
-				if (typeof funnyNumber == 'undefined')
-					{funnyNumber = 0;}
-				if (funnyNumber == 100)
-					{alert('You havin\' a good time there?')} 
-				if (funnyNumber <= 100)
-					{funnyNumber++}">
-				Does nothing, just a placeholder for more options
-			<br>
-			More to come?
-		</div>
-	</div>
-	<canvas id="initialCanvas" style="display: none;"></canvas>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	-->
 	<div id="helpMenu">
 		<div class="page">
 			<h1>Help</h1>
-			The tool is made to be as streamlined as possible, but there's not a whole lot of direction for people who are just starting out, which is why this is here!<br>
-			Also, as a sidenote, a lot of the input fields have a hover-over tooltip you can read for more information! Try it out!
+			TODO: Pending rewrite
 			<br><br>
 			<div id="contents">
 				<b>Jump To:</b><br>
@@ -358,11 +403,6 @@
 				2. <span onclick="document.getElementById('advanced-mode').scrollIntoView()"><a href="#">Advanced Mode</a></span><br>
 				3. <span onclick="document.getElementById('troubleshooting').scrollIntoView()"><a href="#">Troubleshooting</a></span><br>
 				4. <span onclick="document.getElementById('changelog').scrollIntoView()"><a href="#">Changelog</a></span><span onclick="document.getElementById('secret').scrollIntoView()" style="opacity: 0;"><a href="#">?</a></span><br>
-			</div>
-			<div id="advanced">
-				<span class="hint advancedNotif disabled">Advanced Mode: </span><br>
-				<canvas onclick="toggleAdvanced(event)" width="50" height="25" id="advancedSwitch"></canvas><br>
-				<span class="hint" id="warning">(hold shift and click to toggle)</span>
 			</div>
 		</div><br><br id="getting-started">
 		<div class="page">
@@ -410,70 +450,100 @@
 		</div><br><br id="changelog">
 		<div class="page">
 			<h2>Changelog</h2>
-			<h4>November 7th, 2020 - unique code (minor update)</h4>
-			<div><span class="change">~</span> traded out the cogwheel in the crop preview and the copyright symbol in the copyright disclaimer for HTML entities instead of straight unicode <b>(TL;DR - made things look better for everyone hopefully)</b></div>
-			<div><span class="change">~</span> made the export button smaller (DM me if that's not a good change and I'll make it big again in the next update)</div>
-			<div><span class="bugfix">?</span> new update soon with bugfixes galore - I have a to do list to get through hh</div>
 
-			<h4>September 15th, 2020 - picturesque</h4>
-			<div><span class="change">~</span> optimized a few of the backend methods of doing things</div>
-			<div><span class="change">~</span> new expressions are also saved to a hidden template in the code so uhhh...be careful when fiddling with Inspect Element please</div>
-			<div><span class="change">~</span> improved the frame size autofinder - it should be a good 70% more accurate now!! (it verifies other slices now instead of stopping at the first slice)</div>
-			<div><span class="change">~</span> changed the copyright blurb at the bottom of the page, because...</div>
-			<div><span class="addition">+</span> there's a dialogue portrait preview now!! just swap over to Portrait Data and click the new play buttons!</div>
-			<div><span class="addition">+</span> added Autofill Options! includes two new methods of autofill that skip the normal way of doing things, suggested by two friends. try them out!</div>
-			<div><span class="addition">+</span> there's a secret new debug mode that's not really secret at all if you ask nicely</div>
-			<div><span class="addition">+</span> added upload status output so you know exactly what went wrong with the process</div>
-			<div><span class="addition">+</span> added an optional input for the new row preview spots - if the check box is ticked you can edit them and they will be put in the resulting file. if it's not, however, it won't be present, so be aware of that!</div>
-			<div><span class="addition">+</span> added a "Set All To These Settings" button to portrait data! now if you have a standard for your sprites, you can copy it everywhere else easily!</div>
-			<div><span class="removal">-</span> removed new expression names, they really did nothing but get in the way to be fair</div>
+			<details>
+				<summary>May 16th, 2021 - up and over</summary>
+				<div><span class="change">~</span> overhauled EVERYTHING. like...</div>
+				<div><span class="change">~</span> oh my god so much. it's not even funny.</div>
+				<div><span class="change">~</span> okay I guess I have to actually write patch notes</div>
+				<hr>
+				<div><span class="change">~</span> rewrote almost every line of code by hand, only keeping a select few tidbits</div>
+				<div><span class="change">~</span> moved legacy JSON generator to <a href="https://deadlysprinklez.github.io/rdtools/jsongenerator-old">jsongenerator-old</a> if anyone wants to still use that</div>
+				<div><span class="change">~</span> put all the changelogs into expandable &#60;details&#62; elements, because they were getting out of hand</div>
+				<div><span class="addition">+</span> added a tab-based navigation system</div>
+				<div><span class="addition">+</span> added more tutorial writing with all the new screen space we gained</div>
+				<div><span class="addition">+</span> added a new frame splitting method - now you can accurately divide your spritesheet by SEEING where it gets divided at</div>
+				<div><span class="addition">+</span> added a preview for row...er, previews</div>
+				<div><span class="addition">+</span> added click'n'drag implementation to the new frame splitter and row preview...previews.</div>
+				<div><span class="addition">+</span> added a brand new expression navigation system - now you can click to select an expression. no more overwhelming the user! hopefully!</div>
+				<div><span class="addition">+</span> added a warning and error system to the export button</div>
+				<div><span class="removal">-</span> <b>TEMPORARILY</b> removed the automatic spritesheet divider</div>
+				<div><span class="removal">-</span> <b>TEMPORARILY</b> removed auto-fill options</div>
+				<br>
+				<span style="text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">If there aren't any bugs for me to squash this is probably gonna be the last major update from me. I'm planning on adding localization in a minor update, but I'm glad to have built and improved this as much as I did ^^<br>
+				Thank you all so much for using my stuff. I love you all. -<span style="color: red">D</span><span style="color: cyan">S</span></span>
+			</details>
 
-			<h4>August 6th, 2020 - snip, trim, shave, cut</h4>
-			<div><span class="change">~</span> repurposed a lot of the clutter, most of it is in tooltips now!</div>
-			<div><span class="change">~</span> moved the animation preview to it's own detached window</div>
-			<div><span class="change">~</span> clicking the Add Expression button now scrolls you to the bottom of the page</div>
-			<div><span class="addition">+</span> added help menu (you're here now! hi!)</div>
-			<div><span class="addition">+</span> added a cropping preview, so now you can actually see what your sprite will look like at a glance (access it by uploading a spritesheet and clicking on the frame x and y boxes!)</div>
-			<div style="margin-left: 10px;"><span class="addition">+</span> also there's an options menu for it for some extra help, like a transparency guide for where the four pixels of transparency should be, changing the color of the highlight, layout, and a lot more</div>
-			<div><span class="addition">+</span> added animation scaling so now you can see your sprites move as big or as small as you'd like them to</div>
-			<div><span class="addition">+</span> added non-looping animation for convenience, also a play button to replay non-looping or restart looping animations</div>
-			<div><span class="addition">+</span> added portrait data for custom characters! now your characters can appear in dialogue boxes - start a Show Dialogue event and put "[character name]_[expression name]: put dialogue text here!"</div>
-			<div><span class="addition">+</span> added Advanced Mode, which disables what few limits were on the tool (read up above)</div>
-			<div><span class="addition">+</span> added a "To The Top button", just in case you don't want to scroll back up manually</div>
-			<div><span class="addition">+</span> added no hidden secrets at all, whatsoever, especially not in the new help menu</div>
-			<div><span class="addition">+</span> added a warning for when you close the tab so you don't lose any data accidentally</div>
-			<div><span class="removal">-</span> removed the "reload frames" button, why was that there when I could've done the same thing without it and easier</div>
-			<div><span class="change">~</span> <b>minor update (2020-09-30)</b>: row preview now only gets added to the generated JSON file if the box is checked <i>and</i> if everything is filled in correctly</div>
-			<div><span class="bugfix">*</span> <b>bugfix (2020-09-30)</b>: row preview was trying to fill in the element data for Y in both slots, instead of the user-inputted value for both - fixed!</div>
+			<details>
+				<summary>November 7th, 2020 - unique code (minor update)</summary>
+				<div><span class="change">~</span> traded out the cogwheel in the crop preview and the copyright symbol in the copyright disclaimer for HTML entities instead of straight unicode <b>(TL;DR - made things look better for everyone hopefully)</b></div>
+				<div><span class="change">~</span> made the export button smaller (DM me if that's not a good change and I'll make it big again in the next update)</div>
+				<div><span class="bugfix">?</span> new update soon with bugfixes galore - I have a to do list to get through hh</div>
+			</details>
 
-			<h4>June 23rd, 2020 - move it, shake it, tap your feet</h4>
-			<div><span class="addition">+</span> added an animation preview - complete with looping, functional loopStart, and FPS</div>
-			<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: fixed a stupid mistake where I attempt to say a constant isn't a constant - it broke so I fixed it, dw</div>
-			<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: removed a LOT of the browser console logging, which would lag out your browser for a good while. some of it's still there just in case though</div>
+			<details>
+				<summary>September 15th, 2020 - picturesque</summary>
+				<div><span class="change">~</span> optimized a few of the backend methods of doing things</div>
+				<div><span class="change">~</span> new expressions are also saved to a hidden template in the code so uhhh...be careful when fiddling with Inspect Element please</div>
+				<div><span class="change">~</span> improved the frame size autofinder - it should be a good 70% more accurate now!! (it verifies other slices now instead of stopping at the first slice)</div>
+				<div><span class="change">~</span> changed the copyright blurb at the bottom of the page, because...</div>
+				<div><span class="addition">+</span> there's a dialogue portrait preview now!! just swap over to Portrait Data and click the new play buttons!</div>
+				<div><span class="addition">+</span> added Autofill Options! includes two new methods of autofill that skip the normal way of doing things, suggested by two friends. try them out!</div>
+				<div><span class="addition">+</span> there's a secret new debug mode that's not really secret at all if you ask nicely</div>
+				<div><span class="addition">+</span> added upload status output so you know exactly what went wrong with the process</div>
+				<div><span class="addition">+</span> added an optional input for the new row preview spots - if the check box is ticked you can edit them and they will be put in the resulting file. if it's not, however, it won't be present, so be aware of that!</div>
+				<div><span class="addition">+</span> added a "Set All To These Settings" button to portrait data! now if you have a standard for your sprites, you can copy it everywhere else easily!</div>
+				<div><span class="removal">-</span> removed new expression names, they really did nothing but get in the way to be fair</div>
+			</details>
 
-			<h4>June 21st, 2020 - it's called a sprite<i>sheet</i> for a reason</h4>
-			<div><span class="change">~</span> temporarily locked down the generator while I updated to the new standards, probably won't do that again</div>
-			<div><span class="change">~</span> while working on the new standards I also improved the analyzing function a bit, should be more efficient</div>
-			<div><span class="addition">+</span> added analyzing for 2-dimensional spritesheets</div>
-			<div><span class="addition">+</span> <b>minor update (2020-06-22)</b>: added in existing .json editing</div>
-			<div><span class="bugfix">*</span> <b>bugfix (2020-06-22)</b>: stopped the analyzer from cancelling itself early</div>
+			<details>
+				<summary>August 6th, 2020 - snip, trim, shave, cut</summary>
+				<div><span class="change">~</span> repurposed a lot of the clutter, most of it is in tooltips now!</div>
+				<div><span class="change">~</span> moved the animation preview to it's own detached window</div>
+				<div><span class="change">~</span> clicking the Add Expression button now scrolls you to the bottom of the page</div>
+				<div><span class="addition">+</span> added help menu (you're here now! hi!)</div>
+				<div><span class="addition">+</span> added a cropping preview, so now you can actually see what your sprite will look like at a glance (access it by uploading a spritesheet and clicking on the frame x and y boxes!)</div>
+				<div style="margin-left: 10px;"><span class="addition">+</span> also there's an options menu for it for some extra help, like a transparency guide for where the four pixels of transparency should be, changing the color of the highlight, layout, and a lot more</div>
+				<div><span class="addition">+</span> added animation scaling so now you can see your sprites move as big or as small as you'd like them to</div>
+				<div><span class="addition">+</span> added non-looping animation for convenience, also a play button to replay non-looping or restart looping animations</div>
+				<div><span class="addition">+</span> added portrait data for custom characters! now your characters can appear in dialogue boxes - start a Show Dialogue event and put "[character name]_[expression name]: put dialogue text here!"</div>
+				<div><span class="addition">+</span> added Advanced Mode, which disables what few limits were on the tool (read up above)</div>
+				<div><span class="addition">+</span> added a "To The Top button", just in case you don't want to scroll back up manually</div>
+				<div><span class="addition">+</span> added no hidden secrets at all, whatsoever, especially not in the new help menu</div>
+				<div><span class="addition">+</span> added a warning for when you close the tab so you don't lose any data accidentally</div>
+				<div><span class="removal">-</span> removed the "reload frames" button, why was that there when I could've done the same thing without it and easier</div>
+				<div><span class="change">~</span> <b>minor update (2020-09-30)</b>: row preview now only gets added to the generated JSON file if the box is checked <i>and</i> if everything is filled in correctly</div>
+				<div><span class="bugfix">*</span> <b>bugfix (2020-09-30)</b>: row preview was trying to fill in the element data for Y in both slots, instead of the user-inputted value for both - fixed!</div>
+			</details>
+	
+			<details>
+				<summary>June 23rd, 2020 - move it, shake it, tap your feet</summary>
+				<div><span class="addition">+</span> added an animation preview - complete with looping, functional loopStart, and FPS</div>
+				<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: fixed a stupid mistake where I attempt to say a constant isn't a constant - it broke so I fixed it, dw</div>
+				<div><span class="bugfix">*</span> <b>bugfix (sameday)</b>: removed a LOT of the browser console logging, which would lag out your browser for a good while. some of it's still there just in case though</div>
+			</details>
 
-			<h4>June 18th, 2020 - automated, innovated</h4>
-			<div><span class="addition">+</span> implemented the spritesheet analyzer tool (at the time just called spritesheet autofill)</div>
-			<div><span class="addition">+</span> added a title to the page (how did I FORGET that)</div>
-			<div><span class="removal">-</span> deleted a blank file github decided to add to the project</div>
+			<details>
+				<summary>June 21st, 2020 - it's called a sprite<i>sheet</i> for a reason</summary>
+				<div><span class="change">~</span> temporarily locked down the generator while I updated to the new standards, probably won't do that again</div>
+				<div><span class="change">~</span> while working on the new standards I also improved the analyzing function a bit, should be more efficient</div>
+				<div><span class="addition">+</span> added analyzing for 2-dimensional spritesheets</div>
+				<div><span class="addition">+</span> <b>minor update (2020-06-22)</b>: added in existing .json editing</div>
+				<div><span class="bugfix">*</span> <b>bugfix (2020-06-22)</b>: stopped the analyzer from cancelling itself early</div>
+			</details>
 
-			<h4>June 16th, 2020 - we're live</h4>
-			<div><span class="addition">+</span> added the tool to my dead shell of a website (trust me this is a MUCH better use)</div>
-			<div><span class="removal">-</span> deleted everything I made in like...the 6th-10th grades</div>
-			<br>
-			<br>
-			<h3>Upcoming Changes</h3>
-			As far as what's to expect from this tool next, whatever's on this list is it!<br>
-			I'm definitely looking to update the spritesheet analyzer, making it a bit more accurate. Right now, though, I have other projects to focus on. I've been giving this one a LOT of my time.<br>
-			Hopefully I'll be adding support for <span class="highlight">clip groups</span>, if they get added to the game. <s>Hi Gia!</s><br>
-			Hopefully I'll also get around to optimizing and improving the spritesheet analyzer so it's faster and more accurate.<br>
-			Otherwise, I'm always open to suggestions and other ideas! Message me on Discord at <span class="highlight">DeadlySprinklez#4327</span>. I'll be happy to hear you!
+			<details>
+				<summary>June 18th, 2020 - automated, innovated</summary>
+				<div><span class="addition">+</span> implemented the spritesheet analyzer tool (at the time just called spritesheet autofill)</div>
+				<div><span class="addition">+</span> added a title to the page (how did I FORGET that)</div>
+				<div><span class="removal">-</span> deleted a blank file github decided to add to the project</div>
+			</details>
+
+			<details>
+				<summary>June 16th, 2020 - we're live</summary>
+				<div><span class="addition">+</span> added the tool to my dead shell of a website (trust me this is a MUCH better use)</div>
+				<div><span class="removal">-</span> deleted everything I made in like...the 6th-10th grades</div>
+			</details>
 		</div>
 		<div class="spacer"></div>
 		<div class="spacer"></div>
@@ -487,10 +557,10 @@
 			Because I want to. It's my tool, <b>I</b> get to choose the appreciation!<br>
 			Side note, everything that's highlighted here has a tooltip! Hover over to see some blurbs from the people I thanked!<br><br>
 			Big thanks to 
-			<span class="highlight" title="一二三四五六七">the entire crew of 7th Beat Games</span> for making an incredible game! Can't wait for release!!<br>
+			<span class="highlight" title="一二三四五六七">the entire crew of 7th Beat Games</span> for making an incredible game!<br>
 			Thanks to 
 			<span class="highlight" title=":clap:">the entire RDL community</span>
-			 - I made this for you guys! (Mostly Adipem but still, hush)<br>
+			 - I made this for you guys! (Mostly Adipem)<br>
 
 			Big thanks to a few people I know by name in the RDL community for keeping me sane while I made this tool - namely 
 			<span class="highlight" title="'FUCK YOU BALTIMORE! IF YOU'RE DUMB ENOUGH TO BUY A NEW CAR THIS WEEKEND, YOU'RE A BIG ENOUGH SCHMUCK TO COME TO BIG BILL HELL'S CARS! BAD DEALS, CARS THAT BREAK DOWN, THIEVES! IF YOU THINK YOU'RE GOING TO FIND A BARGAIN AT BIG BILL'S, YOU CAN KISS MY ASS! IT'S OUR BELIEF THAT YOU'RE SUCH A STUPID MOTHERFUCKER THAT YOU'LL FALL FOR THIS BULLSHIT GUARANTEED! IF YOU FIND A BETTER DEAL: SHOVE IT UP YOUR UGLY ASS! YOU HEARD US RIGHT: SHOVE IT UP YOUR UGLY ASS! BRING YOUR TRADE, BRING YOUR TITLE, BRING YOUR WIFE, WE'LL FUCK HER! THAT'S RIGHT WE'LL FUCK YOUR WIFE! BECAUSE AT BIG BILL HELL'S, YOU'RE FUCKED SIX WAYS FROM SUNDAY! TAKE A HIKE TO BIG BILL HELL'S! HOME OF CHALLENGE PISSING, THAT'S RIGHT, CHALLENGE PISSING. HOW DOES IT WORK? IF YOU CAN PISS 6 FEET IN THE AIR STRAIGHT UP AND NOT GET WET, YOU GET NO DOWN PAYMENT. DON'T WAIT, DON'T DELAY, DON'T FUCK WITH US OR WE'LL RIP YOUR NUTS OFF! ONLY AT BIG BILL'S HELL, THE ONLY DEALER THAT TELLS YOU TO FUCK OFF. HURRY UP, ASSHOLE! THIS EVENT ENDS THE MINUTE YOU WRITE US A CHECK AND IT BETTER NOT BOUNCE OR YOU'RE A DEAD MOTHERFUCKER. GO TO HELL. BIG BILL HELL'S CARS - BALTIMORE'S FILTHIEST AND EXCLUSIVE HOME OF THE MEANEST SONS OF BITCHES IN THE STATE OF MARYLAND, GUARANTEED!!' -plastermaster">plastermaster</span>, 
@@ -501,9 +571,7 @@
 			<span class="highlight" title="':skateboard: zzshhhhhh clk clk zshhhhhh clk clk szhhhhhhh clk clk' -Axobotl">Axobotl</span>, 
 			<span class="highlight" title="Hey guys, it's me, DPS2004. DeadlySprinklez has trapped me inside the source code to this tool. Everytime you upload an image I am forced to generate JSON files. If you have the time, can you please upload an image of some chips or something so I can eat? I am not fed well. Hold on, new image is being uploaded, talk to you later!">DPS2004</span>, 
 			<span class="highlight" title="'trans rights' -FireOcta">FireOcta</span>, 
-			<span class="highlight" title="'Kusane isn't getting acknowledged so I shall 😳 in their place' -definitely_not_HIM
-
-oh shoutouts to kusane">definitely_not_HIM</span>, 
+			<span class="highlight" title="'ime fuckign gameing' -definitely_not_HIM">definitely_not_HIM</span>, 
 			<span class="highlight" title="chirp">Fancybird</span>, 
 			<span class="highlight" title="'straighten your backs, you banana-shaped focks' -fartiliumstation">fartiliumstation</span>, 
 			<span class="highlight" title="'sans peepee' -saladplainzone">saladplainzone</span>, 
@@ -531,8 +599,8 @@ also brothers in arms, X' -TVtheTV">TVtheTV</span> (<3),
 			<span class="highlight" title="Still waiting for that tabletop killing game, bud! When's it gonna happen?!">aethermaster144</span>, 
 			<span class="highlight" title="Civ is actually the first person I ever met online and it was through a Garry's Mod Murder game! He's the reason why I'm here at all, truth be told.">Civlian</span>, 
 			my friend <span class="highlight" title="Breaking news: reports of a crazed trucker broke out recently all across the nation. Many sources say the trucker was seen at common rest stops muttering something about 'becoming divine' and 'having to build more quantum storage units.' Attempts at conversation were met with more ramblings about 'having to gather more soul fragments and lamb crystals' for a 'thaumaturgic ritual.' More info at 11.">Kyle</span>, 
-			<span class="highlight" title="My first REAL friend I've ever kept for more than a year, still good friends now. Not too invested in RD, though, so I didn't bother asking for a quote lol">Buttonclicker</span>, 
-			<span class="highlight" title="Met through Buttonclicker, but also a very good friend who's been there for me a lot recently. Also not invested in RD though so I didn't ask for a quote from him either lmao">DirtMann</span>, and all of my other IRL friends who I didn't mention by name! You likely won't see this but you're here anyway!<br>
+			<span class="highlight" title="My first REAL friend I've ever kept for more than a year, still good friends now. Not too invested in RD, though, so I didn't bother asking for a quote lol">MidnightMan</span>, 
+			<span class="highlight" title="Met through MidnightMan, but also a very good friend who's been there for me a lot recently. Also not invested in RD though so I didn't ask for a quote from him either lmao">DirtMann</span>, and all of my other IRL friends who I didn't mention by name! You likely won't see this but you're here anyway!<br>
 			<br>
 
 			Also thank
@@ -544,9 +612,6 @@ and [client's name] always cares">you</span>, specifically, for using the tool a
 	</div>
 	<div id="help" onclick="toggleHelp()">
 		<img src="assets/help button.png">
-	</div>
-	<div id="toTop" onclick="scrollToTop();">
-		<span class="center">To the<br>top</span>
 	</div>
 	<script src="main.js"></script>
 </body>

@@ -16,23 +16,18 @@ a, a:active, a:hover, a:visited {
 	font-style: normal;
 	color: white;
 }
-#export {
-	width: auto;
-	margin-left: 50%;
-	transform: translate(-50%, 0%);
-	text-align: center;
-	border: none;
-	border-radius: 15px;
-	background-color: #0AE164;
-	cursor: pointer;
-}
 h1 {
 	text-align: center;
 	font-weight: 700;
 }
+summary {
+	text-decoration: underline;
+	font-weight: 700;
+	padding: 5px;
+}
 .page {
 	position: relative;
-	width: 80%;
+	width: 80vw;
 	margin: 10px 9.557% 10px 9.557%;
 	padding: 0px 15px 5px 15px;
 	border: 0px none black;
@@ -42,43 +37,339 @@ h1 {
 	color: white;
 	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
 				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+	overflow: hidden;
 }
 .page > * {
 	max-width: 100%;
 }
-.expressionNoDelete > .removebutton {
-	filter: grayscale(100);
+
+/*
+
+MAIN PAGE SETUP DONE
+
+TABS SETUP START
+
+*/
+
+table {
+	width: 100%;
+	border-collapse: collapse;
 }
-.removebutton, .preview {
-	vertical-align: middle;
-	width: 15px;
-	height: 15px;
+table tr td {
+	border-left: solid white 2px;
+	border-right: solid white 2px;
+}
+table tr td:first-child {
+	border-left: none;
+}
+table tr td:last-child {
+	border-right: none;
+}
+table.doc * {
+	border: none;
+}
+#tabsContainer {
+	width: 100%;
+	text-align: center;
+}
+#tabs {
+	width: 100%;
+	border-bottom: 3px solid white;
+	height: 28px;
+}
+.tab {
+	width: 25px;
+	overflow: hidden;
+	max-width: 25px;
+	height: 25px;
+	margin-left: -5px;
+	display: inline-block;
+	user-select: none;
 	cursor: pointer;
+	border: 3px solid white;
+	border-bottom: none;
+	border-radius: 10px 10px 0px 0px;
+	text-shadow: none;
+	background-color: #FFFFFF30;
+	transition: max-width 0s, border-color 0.25s;
 }
-.addbutton {
-	width: 50px;
-	height: 50px;
+.tab.active {
+	width: max-content;
+	max-width: 333px;
+	border-color: #60FF60;
+	padding-right: 3px;
+	padding-left: 3px;
+	transition: max-width 1s, border-color 0.25s;
+}
+.tab .tabName {
+	display: none;
+	white-space: nowrap;
+}
+.tab.active .tabName {
+	display: initial;
+	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
+				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
+}
+
+.doc {
+	display: none;
+	visibility: hidden;
+	width: 0px;
+	height: 0px;
+}
+.doc.active {
+	display: unset;
+	visibility: unset;
+	width: unset;
+	height: unset;
+}
+hr {
+	border: 1px solid white !important;
+	color: white;
+}
+#expressionsHolder {
+	min-width: 50%;
+	min-height: 10px;
+}
+
+/*
+
+TABS SETUP DONE
+
+CANVAS RULES START
+
+*/
+
+#sheetPreview {
+	max-width: 33vw;
+}
+#sheetDivider, #rowPrevPreview, #dialoguePreview, #animationPreview {
+	border: solid black 2px;
+}
+#sheetDivHolder {
+	display: inline-block;
+	overflow: auto;
+	max-width: 33vw;
+}
+#rowPrevFrame, #sheetDivider, #rowPrevPreview, #animationPreview, #dialoguePreview {
+	image-rendering: crisp-edges;
+}
+
+
+/*
+
+CANVAS RULES DONE
+
+MISCELLANEOUS RULES START
+
+*/
+
+.noFileBlur {
+	content: "yo";
+	filter: blur(1px) saturate(10%) grayscale(100%);
+}
+
+#loopType {
+	display: inline-block;
+}
+
+.loopButton {
+	position: relative;
+	display: inline-block;
+	background-color: rgba(255,255,255,0.15);
+	user-select: none;
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 10px;
+	transition: .2s ease-out;
+	border: 2px solid white !important;
+}
+
+#expList {
 	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	padding-top: 5px;
+	border: 3px solid white;
+	border-radius: 10px;
+	position: relative;
+	text-align: center;
+	overflow-x: visible; 
+	overflow-y: auto;
+	max-height: 40vh;
+	min-width: 33vw;
+	scrollbar-width: none;
+}
+
+#expList::-webkit-scrollbar {
+	display: none; /* this should work for Chrome, Safari, + Opera browsers, 
+	but this has only been tested on Firefox. sorry if it doesn't work! -DS */
+}
+#expAdd {
+	display: none;
+}
+
+#expAdd.active {
+	min-width: 30%;
+	font-size: 24pt;
+	text-align: center;
+	display: inline-block;
+	background-color: #33CC33;
+	border-radius: 10px;
+	user-select: none;
+	cursor: pointer;
+	transition: 0.25s background-color ease-out;
+}
+
+#expAdd:hover {
+	background-color: #66DD66;
+}
+
+#expAdd:active {
+	background-color: #16AA16;
+}
+
+.expression {
+	padding: 5px;
+	margin: 1px;
+	text-align: left;
+	width: 33vw;
+	border: 1px solid white !important;
+	border-radius: 15px;
+	user-select: none;
 	cursor: pointer;
 }
-.addbutton:hover {
-	filter: brightness(.85);
-} 
-.addbutton:active {
-	filter: brightness(.50);
+.expression.selectedExpression {
+	padding: 4px;
+	border: 2px solid white !important;
+	background-color: rgba(255,255,255,0.33);
 }
+#deleteExpression {
+	color: white;
+	background-color: #ff0000;
+	border-radius: 3px;
+	font: unset;
+}
+#deleteExpression:active:not(:disabled) {
+	background-color: #ff3333;
+	transform: translate(0, 1px);
+}
+#deleteExpression:disabled {
+	background-color: #aa3333;
+}
+
+#exportButton {
+	display: inline-block;
+	min-width: 30%;
+	max-width: 30%;
+	min-height: 64px;
+	max-height: 64px;
+	background-color: #33CC33;
+	border-radius: 10px;
+	user-select: none;
+	cursor: pointer;
+	transition: 0.25s background-color ease-out;
+}
+
+#exportButton:hover {
+	background-color: #66DD66;
+}
+
+#exportButton:active {
+	background-color: #16AA16;
+}
+
+label input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	position: absolute;
+}
+input:checked + .loopButton {
+	background-color: rgba(255,255,255,0.8);
+}
+
+/* thanks w3schools */
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 60px;
+  vertical-align: middle;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2196F3;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+  box-shadow: 0 0 2px black;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  top: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 0 4px black;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateY(26px);
+  -ms-transform: translateY(26px);
+  transform: translateY(26px);
+}
+
+#frameRefs {
+	display: block;
+	align-content: center;
+	padding: auto;
+}
+.warning {
+	color: #FF8080;
+	width: max-content;
+	position: absolute;
+	transform: translateX(-50%);
+}
+.frameRef {
+	display: inline-block;
+	border: solid white 2px;
+}
+.frameRefImg {
+	image-rendering: crisp-edges;
+}
+.hidden {
+	display: none;
+}
+
+.autofilledConfirmation {
+	color: limegreen;
+}
+
 .hint {
 	font-size: 8pt;
 }
 .hint:required {
 	color: red;
-}
-input[readonly] {
-	background-color: #afafaf;
-	color: #313131;
 }
 #help {
 	width: 40px;
@@ -89,18 +380,7 @@ input[readonly] {
 	top: 1%;
 	right: 1%;
 }
-#toTop {
-	cursor: pointer;
-	position: absolute;
-	bottom: 50vh;
-	right: 2vw;
-	color: white;
-	background-color: #2C4FDB;
-	border-radius: 10px;
-	padding: 10px;
-	box-shadow: 0px 0px 5px 0px black;
-}
-#helpMenu, #AFOptionsWindow {
+#helpMenu {
 	overflow: hidden;
 	position: absolute;
 	width: 100%;
@@ -129,66 +409,6 @@ input[readonly] {
 .change { color: white; }
 .addition { color: limegreen; }
 .removal { color: red; }
-#advanced {
-	position: absolute;
-	right: 0;
-	bottom: 0;
-	background-color: #2C4FDB;
-	padding: 3px;
-	border-radius: 8px;
-	box-shadow: 0 0 5px 0 black;
-	text-shadow: 0px -1px 0 black, -1px 0px 0 black, 1px 0px 0 black, 0px 1px 0 black,
-				 -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;
-}
-#advanced * {
-	display: block;
-}
-#advanced:last-child {
-	position: ;
-	top: px;
-	display: inline;
-}
-#advanced canvas {
-	margin: 0 auto 0 auto;
-}
-.advancedNotif {
-	text-align: center;
-}
-.advancedNotif.disabled::after {
-	color: red;
-	content: "OFF";
-}
-.advancedNotif.enabled::after {
-	color: limegreen;
-	content: "ON";
-}
-#animationDiv, #croppingDiv {
-	position: fixed;
-	left: 1vw;
-	bottom: 1vh;
-	background-color: #2C4FDB;
-	padding: 3px;
-	border-radius: 8px;
-	text-align: center;
-	overflow: auto;
-	max-height: 50vh;
-	max-width: 50vw;
-	box-shadow: 0 0 5px 0 black;
-}
-#croppingDiv {
-	overflow-x: hidden;
-	overflow-y: auto;
-	z-index: 1;
-}
-#animationDiv *, #croppingDiv * {
-	margin: 0 auto;
-}
-#croppingOptions {
-
-}
-#animationScaleInput, #croppingScaleInput {
-	width: 50px;
-}
 #contents {
 	display:  inline-block;
 	border: 1px solid black;
@@ -202,103 +422,4 @@ input[readonly] {
 	display: flex;
 	flex-wrap: wrap;
 	text-align: center;
-}
-#animation, #cropping {
-	image-rendering: pixelated;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: crisp-edges;
-}
-#cropping {
-	border: 2px solid rgba(255,0,0,0.5);
-}
-#optionsButton {
-	user-select: none;
-	-ms-user-select: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	cursor: pointer;
-	position: absolute;
-	right: 0;
-}
-#warning {
-	animation: warning 0.5s linear 0s 1 forwards;
-	-webkit-animation: warning 0.5s linear 0s 1 forwards;
-	display: block;
-}
-#autofillOptions {
-	text-decoration: none;
-	background-color: #1B3ECA;
-	border: 3px solid #041C76;
-	border-radius: 50px;
-	padding: 3px;
-}
-#AFOptionsWindow {
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0,0,0,0.8);
-}
-#AFOptionsWindow .page {
-	position: absolute;
-	min-width: 67vw;
-	min-height: 67vh;
-	max-width: 67vw;
-	max-height: 67vh;
-	margin: 0 !important;
-	top: 16.5vh;
-	left: 16.5vw;
-	overflow: auto;
-	padding: 10px 20px 10px 20px;
-}
-
-
-@keyframes warning {
-	0% { color: white; transform: translateX(0); }
-	1% { color: #FF6666; }
-	33% { color: white; }
-	66% { color: #FF6666; }
-	
-	/* haha warning machine go a-shaka-shaka */
-	12.5% { transform: translateX(-3px); }
-	25% { transform: translateX(0); }
-	37.5% { transform: translateX(3px); }
-	50% { transform: translateX(0); }
-	62.5% { transform: translateX(-3px); }
-	75% { transform: translateX(0); }
-	87.5% { transform: translateX(3px); }
-
-	100% { color: white; transform: translateX(0); }
-}
-@-webkit-keyframes warning {
-	0% { color: white; transform: translateX(0); }
-	1% { color: #FF6666; }
-	33% { color: white; }
-	66% { color: #FF6666; }
-	
-	/* haha warning machine go a-shaka-shaka */
-	12.5% { transform: translateX(-3px); }
-	25% { transform: translateX(0); }
-	37.5% { transform: translateX(3px); }
-	50% { transform: translateX(0); }
-	62.5% { transform: translateX(-3px); }
-	75% { transform: translateX(0); }
-	87.5% { transform: translateX(3px); }
-	
-	100% { color: white; transform: translateX(0); }
-}
-@-moz-keyframes warning {
-	0% { color: white; transform: translateX(0); }
-	1% { color: #FF6666; }
-	33% { color: white; }
-	66% { color: #FF6666; }
-	
-	/* haha warning machine go a-shaka-shaka */
-	12.5% { transform: translateX(-3px); }
-	25% { transform: translateX(0); }
-	37.5% { transform: translateX(3px); }
-	50% { transform: translateX(0); }
-	62.5% { transform: translateX(-3px); }
-	75% { transform: translateX(0); }
-	87.5% { transform: translateX(3px); }
-	
-	100% { color: white; transform: translateX(0); }
 }
