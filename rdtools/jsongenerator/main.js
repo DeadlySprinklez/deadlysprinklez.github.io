@@ -352,12 +352,19 @@ function changeToExpression(e) {
 	expFrames.value = selExion.frames.toString();
 	expFPS.value = selExion.fps;
 	expLoopStart.value = selExion.loopStart;
-	expPOffX.value = selExion.portraitOffset[0];
-	expPOffY.value = selExion.portraitOffset[1];
-	expPSizeX.value = selExion.portraitSize[0];
-	expPSizeY.value = selExion.portraitSize[1];
-	expPScale.value = selExion.portraitScale;
-	loopType.querySelector("*[value=\"" + selExion.loop + "\"]").click();
+	if (selExion.portraitOffset) {
+		expPOffX.value = selExion.portraitOffset[0];
+		expPOffY.value = selExion.portraitOffset[1];
+	}
+	if (selExion.portraitSize) {
+		expPSizeX.value = selExion.portraitSize[0];
+		expPSizeY.value = selExion.portraitSize[1];
+	}
+	if (selExion.portraitScale)
+		expPScale.value = selExion.portraitScale;
+	if (selExion.loop)
+		loopType.querySelector("*[value=\"" + selExion.loop + "\"]").click();
+	else loopType.querySelector("*[value=\"no\"]").click();
 }
 
 
