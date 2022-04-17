@@ -3,17 +3,398 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="google-site-verification" content="JqoBfMmrKrBihdI8YSQvZQrvsKEEPM6UMaMxhOjFntQ">
+	<title>Alex's Portfolio</title>
+	<style>
+		* {
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+		}
+		canvas {
+			width: 100vw;
+			height: 100vh;
+			position: fixed;
+			top: 0vh;
+			z-index: -1;
+		}
+		#page {
+			width: 66vw;
+			position: fixed;
+			left: 50vw;
+			top: 20px;
+			transform: translateX(-50%);
+			background-color: rgba(255,255,255,0.3);
+			border-radius: 10px;
+			padding: 15px;
+			text-align: center;
+			max-height: calc(90vh - 20px);
+			overflow-y: auto;
+		}
+		img {
+			padding-left: 15px;
+			padding-right: 15px;
+		}
+		.thumbnail {
+			padding-left: 0px;
+			border-radius: 15px;
+			width: 100px;
+			height: 100px;
+		}
+		table {
+			position: relative;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		td {
+			text-align: left;
+		}
+		#bgCirclesSwitch {
+			position: fixed;
+			bottom: 0px;
+			right: 0px;
+		}
+		</style>
 </head>
 <body>
-	<i>A message plays...</i>
-	<br>
-	<br>
-	<span>"You've reached the homespace of DeadlySprinklez."</span>
-	<br>
-	<span>"It's a bit empty around here, but there's about to be a huge overhaul soon."</span>
-	<br>
-	<span>"See you whenever that happens."</span>
-	<br>
-	<br>
-	<i>The message ends...</i> 
+	<canvas id="main"></canvas>
+	<div id="page">
+		<h2>Hi I'm Alex, here's my stuff</h2>
+		<p>
+			<a href="https://github.com/DeadlySprinklez"><img src="img/GitHub_Logo.png" height=25 /></a>
+			<a href="https://deadlysprinklez.itch.io/"><img src="img/itchio-textless-black.svg" height=25 /></a>
+		</p>
+		<div id="entryList">
+			To load my portfolio, enable JavaScript or update your browser! &lt;3 -Alex
+		</div>
+	</div>
+	<button id="bgCirclesSwitch" onclick="bgCircleSpawner.toggleBgCircles()">Background circles: ON</button>
+	<script>
+		var canvas = document.getElementById("main");
+		var ctx = canvas.getContext("2d");
+		var lastTime = 0;
+		var deltaTime = 0;
+		var objects = [];
+
+		var killZone = 250;
+
+		var DEBUG = false;
+
+		canvas.oncontextmenu = (event) => {
+			return false;
+			event.preventDefault();
+		}
+		//window.oncontextmenu = canvas.oncontextmenu;
+
+		window.onresize = (event) => {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		}
+
+		window.onload = (event) => {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+
+			EntryBuilder.AddEntries(
+				new Entry(
+					"img/rdccjsongen.png",
+					"Rhythm Doctor CC JSON Generator",
+					"https://deadlysprinklez.github.io/rdtools/jsongenerator",
+					[
+						"A tool made independently during the summer of 2021 to assist in creating JSON files for custom characters in the indie title Rhythm Doctor",
+						"Has in-depth features like interactive visual editing and animation previews",
+						"Developed in HTML and JavaScript over <a href='https://deadlysprinklez.github.io/rdtools/jsongenerator-old/' title='The old/legacy generator, deprecated'>the course of a few months</a>, later rebuilt from the ground up"
+					]
+				),
+				new Entry(
+					"",
+					"Rhythm Weightlifter",
+					"https://deadlysprinklez.github.io/rhythm-weightlifter",
+					[
+						"A very early alpha build of a rhythm minigame commissioned by 7th Beat Games",
+						"Developed to solidify the concept of common polyrhythms in players' minds",
+						"Developed wholly in JavaScript with the Canvas API, being moved over to Unity with better graphics"
+					]
+				),
+				new Entry(
+					"img/tau.png",
+					"TAU",
+					"https://deadlysprinklez.itch.io/tau",
+					[
+						"A circular rhythm game prototype developed in 2019 alongside my friend over the internet",
+						"Has controller support and a level select menu by yours truly",
+						"Developed in Lua with the <a href='https://love2d.org/'>LÖVE framework</a> over a Git repository on Bitbucket"
+					]
+				),
+				new Entry(
+					"img/over.png",
+					"Over",
+					"https://ldjam.com/events/ludum-dare/47/over",
+					[
+						"A game made for Ludum Dare 47, programmed by myself and a few friends",
+						"Programmed the lightning bolts and some patterns in the endless mode",
+						"Developed in Lua with the <a href='https://love2d.org/'>LÖVE framework</a> over a Git repository on GitHub"
+					]
+				),
+				new Entry(
+					"img/hypercube.png",
+					"Hypercube Warrior",
+					"https://ldjam.com/events/ludum-dare/50/hypercube-warrior",
+					[
+						"A game made for Ludum Dare 50, with art made by myself and a few friends",
+						"Made the game logo and backgrounds, other art made by DPS2004",
+						"Being developed further in Lua with the <a href='https://love2d.org/'>LÖVE framework</a> over a Git repository on GitHub"
+					]
+				),
+				new Entry(
+					"https://img.itch.zone/aW1nLzY2NjUwMzkucG5n/315x250%23c/2jL6Sa.png",
+					"Yearning Simulator 2021",
+					"https://deadlysprinklez.itch.io/yearning-simulator-2021",
+					[
+						"An incredibly simple tool made in 2 hours as a joke between friends late at night",
+						"Randomly generates a message intended to be sent to romantic partners",
+						"Developed in C# with the Windows Forms framework"
+					]
+				)
+			);
+
+			init();
+		};
+
+		function init() {
+			for (let i = 0; i < 400; i++) {
+				bgCircleSpawner.spawn();
+			}
+			loop();
+		}
+
+		function loop() {
+			deltaTime = window.performance.now() - lastTime;
+			if (deltaTime > 10000) {
+				console.warn("Delta time exceeded 10,000ms! (" + deltaTime + ") Negating.");
+				deltaTime = 0;
+			}
+			lastTime = window.performance.now();
+
+			ctx.fillStyle = "hsl(0,50%,50%)"
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+
+			for (let i = 0; i < objects.length; i++) {
+				objects[i].earlyUpdate();
+				objects[i].update();
+			}
+
+			let fps = Math.trunc(1000 / deltaTime);
+
+			ctx.strokeStyle = "#000000";
+			ctx.strokeText("FPS: " + fps, 5, 15);
+			ctx.strokeText("Obj: " + objects.length, 5, 29);
+			ctx.fillStyle = "#ffffff";
+			ctx.fillText("FPS: " + fps, 5, 15);
+			ctx.fillText("Obj: " + objects.length, 5, 29);
+
+			bgCircleSpawner.update();
+
+			requestAnimationFrame(loop);
+		}
+
+		class bgObject {
+			constructor(x,y,speed,direction) {
+				this.x = x;
+				this.y = y;
+				this.speed = speed;
+				this.direction = direction;
+			}
+
+			earlyUpdate() {}
+
+			update() {
+				this.x += Math.cos(this.direction) * this.speed * (deltaTime/1000);
+				this.y += Math.sin(this.direction) * this.speed * (deltaTime/1000);
+				if (this.x > canvas.width + killZone || this.x < -killZone) {
+					objects.splice(objects.indexOf(this), 1);
+				}
+				if (DEBUG) {
+					ctx.fillStyle = "#000000";
+					ctx.fillText("(" + Math.trunc(this.x) + ", " + Math.trunc(this.y) + ")", this.x, this.y);
+				}
+			}
+		}
+
+		class bgCircle extends bgObject {
+			color = 0;
+			spinning = 0;
+			constructor(x,y,speed,direction,radius,spinning = 0) {
+				super(x,y,speed,direction);
+				this.radius = radius;
+				if (Math.random() > 0.5) this.color = 1;
+				this.spinning = spinning;
+			}
+
+			update() {
+				super.update();
+				switch (this.spinning) {
+					case 0:
+						break;
+					case 1:
+						this.direction += (1/30) * Math.PI * (deltaTime/1000);
+						break;
+					case 2:
+						this.direction -= (1/30) * Math.PI * (deltaTime/1000);
+						break;
+				}
+				if (DEBUG) {
+					ctx.fillStyle = "#000000";
+					ctx.fillText(Math.trunc(this.direction * 100 / Math.PI) / 100, this.x, this.y);
+				}
+
+				if (this.color == 0)
+					ctx.fillStyle = "rgba(125,0,0,0.15)"
+				else
+					ctx.fillStyle = "rgba(255,125,125,0.15)"
+				ctx.beginPath();
+				ctx.arc(Math.round(this.x),Math.round(this.y),this.radius,0,2*Math.PI);
+				ctx.fill();
+			}
+		}
+
+		class bgCircleSpawner {
+			static spawnTimer = 3000;
+			static baseTime = 500;
+			static toggled = true;
+
+			static update() {
+				if (this.toggled) {
+					this.spawnTimer -= deltaTime;
+	
+					let spawned = 0;
+					while (this.spawnTimer < 0) {
+						this.spawn();
+						this.spawnTimer += this.baseTime;
+						spawned++;
+						if (spawned > 250) break;
+					}
+				}
+			}
+
+			static spawn() {
+				// 0 - comes in from left
+				// 1 - comes in from right
+				// 2 - comes in from top
+				// 3 - comes in from bottom
+				let xyState;
+				xyState = Math.floor(Math.random() * 4);
+				objects.push(new bgCircle(
+					// x pos
+					(xyState == 0 ? -125
+					: (xyState == 1 ? canvas.width + 125
+					: Math.random() * (canvas.width + 250) - 125)),
+					// y pos
+					(xyState == 2 ? -125
+					: (xyState == 3 ? canvas.height + 125
+					: Math.random() * (canvas.height + 250) - 125)),
+					// speed
+					Math.random() * 45 + 5,
+					// direction
+					(xyState == 0 ? (Math.random() - 0.5) * Math.PI * 0.25
+					: (xyState == 1 ? (Math.random() - 0.5) * Math.PI * 0.25 + Math.PI
+					: (xyState == 2 ? (Math.random() - 0.5) * Math.PI * 0.25 + Math.PI * 0.5
+					: (Math.random() - 0.5) * Math.PI * 0.25 + Math.PI * 1.5))),
+					// radius
+					100,
+					// spin type (0-2, 0 = no spin, 1 = cw, 2 = ccw)
+					Math.floor(Math.random() * 3)
+				));
+			}
+
+			static toggleBgCircles() {
+				this.toggled = !this.toggled;
+				if (this.toggled) {
+					document.getElementById("bgCirclesSwitch").innerHTML = "Background circles: ON";
+					for (let i = 0; i < 400; i++) {
+						bgCircleSpawner.spawn();
+					}
+				}
+				else {
+					document.getElementById("bgCirclesSwitch").innerHTML = "Background circles: OFF";
+					objects = new Array();
+					this.spawnTimer = 3000;
+				}
+			}
+		}
+
+		class Entry {
+			thumbnail = "";
+			title = "";
+			url = "";
+			description = [];
+
+			constructor(tn, tt, url, d) {
+				this.thumbnail = tn;
+				if (!this.thumbnail) {
+					// default to transparent pixel png data
+					this.thumbnail = "img/no_entry.png";
+				}
+				this.title = tt;
+				this.url = url;
+				this.description = d;
+				if (typeof this.description != "object") {
+					this.description = String(this.description).split("\n");
+				}
+			}
+		}
+
+		class EntryBuilder {
+			static entries = [];
+
+			static AddEntries(...entries) {
+				for (let i = 0; i < entries.length; i++) {
+					this.entries.push(entries[i]);
+				}
+				this.BuildEntries();
+			}
+
+			static BuildEntries() {
+				let eList = document.getElementById("entryList");
+
+				eList.innerHTML = "";
+
+				let eTable = document.createElement("table");
+				let eHead = eTable.createTHead();
+				let eRow;
+				let eCell;
+				for (let i = 0; i < this.entries.length; i++) {
+					eRow = eHead.insertRow();
+					eRow.insertCell().insertAdjacentHTML("beforeend",
+						`
+						<a href="` + this.entries[i].url + `">
+							<img src="` + this.entries[i].thumbnail + `" class="thumbnail">
+						</a>
+						`
+					);
+					eCell = eRow.insertCell();
+					eCell.insertAdjacentHTML("beforeend",
+						`
+						<a href="` + this.entries[i].url + `">
+							<h3>
+								` + this.entries[i].title + `
+							</h3>
+						</a>
+						`
+						);
+					for (let j = 0; j < this.entries[i].description.length; j++) {
+						eCell.insertAdjacentHTML("beforeend",
+							`
+								<p>` + this.entries[i].description[j] + `</p>
+							`
+						)
+					}
+				}
+				eList.append(eTable);
+				let el = document.createElement("p");
+				el.innerHTML = "<a href='https://deadlysprinklez.github.io/rdtools'>If you'd like to see a collection of tools I and other people have made for Rhythm Doctor, click here</a>";
+				eList.append(el);
+			}
+		}
+	</script>
 </body>
