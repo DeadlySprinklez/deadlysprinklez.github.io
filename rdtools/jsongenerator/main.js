@@ -417,13 +417,13 @@ function exportJSON() {
 
 	if (noFrameWarning) warnings += "\n(Tab 5, Anim. Data) One or more expressions don't have any frames! Make sure you're okay with this before you continue.";
 
-	// if the array hadn't passed all of the checks earlier, prime an error
+	// if the array hadn't passed all of the checks earlier, prime a warning
 	if (arr.includes(false)) {
-		if (!arr[0]) errors += "\nYou're missing a \"neutral\" expression!";
-		if (!arr[1]) errors += "\nYou're missing a \"happy\" expression!";
-		if (!arr[2]) errors += "\nYou're missing a \"barely\" expression!";
-		if (!arr[3]) errors += "\nYou're missing a \"missed\" expression!";
-		errors += "\n(Tab 4, Expressions) The \"neutral\", \"happy\", \"barely\", and \"missed\" expressions are required.";
+		if (!arr[0]) warnings += "\nYou're missing a \"neutral\" expression!";
+		if (!arr[1]) warnings += "\nYou're missing a \"happy\" expression!";
+		if (!arr[2]) warnings += "\nYou're missing a \"barely\" expression!";
+		if (!arr[3]) warnings += "\nYou're missing a \"missed\" expression!";
+		warnings += "\n(Tab 4, Expressions) The \"neutral\", \"happy\", \"barely\", and \"missed\" expressions are required for custom characters, but if you're doing decorations, you should be able to safely ignore this message.";
 	}
 
 	// if the divider warning's still up, prime a warning
