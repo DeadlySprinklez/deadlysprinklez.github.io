@@ -11,6 +11,7 @@ html {
 	top: 0;
 	left: 0;
 	overflow: auto;
+	image-rendering: pixelated;
 }
 a, a:active, a:hover, a:visited {
 	font-style: normal;
